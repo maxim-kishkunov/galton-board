@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
 import {
-    Slider
+    Slider,
+    Col,
 } from 'antd';
+import BoardBlock from './BoardBlock'
 
 class HomePage extends Component {
     constructor(props) {
@@ -9,23 +11,31 @@ class HomePage extends Component {
         this.state = {
             size: 1,
         };
-        // this.getReportData = this.getReportData.bind(this);
+        this.onChangeSlider = this.onChangeSlider.bind(this);
     }
 
     onChangeSlider(fieldName,fieldValue){
-        console.lof(fieldName);
-        console.lof(fieldValue);
+        this.setState({
+            [fieldName]: fieldValue
+        })
     }
 
     render() {
         return (
             <div>
                 <div className="control-wrap">
-                    <label for="size-input">Размер: </label>
-                    <Slider 
+                    <label>Размер:</label>
+                    <Slider
+                        min={1}
+                        max={30}
                         onChange={(val) => this.onChangeSlider('size',val)}
-                        defaultValue={this.state.size} 
+                        defaultValue={this.state.size}
                     />
+                </div>
+                <div>
+                    <Col span={12} style={{display:'flex',justifyContent: 'center'}}>
+                        <BoardBlock {...this.props} size={this.state.size} />
+                    </Col>
                 </div>
             </div>
         );
