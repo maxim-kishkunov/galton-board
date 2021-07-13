@@ -20,9 +20,28 @@ code {
   tr {
     display: flex;
     justify-content: center;
+    
     td{
-      width: 16px;
-      height: 16px;
+      width: 20px;
+      height: 20px;
+      padding: 0;
+      align-items: center;
+      display: flex;
+      justify-content: center;
+      position: relative;
+
+      .cell-block {
+        height: 20px;
+      }
+      
+      hr.left {
+        transform: rotate(45deg);
+        position: absolute;
+        width: 10px;
+        top: 14px;
+        left: 14px;
+        background: #000;
+      }
     }
   } 
 }
