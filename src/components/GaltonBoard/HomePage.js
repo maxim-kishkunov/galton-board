@@ -20,6 +20,25 @@ class HomePage extends Component {
         })
     }
 
+    handleStartTimer() {
+        this.timer = setInterval(() => {
+            
+            this.timer = setInterval(() => {
+
+            }, 500);
+        }, 500);
+    }
+
+    handleStopTimer() {
+    }
+
+    startPath() {
+        let newPath = [];
+        this.timer = setInterval(() => {
+
+        }, 500);
+    }
+
     render() {
         return (
             <div>
@@ -31,6 +50,10 @@ class HomePage extends Component {
                         onChange={(val) => this.onChangeSlider('size',val)}
                         defaultValue={this.state.size}
                     />
+                    <div>
+                        <Button onClick={this.handleStartTimer}>Старт</Button>
+                        <Button onClick={this.handleStopTimer}>Стоп</Button>
+                    </div>
                 </div>
                 <div>
                     <Col span={12} style={{display:'flex',justifyContent: 'center'}}>

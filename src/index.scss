@@ -34,12 +34,21 @@ code {
         height: 20px;
       }
       
-      hr.left {
+      hr.right {
         transform: rotate(45deg);
         position: absolute;
         width: 10px;
         top: 14px;
         left: 14px;
+        background: #000;
+      }
+      .board-table tr td hr.left {
+        transform: rotate(135deg);
+        position: absolute;
+        width: 12px;
+        height: 2px;
+        top: 12px;
+        right: 14px;
         background: #000;
       }
     }
