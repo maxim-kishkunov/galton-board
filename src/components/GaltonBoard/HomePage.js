@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import {
     Slider,
     Col,
+    Button
 } from 'antd';
 import BoardBlock from './BoardBlock'
 
@@ -10,8 +11,10 @@ class HomePage extends Component {
         super(props);
         this.state = {
             size: 1,
+            allWays: Array(),
         };
         this.onChangeSlider = this.onChangeSlider.bind(this);
+        this.handleStartTimer = this.handleStartTimer.bind(this);
     }
 
     onChangeSlider(fieldName,fieldValue){
@@ -22,10 +25,20 @@ class HomePage extends Component {
 
     handleStartTimer() {
         this.timer = setInterval(() => {
-            
-            this.timer = setInterval(() => {
-
-            }, 500);
+            let allWays = this.state.allWays;
+            let size = this.state.size;
+            allWays.push([0,0]);
+            allWays.forEach(function(currWay){
+                if(currWay.length < size){
+                    let randAddNumber = Math.round(Math.random(0))
+                    let currWayLastItem = currWay[currWay.length - 1];
+                    currWay.push([currWayLastItem[0] + 1, currWayLastItem[1] + randAddNumber]);
+                }
+            });
+            console.log(allWays);
+            this.setState({
+                allWays: allWays
+            })
         }, 500);
     }
 
