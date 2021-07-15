@@ -15,6 +15,8 @@ class HomePage extends Component {
         };
         this.onChangeSlider = this.onChangeSlider.bind(this);
         this.handleStartTimer = this.handleStartTimer.bind(this);
+        this.handleRestartTimer = this.handleRestartTimer.bind(this);
+        this.handleStopTimer = this.handleStopTimer.bind(this);
     }
 
     onChangeSlider(fieldName,fieldValue){
@@ -27,29 +29,36 @@ class HomePage extends Component {
         this.timer = setInterval(() => {
             let allWays = this.state.allWays;
             let size = this.state.size;
-            allWays.push([0,0]);
             allWays.forEach(function(currWay){
-                if(currWay.length < size){
+                if(currWay.length <= size){
                     let randAddNumber = Math.round(Math.random(0))
                     let currWayLastItem = currWay[currWay.length - 1];
-                    currWay.push([currWayLastItem[0] + 1, currWayLastItem[1] + randAddNumber]);
+                    currWay[currWay.length] = {
+                        row: currWayLastItem.row + 1,
+                        cell: currWayLastItem.cell + randAddNumber
+                    };
                 }
             });
-            console.log(allWays);
+            allWays[allWays.length] = [{
+                row: 0,
+                cell: 0
+            }];
             this.setState({
                 allWays: allWays
             })
-        }, 500);
+        }, 1000);
+    }
+
+    handleRestartTimer() {
+        this.setState({
+            allWays: []
+        },() => {
+            this.handleStartTimer();
+        })
     }
 
     handleStopTimer() {
-    }
-
-    startPath() {
-        let newPath = [];
-        this.timer = setInterval(() => {
-
-        }, 500);
+        clearInterval(this.timer);
     }
 
     render() {
@@ -66,11 +75,12 @@ class HomePage extends Component {
                     <div>
                         <Button onClick={this.handleStartTimer}>Старт</Button>
                         <Button onClick={this.handleStopTimer}>Стоп</Button>
+                        <Button onClick={this.handleRestartTimer}>Рестарт</Button>
                     </div>
                 </div>
                 <div>
                     <Col span={12} style={{display:'flex',justifyContent: 'center'}}>
-                        <BoardBlock {...this.props} size={this.state.size} />
+                        <BoardBlock {...this.props} size={this.state.size} allWays={this.state.allWays} />
                     </Col>
                 </div>
             </div>

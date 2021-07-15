@@ -14,9 +14,10 @@ class BoardBlock extends Component {
     }
 
     render() {
+        const {size, allWays} = this.props;
         let boardItems = [];
-        if(this.props.size && typeof this.props.size === 'number'){
-            for(let i = 1; i <= this.props.size; i++){
+        if(size && typeof size === 'number'){
+            for(let i = 1; i <= size; i++){
                 let cells = [];
                 let cellIndex = 0;
                 for(let j = 0; j < (2 * i + 1); j ++){
@@ -27,9 +28,34 @@ class BoardBlock extends Component {
                             </td>
                         );
                     }else{
+                        let currRow = i - 1;
+                        let currCell = cellIndex;
+                        let leftLine = false;
+                        let rightLine = false;
+                        if(allWays){
+                            for(let k = 0; k < allWays.length; k++){
+                                let currItem = allWays[k];
+                                if(currRow === 0 || (currItem.length > currRow && (currItem.find(item => item && item.row === currRow - 1 && item.cell === currCell - 1)
+                                    || currItem.find(item => item && item.row === currRow - 1 && item.cell === currCell)))
+                                ){
+                                    if(currItem.find(item => item && item.row === currRow + 1 && item.cell === currCell))
+                                        leftLine = true;
+                                    if(currItem.find(item => item && item.row === currRow + 1 && item.cell === currCell + 1))
+                                        rightLine = true;
+                                }
+                            }
+                        }
                         cells.push(
                             <td key={j}>
-                                <div className="cell-block" dangerouslySetInnerHTML={{__html: `[${i-1};${cellIndex}]<br>&#9899;`}} />
+                                <div className="cell-block" dangerouslySetInnerHTML={{__html: `&#9899;`}} />
+                                {
+                                    leftLine &&
+                                        <hr className="left" />
+                                }
+                                {
+                                    rightLine &&
+                                        <hr className="right" />
+                                }
                             </td>
                         );
                         cellIndex ++;
@@ -44,9 +70,11 @@ class BoardBlock extends Component {
         }
         return (
             <table className="board-table">
-            {
-                boardItems
-            }
+                <tbody>
+                {
+                    boardItems
+                }
+                </tbody>
             </table>
         );
     }
