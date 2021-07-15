@@ -3,6 +3,7 @@ import {
     Slider,
     InputNumber,
 } from 'antd';
+import { Redirect } from 'react-router-dom';
 
 class BoardBlock extends Component {
     constructor(props) {
@@ -24,7 +25,7 @@ class BoardBlock extends Component {
                     if(j % 2 === 0){
                         cells.push(
                             <td key={j}>
-                                <div className="cell-block" dangerouslySetInnerHTML={{__html: '&nbsp;'}} />
+                                &nbsp;
                             </td>
                         );
                     }else{
@@ -32,11 +33,14 @@ class BoardBlock extends Component {
                         let currCell = cellIndex;
                         let leftLine = false;
                         let rightLine = false;
+                        let redPoint = false;
                         if(allWays){
                             for(let k = 0; k < allWays.length; k++){
                                 let currItem = allWays[k];
-                                if(currRow === 0 || (currItem.length > currRow && (currItem.find(item => item && item.row === currRow - 1 && item.cell === currCell - 1)
-                                    || currItem.find(item => item && item.row === currRow - 1 && item.cell === currCell)))
+                                if(currItem.length - 1 === currRow && currItem.find(item => item && item.cell === currCell && item.row === currRow)){
+                                    redPoint = true;
+                                }
+                                if(currRow === 0 || (currItem.length > currRow && currItem.find(item => item && item.row === currRow - 1 && item.childCell === currCell))
                                 ){
                                     if(currItem.find(item => item && item.row === currRow + 1 && item.cell === currCell))
                                         leftLine = true;
@@ -47,7 +51,7 @@ class BoardBlock extends Component {
                         }
                         cells.push(
                             <td key={j}>
-                                <div className="cell-block" dangerouslySetInnerHTML={{__html: `&#9899;`}} />
+                                <div className={`cell-block${redPoint ? ' red' : ''}`} />
                                 {
                                     leftLine &&
                                         <hr className="left" />

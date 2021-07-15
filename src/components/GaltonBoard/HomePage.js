@@ -2,7 +2,8 @@ import React, { Component } from 'react';
 import {
     Slider,
     Col,
-    Button
+    Button,
+    InputNumber,
 } from 'antd';
 import BoardBlock from './BoardBlock'
 
@@ -11,12 +12,12 @@ class HomePage extends Component {
         super(props);
         this.state = {
             size: 1,
-            allWays: Array(),
+            allWays: [],
         };
         this.onChangeSlider = this.onChangeSlider.bind(this);
         this.handleStartTimer = this.handleStartTimer.bind(this);
         this.handleRestartTimer = this.handleRestartTimer.bind(this);
-        this.handleStopTimer = this.handleStopTimer.bind(this);
+        this.handlePauseTimer = this.handlePauseTimer.bind(this);
     }
 
     onChangeSlider(fieldName,fieldValue){
@@ -26,39 +27,51 @@ class HomePage extends Component {
     }
 
     handleStartTimer() {
+        let i = 0;
         this.timer = setInterval(() => {
-            let allWays = this.state.allWays;
-            let size = this.state.size;
-            allWays.forEach(function(currWay){
-                if(currWay.length <= size){
-                    let randAddNumber = Math.round(Math.random(0))
-                    let currWayLastItem = currWay[currWay.length - 1];
-                    currWay[currWay.length] = {
-                        row: currWayLastItem.row + 1,
-                        cell: currWayLastItem.cell + randAddNumber
-                    };
-                }
-            });
-            allWays[allWays.length] = [{
-                row: 0,
-                cell: 0
-            }];
-            this.setState({
-                allWays: allWays
-            })
+            if(!this.state.isPaused) {
+                let allWays = this.state.allWays;
+                let size = this.state.size;
+                allWays.forEach(function(currWay){
+                    if(currWay.length <= size){
+                        let randAddNumber = Math.round(Math.random(0))
+                        let currWayLastItem = currWay[currWay.length - 1];
+                        let currWayNewItem = {
+                            row: currWayLastItem.row + 1,
+                            cell: currWayLastItem.cell + randAddNumber,
+                            parentCell: currWayLastItem.cell
+                        };
+                        currWayLastItem.childCell = currWayNewItem.cell;
+                        currWay[currWay.length] = currWayNewItem;
+                    }
+                });
+                if(i % 2 === 0)
+                    allWays[allWays.length] = [{
+                        row: 0,
+                        cell: 0
+                    }];
+                this.setState({
+                    allWays: allWays
+                })
+                i++;
+            }
         }, 1000);
     }
 
     handleRestartTimer() {
         this.setState({
-            allWays: []
+            allWays: [],
+            isPaused: false,
         },() => {
+            clearInterval(this.timer);
             this.handleStartTimer();
         })
     }
 
-    handleStopTimer() {
-        clearInterval(this.timer);
+    handlePauseTimer() {
+        this.setState({
+            isPaused: !this.state.isPaused
+        })
     }
 
     render() {
@@ -66,6 +79,7 @@ class HomePage extends Component {
             <div>
                 <div className="control-wrap">
                     <label>Размер:</label>
+                    <InputNumber name="size" value={this.state.size} onChange={(val) => this.onChangeSlider('size',val)} />
                     <Slider
                         min={1}
                         max={30}
@@ -74,7 +88,7 @@ class HomePage extends Component {
                     />
                     <div>
                         <Button onClick={this.handleStartTimer}>Старт</Button>
-                        <Button onClick={this.handleStopTimer}>Стоп</Button>
+                        <Button onClick={this.handlePauseTimer}>Пауза</Button>
                         <Button onClick={this.handleRestartTimer}>Рестарт</Button>
                     </div>
                 </div>
