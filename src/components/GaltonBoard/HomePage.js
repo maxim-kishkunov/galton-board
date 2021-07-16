@@ -6,6 +6,7 @@ import {
     InputNumber,
 } from 'antd';
 import BoardBlock from './BoardBlock'
+import StackBarChart from './StackBarChart'
 
 class HomePage extends Component {
     constructor(props) {
@@ -55,7 +56,7 @@ class HomePage extends Component {
                 })
                 i++;
             }
-        }, 1000);
+        }, 300);
     }
 
     handleRestartTimer() {
@@ -75,6 +76,14 @@ class HomePage extends Component {
     }
 
     render() {
+        const {size, allWays} = this.state;
+        let barChartData = [];
+        for(let i=0;i<allWays.length;i++){
+            let currItem = allWays[i];
+            if(currItem.length === size + 1){
+                barChartData.push(currItem[currItem.length - 1].cell);
+            }
+        }
         return (
             <div>
                 <div className="control-wrap">
@@ -87,7 +96,7 @@ class HomePage extends Component {
                         defaultValue={this.state.size}
                     />
                     <div>
-                        <Button onClick={this.handleStartTimer}>Старт</Button>
+                        <Button disabled={this.timer} onClick={this.handleStartTimer}>Старт</Button>
                         <Button onClick={this.handlePauseTimer}>Пауза</Button>
                         <Button onClick={this.handleRestartTimer}>Рестарт</Button>
                     </div>
@@ -95,6 +104,7 @@ class HomePage extends Component {
                 <div>
                     <Col span={12} style={{display:'flex',justifyContent: 'center'}}>
                         <BoardBlock {...this.props} size={this.state.size} allWays={this.state.allWays} />
+                        <StackBarChart {...this.props} data={barChartData} size={this.state.size} /> 
                     </Col>
                 </div>
             </div>
