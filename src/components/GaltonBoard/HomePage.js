@@ -23,6 +23,8 @@ class HomePage extends Component {
 
     onChangeSlider(fieldName,fieldValue){
         this.setState({
+            allWays: [],
+            isPaused: false,
             [fieldName]: fieldValue
         })
     }
@@ -77,11 +79,14 @@ class HomePage extends Component {
 
     render() {
         const {size, allWays} = this.state;
-        let barChartData = [];
-        for(let i=0;i<allWays.length;i++){
+        let barChartData = Array(size + 1);
+        for(let i = 0;i <= size;i ++){
+            barChartData[i] = 0;
+        }
+        for(let i = 0; i <= allWays.length; i++){
             let currItem = allWays[i];
-            if(currItem.length === size + 1){
-                barChartData.push(currItem[currItem.length - 1].cell);
+            if(currItem && currItem.length === size + 1){
+                barChartData[currItem[currItem.length - 1].cell] ++;
             }
         }
         return (
@@ -102,7 +107,7 @@ class HomePage extends Component {
                     </div>
                 </div>
                 <div>
-                    <Col span={12} style={{display:'flex',justifyContent: 'center'}}>
+                    <Col span={12} style={{display:'flex',justifyContent: 'center', flexDirection: 'column'}}>
                         <BoardBlock {...this.props} size={this.state.size} allWays={this.state.allWays} />
                         <StackBarChart {...this.props} data={barChartData} size={this.state.size} /> 
                     </Col>
