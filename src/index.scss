@@ -63,3 +63,23 @@ code {
     }
   } 
 }
+
+
+.stack-bar-chart {
+  display: flex;
+  flex-direction: row-reverse;
+  margin: 5px auto;
+  transform: rotate(180deg);
+  transform-origin: center;
+
+  .bar-item {
+    margin: 0 1px;
+    width: 28px;
+
+    .bar-line-item {
+      width: 28px;
+      height: 20px;
+      background: #070;
+    }
+  }
+}

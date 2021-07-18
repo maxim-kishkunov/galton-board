@@ -7,6 +7,7 @@ import {
 } from 'antd';
 import BoardBlock from './BoardBlock'
 import StackBarChart from './StackBarChart'
+import PseudoStackBarChart from './PseudoStackBarChart'
 
 class HomePage extends Component {
     constructor(props) {
@@ -109,7 +110,8 @@ class HomePage extends Component {
                 <div>
                     <Col span={12} style={{display:'flex',justifyContent: 'center', flexDirection: 'column'}}>
                         <BoardBlock {...this.props} size={this.state.size} allWays={this.state.allWays} />
-                        <StackBarChart {...this.props} data={barChartData} size={this.state.size} /> 
+                        {/* <StackBarChart {...this.props} data={barChartData} size={this.state.size} />  */}
+                        <PseudoStackBarChart {...this.props} data={barChartData} size={this.state.size} /> 
                     </Col>
                 </div>
             </div>
