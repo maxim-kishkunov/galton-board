@@ -1,9 +1,4 @@
 import React, { Component } from 'react';
-import {
-    Slider,
-    InputNumber,
-} from 'antd';
-import { Redirect } from 'react-router-dom';
 
 class BoardBlock extends Component {
     constructor(props) {
@@ -11,9 +6,19 @@ class BoardBlock extends Component {
         this.state = {
 
         };
-        // this.onChangeSlider = this.onChangeSlider.bind(this);
     }
-
+    
+    objectsAreSame(x, y) {
+        let objectsAreSame = true;
+        for(var propertyName in x) {
+           if(x[propertyName] !== y[propertyName]) {
+              objectsAreSame = false;
+              break;
+           }
+        }
+        return objectsAreSame;
+    }
+     
     render() {
         const {size, allWays} = this.props;
         let boardItems = [];
@@ -34,18 +39,28 @@ class BoardBlock extends Component {
                         let leftLine = false;
                         let rightLine = false;
                         let redPoint = false;
+                        let redLine = false;
+
                         if(allWays){
                             for(let k = 0; k < allWays.length; k++){
-                                let currItem = allWays[k];
+                                let currItem = allWays[k]; //Текущий путь падения шарика
+                                let thisIsDouble = false;
+                                for(let q = 0; q < allWays.length; q ++){
+                                    if(this.objectsAreSame(allWays[q], currItem))
+                                        thisIsDouble = true;
+                                }
                                 if(currItem.length - 1 === currRow && currItem.find(item => item && item.cell === currCell && item.row === currRow)){
                                     redPoint = true;
                                 }
                                 if(currRow === 0 || (currItem.length > currRow && currItem.find(item => item && item.row === currRow - 1 && item.childCell === currCell))
                                 ){
-                                    if(currItem.find(item => item && item.row === currRow + 1 && item.cell === currCell))
+                                    
+                                    if(currItem.find(item => item && item.row === currRow + 1 && item.cell === currCell)){
                                         leftLine = true;
-                                    if(currItem.find(item => item && item.row === currRow + 1 && item.cell === currCell + 1))
+                                    }
+                                    if(currItem.find(item => item && item.row === currRow + 1 && item.cell === currCell + 1)){
                                         rightLine = true;
+                                    }
                                 }
                             }
                         }

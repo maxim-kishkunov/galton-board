@@ -1,12 +1,6 @@
 
 import React from 'react';
 import ReactEcharts from 'echarts-for-react';
-import {
-    Col, Row
-} from 'antd';
-import moment from 'moment';
-
-const idiot_date_format = 'MM.DD.YYYY';
 
 export default class StackBarChart extends React.Component {
     constructor(props) {
@@ -19,7 +13,7 @@ export default class StackBarChart extends React.Component {
         let categories = [];
         for(let i = 1;i <= this.props.size + 1; i++)
             categories.push(i);
-        return {
+        return { 
             grid: {
                 // left: '-10px',
                 // right: '0',
@@ -44,7 +38,6 @@ export default class StackBarChart extends React.Component {
     };
 
     render() {
-        let tableWidth = (this.props.size * 2 - 1) * 16;
         return (
                 <ReactEcharts
                     style={{

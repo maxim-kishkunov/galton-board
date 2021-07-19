@@ -6,7 +6,6 @@ import {
     InputNumber,
 } from 'antd';
 import BoardBlock from './BoardBlock'
-import StackBarChart from './StackBarChart'
 import PseudoStackBarChart from './PseudoStackBarChart'
 
 class HomePage extends Component {
@@ -105,6 +104,9 @@ class HomePage extends Component {
                         <Button disabled={this.timer} onClick={this.handleStartTimer}>Старт</Button>
                         <Button onClick={this.handlePauseTimer}>Пауза</Button>
                         <Button onClick={this.handleRestartTimer}>Рестарт</Button>
+                    </div>
+                    <div>
+                        Всего бросков: {this.state.allWays.length}
                     </div>
                 </div>
                 <div>
