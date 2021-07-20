@@ -20,7 +20,7 @@ class BoardBlock extends Component {
     }
      
     render() {
-        const {size, allWays} = this.props;
+        const {size, allWays, allWaysStrings} = this.props;
         let boardItems = [];
         if(size && typeof size === 'number'){
             for(let i = 1; i <= size; i++){

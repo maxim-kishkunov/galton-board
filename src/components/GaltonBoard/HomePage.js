@@ -14,6 +14,7 @@ class HomePage extends Component {
         this.state = {
             size: 1,
             allWays: [],
+            allWaysStrings: [],
         };
         this.onChangeSlider = this.onChangeSlider.bind(this);
         this.handleStartTimer = this.handleStartTimer.bind(this);
@@ -34,27 +35,39 @@ class HomePage extends Component {
         this.timer = setInterval(() => {
             if(!this.state.isPaused) {
                 let allWays = this.state.allWays;
+                let allWaysStrings = this.state.allWaysStrings;
                 let size = this.state.size;
-                allWays.forEach(function(currWay){
-                    if(currWay.length <= size){
-                        let randAddNumber = Math.round(Math.random(0))
-                        let currWayLastItem = currWay[currWay.length - 1];
-                        let currWayNewItem = {
-                            row: currWayLastItem.row + 1,
-                            cell: currWayLastItem.cell + randAddNumber,
-                            parentCell: currWayLastItem.cell
-                        };
-                        currWayLastItem.childCell = currWayNewItem.cell;
-                        currWay[currWay.length] = currWayNewItem;
+                for(let j = 0; j < allWaysStrings.length; j ++){
+                    if(allWaysStrings[j].length <= size){
+                        let randAddNumber = Math.round(Math.random(0));
+                        allWaysStrings[j] += ( +allWaysStrings[j][allWaysStrings[j].length - 1] + randAddNumber).toString();
+                        // console.log(currWay);
                     }
-                });
-                if(i % 2 === 0)
+                }
+                console.log(allWaysStrings);
+                // allWays.forEach(function(currWay){
+                //     if(currWay.length <= size){
+                //         let randAddNumber = Math.round(Math.random(0))
+                //         let currWayLastItem = currWay[currWay.length - 1];
+                //         let currWayNewItem = {
+                //             row: currWayLastItem.row + 1,
+                //             cell: currWayLastItem.cell + randAddNumber,
+                //             parentCell: currWayLastItem.cell
+                //         };
+                //         currWayLastItem.childCell = currWayNewItem.cell;
+                //         currWay[currWay.length] = currWayNewItem;
+                //     }
+                // });
+                if(i % 2 === 0){
+                    allWaysStrings.push('0');
                     allWays[allWays.length] = [{
                         row: 0,
                         cell: 0
                     }];
+                }
                 this.setState({
-                    allWays: allWays
+                    // allWays: allWays
+                    allWaysStrings: allWaysStrings
                 })
                 i++;
             }
@@ -111,7 +124,7 @@ class HomePage extends Component {
                 </div>
                 <div>
                     <Col span={12} style={{display:'flex',justifyContent: 'center', flexDirection: 'column'}}>
-                        <BoardBlock {...this.props} size={this.state.size} allWays={this.state.allWays} />
+                        <BoardBlock {...this.props} size={this.state.size} allWays={this.state.allWays} allWaysStrings={this.state.allWaysStrings} />
                         {/* <StackBarChart {...this.props} data={barChartData} size={this.state.size} />  */}
                         <PseudoStackBarChart {...this.props} data={barChartData} size={this.state.size} /> 
                     </Col>
