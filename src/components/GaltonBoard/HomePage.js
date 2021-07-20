@@ -13,8 +13,7 @@ class HomePage extends Component {
         super(props);
         this.state = {
             size: 1,
-            allWays: [],
-            allWaysStrings: [],
+            allRoutes: [],
         };
         this.onChangeSlider = this.onChangeSlider.bind(this);
         this.handleStartTimer = this.handleStartTimer.bind(this);
@@ -24,7 +23,7 @@ class HomePage extends Component {
 
     onChangeSlider(fieldName,fieldValue){
         this.setState({
-            allWays: [],
+            allRoutes: [],
             isPaused: false,
             [fieldName]: fieldValue
         })
@@ -34,40 +33,19 @@ class HomePage extends Component {
         let i = 0;
         this.timer = setInterval(() => {
             if(!this.state.isPaused) {
-                let allWays = this.state.allWays;
-                let allWaysStrings = this.state.allWaysStrings;
+                let allRoutes = this.state.allRoutes;
                 let size = this.state.size;
-                for(let j = 0; j < allWaysStrings.length; j ++){
-                    if(allWaysStrings[j].length <= size){
+                for(let j = 0; j < allRoutes.length; j ++){
+                    if(allRoutes[j].length <= size){
                         let randAddNumber = Math.round(Math.random(0));
-                        allWaysStrings[j] += ( +allWaysStrings[j][allWaysStrings[j].length - 1] + randAddNumber).toString();
-                        // console.log(currWay);
+                        allRoutes[j].push(allRoutes[j][allRoutes[j].length - 1] + randAddNumber);
                     }
                 }
-                console.log(allWaysStrings);
-                // allWays.forEach(function(currWay){
-                //     if(currWay.length <= size){
-                //         let randAddNumber = Math.round(Math.random(0))
-                //         let currWayLastItem = currWay[currWay.length - 1];
-                //         let currWayNewItem = {
-                //             row: currWayLastItem.row + 1,
-                //             cell: currWayLastItem.cell + randAddNumber,
-                //             parentCell: currWayLastItem.cell
-                //         };
-                //         currWayLastItem.childCell = currWayNewItem.cell;
-                //         currWay[currWay.length] = currWayNewItem;
-                //     }
-                // });
                 if(i % 2 === 0){
-                    allWaysStrings.push('0');
-                    allWays[allWays.length] = [{
-                        row: 0,
-                        cell: 0
-                    }];
+                    allRoutes.push([0]);
                 }
                 this.setState({
-                    // allWays: allWays
-                    allWaysStrings: allWaysStrings
+                    allRoutes: allRoutes
                 })
                 i++;
             }
@@ -76,7 +54,7 @@ class HomePage extends Component {
 
     handleRestartTimer() {
         this.setState({
-            allWays: [],
+            allRoutes: [],
             isPaused: false,
         },() => {
             clearInterval(this.timer);
@@ -91,15 +69,15 @@ class HomePage extends Component {
     }
 
     render() {
-        const {size, allWays} = this.state;
+        const {size, allRoutes} = this.state;
         let barChartData = Array(size + 1);
         for(let i = 0;i <= size;i ++){
             barChartData[i] = 0;
         }
-        for(let i = 0; i <= allWays.length; i++){
-            let currItem = allWays[i];
+        for(let i = 0; i <= allRoutes.length; i++){
+            let currItem = allRoutes[i];
             if(currItem && currItem.length === size + 1){
-                barChartData[currItem[currItem.length - 1].cell] ++;
+                barChartData[+ currItem[currItem.length - 1]] ++;
             }
         }
         return (
@@ -119,13 +97,12 @@ class HomePage extends Component {
                         <Button onClick={this.handleRestartTimer}>Рестарт</Button>
                     </div>
                     <div>
-                        Всего бросков: {this.state.allWays.length}
+                        Всего бросков: {this.state.allRoutes.length}
                     </div>
                 </div>
                 <div>
                     <Col span={12} style={{display:'flex',justifyContent: 'center', flexDirection: 'column'}}>
-                        <BoardBlock {...this.props} size={this.state.size} allWays={this.state.allWays} allWaysStrings={this.state.allWaysStrings} />
-                        {/* <StackBarChart {...this.props} data={barChartData} size={this.state.size} />  */}
+                        <BoardBlock {...this.props} size={this.state.size} allRoutes={this.state.allRoutes} />
                         <PseudoStackBarChart {...this.props} data={barChartData} size={this.state.size} /> 
                     </Col>
                 </div>

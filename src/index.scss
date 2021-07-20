@@ -41,24 +41,30 @@ code {
         background: #f00;
         border: 1px solid #f00; 
       }
-      
+           
+      hr.right.red, hr.left.red {
+        background: #f00;
+      }
       hr.right {
         transform: rotate(45deg);
         position: absolute;
-        width: 5px;
-        height: 1px;
+        width: 7px;
+        height: 3px;
         top: 7px;
         left: 12px;
         background: #acacac;
+        border: 0;
+        
       }
       hr.left {
         transform: rotate(135deg);
         position: absolute;
-        width: 5px;
-        height: 1px;
+        width: 7px;
+        height: 3px;
         top: 7px;
         right: 12px;
         background: #acacac;
+        border: 0;
       }
     }
   } 
@@ -67,24 +73,27 @@ code {
 
 .stack-bar-chart {
   display: flex;
-  flex-direction: row-reverse;
-  margin: 5px auto;
-  transform: rotate(180deg);
-  transform-origin: center;
-  height: 160px;
+  .chart-inner {
+    display: flex;
+    flex-direction: row-reverse;
+    margin: 5px auto;
+    transform: rotate(180deg);
+    transform-origin: center;
+    height: 160px;
 
-  .bar-item {
-    margin: 0 1px;
-    width: 28px;
-
-    .bar-line-item {
+    .bar-item {
+      margin: 0 1px;
       width: 28px;
-      height: 14px;
-      background: #070;
-    }
-    .bar-item-quantity {
-      transform: rotate(180deg);
-      transform-origin: center;
+
+      .bar-line-item {
+        width: 28px;
+        height: 14px;
+        background: #070;
+      }
+      .bar-item-quantity {
+        transform: rotate(180deg);
+        transform-origin: center;
+      }
     }
   }
 }

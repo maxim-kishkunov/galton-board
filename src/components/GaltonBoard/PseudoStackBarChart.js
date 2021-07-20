@@ -39,7 +39,9 @@ export default class PseudoStackBarChart extends React.Component {
     render() {
         return (
             <div className="stack-bar-chart">
-                {this.drawChart()}
+                <div className="chart-inner">
+                    {this.drawChart()}
+                </div>
             </div>
         );
     }

@@ -20,7 +20,7 @@ class BoardBlock extends Component {
     }
      
     render() {
-        const {size, allWays, allWaysStrings} = this.props;
+        const {size, allRoutes} = this.props;
         let boardItems = [];
         if(size && typeof size === 'number'){
             for(let i = 1; i <= size; i++){
@@ -39,27 +39,35 @@ class BoardBlock extends Component {
                         let leftLine = false;
                         let rightLine = false;
                         let redPoint = false;
-                        let redLine = false;
+                        let redLeftLine = false;
+                        let redRightLine = false;
 
-                        if(allWays){
-                            for(let k = 0; k < allWays.length; k++){
-                                let currItem = allWays[k]; //Текущий путь падения шарика
-                                let thisIsDouble = false;
-                                for(let q = 0; q < allWays.length; q ++){
-                                    if(this.objectsAreSame(allWays[q], currItem))
-                                        thisIsDouble = true;
+                        if(allRoutes){
+                            for(let k = 0; k < allRoutes.length; k++){
+                                let currItem = allRoutes[k]; //Текущий путь падения шарика
+                                let isDoubleWay = false;
+                                if(
+                                    allRoutes.filter(item => 
+                                            item
+                                            && item.length - 1 === size
+                                            && item.join() === currItem.join()).length > 1
+                                ){
+                                    isDoubleWay = true;
                                 }
-                                if(currItem.length - 1 === currRow && currItem.find(item => item && item.cell === currCell && item.row === currRow)){
+
+                                if(currItem.length - 1 === currRow && currItem[currRow] === currCell){
                                     redPoint = true;
                                 }
-                                if(currRow === 0 || (currItem.length > currRow && currItem.find(item => item && item.row === currRow - 1 && item.childCell === currCell))
-                                ){
-                                    
-                                    if(currItem.find(item => item && item.row === currRow + 1 && item.cell === currCell)){
+                                if(currRow === 0 || (currItem.length > currRow && currItem[currRow] === currCell)){
+                                    if(currItem[currRow + 1] === currCell){
                                         leftLine = true;
+                                        if(isDoubleWay)
+                                            redLeftLine = true;
                                     }
-                                    if(currItem.find(item => item && item.row === currRow + 1 && item.cell === currCell + 1)){
+                                    if(currItem[currRow + 1] === (currCell + 1)){
                                         rightLine = true;
+                                        if(isDoubleWay)
+                                            redRightLine = true;
                                     }
                                 }
                             }
@@ -69,11 +77,11 @@ class BoardBlock extends Component {
                                 <div className={`cell-block${redPoint ? ' red' : ''}`} />
                                 {
                                     leftLine &&
-                                        <hr className="left" />
+                                        <hr className={`left${redLeftLine ? ' red' : ''}`}  />
                                 }
                                 {
                                     rightLine &&
-                                        <hr className="right" />
+                                        <hr className={`right${redRightLine ? ' red' : ''}`}  />
                                 }
                             </td>
                         );
