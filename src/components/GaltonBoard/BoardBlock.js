@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import BoardRoute from './BoardRoute';
 
 class BoardBlock extends Component {
     constructor(props) {
@@ -6,19 +7,38 @@ class BoardBlock extends Component {
         this.state = {
 
         };
+        this.renderBoardPoints = this.renderBoardPoints.bind(this);
     }
     
-    objectsAreSame(x, y) {
-        let objectsAreSame = true;
-        for(var propertyName in x) {
-           if(x[propertyName] !== y[propertyName]) {
-              objectsAreSame = false;
-              break;
-           }
+    renderBoardPoints(){
+        const {size, allRoutes} = this.props;
+        let boardItems = [];
+        if(size && typeof size === 'number'){
+            for(let i = 0; i < size; i++){
+                let cells = [];
+                let cellIndex = 0;
+                for(let j = 0; j < (2 * i + 1); j ++){
+                    if(j % 2 != 0 && j > 0){
+                        cells.push(
+                            <div key={j} className="board-cell empty"></div>
+                        );
+                    }else{
+                        cells.push(
+                            <div key={j} className="board-cell"></div>
+                        );
+                        cellIndex ++;
+                    }
+                }
+                boardItems.push(
+                    <div key={i} className="board-row">
+                        {cells}
+                    </div>
+                )
+            }
         }
-        return objectsAreSame;
+        return boardItems;
     }
-     
+
     render() {
         const {size, allRoutes} = this.props;
         let boardItems = [];
@@ -95,14 +115,25 @@ class BoardBlock extends Component {
                 )
             }
         }
+
+        let minWidth = 40 * size;
         return (
-            <table className="board-table">
-                <tbody>
+            <div className="board-wrap" style={{ minWidth: {minWidth}}}>
+                <div className="board-points">
                 {
-                    boardItems
+                    this.renderBoardPoints()
                 }
-                </tbody>
-            </table>
+                </div>
+                {
+                    allRoutes && allRoutes.length ?
+                        allRoutes.map(function (route, index) {
+                            return (
+                                <BoardRoute key={index} {...this.props} data={route} size={size} />
+                            )
+                        }, this)
+                    :('')
+                }
+            </div>
         );
     }
 }

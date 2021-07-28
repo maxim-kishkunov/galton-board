@@ -70,6 +70,94 @@ code {
   } 
 }
 
+.board-wrap{
+  position: relative;
+
+  .board-points{
+    display: flex;
+    flex-direction: column;
+
+    .board-row{
+      display: flex;
+      margin: 0 auto;
+
+      .board-cell{
+        width: 16px;
+        height: 16px;
+        margin: 2px;
+        background: #000;
+        border-radius: 8px;
+      
+        &.empty{
+          background: none;
+        }
+      }
+    }
+    
+    .board-row:first-child{ 
+      .board-cell{
+        margin-top: 0;
+      }
+    }
+  }
+}
+.board-routes{
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  top: 0;
+
+  .routes-inner{
+    height: 100%;
+    width: 100%;
+    position: relative;
+
+    .routes-table{
+      margin: 3px auto;
+      border-spacing: 0px;
+      padding: 0;
+
+      tr.route-section{
+        display: flex;
+        justify-content: center;
+
+        td{
+          width: 10px;
+          height: 10px;
+          padding: 0;
+          display: flex;
+          align-items: center;
+
+          hr{
+            height: 2px;
+            width: 14px;
+            border: none;
+            margin: 0;
+          }
+
+          hr.left{
+            background: #000;
+            transform-origin: center;
+            transform: rotate(135deg);
+          }
+
+          hr.right{
+            background: #000;
+            transform-origin: center;
+            transform: rotate(45deg);
+          }
+        }
+      }
+    }
+  }
+}
+
+.board-routes.double .route-section hr{
+  background: #f00;
+  z-index: 1;
+}
 
 .stack-bar-chart {
   display: flex;
