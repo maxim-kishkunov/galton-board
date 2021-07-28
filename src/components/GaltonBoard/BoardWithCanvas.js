@@ -132,9 +132,9 @@ class BoardWithCanvas extends Component {
 
         let routesLength = all_routes.length;
         
-        if(routesLength > 0){
+        if(routesLength > 0 && lastShownRoute < routesLength){
             for(let i = lastShownRoute; i < routesLength; i++){
-                let currRoute = all_routes[i];                
+                let currRoute = all_routes[i];
                 let isThisRouteShown = shownRoutes.filter(item => item && item === currRoute.join());
                 if(currRoute.join().length <= size || isThisRouteShown.length === 0){
                     let startX = (size - Math.floor(1/ 2)) * 16;
