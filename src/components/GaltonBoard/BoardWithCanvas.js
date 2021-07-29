@@ -145,36 +145,21 @@ class BoardWithCanvas extends Component {
                     if(currRoute.length === size + 1){
                         console.log('ololo');
                     }
-                    for(let j = 0; j < currRoute.length; j++){
+                    for(let j = 1; j < currRoute.length; j++){
                         if(j === size){
                             console.log('ololo');
                         }
-                        if(typeof currRoute[j + 1] === 'number'){
-                            let lastPiecePoint = j === size ? 'end' : currRoute[j + 1];
-                            let piece = j + ':' + currRoute[j] + ',' + (j + 1) + ':' + lastPiecePoint;
-                            let margin = (size - Math.floor(j + 1/ 2)) * 16;
-                            let currX = currRoute[j] * 32 + margin;
-                            let currY = 32 + j * 16;
-                            if(shownPiecesBlack.filter(item => item && item === piece).length === 0){
-                                ctx.lineTo(currX, currY);
-                                ctx.strokeStyle = '#000000';
-                                ctx.stroke();
-                                shownPiecesBlack.push(piece);
-                            }else{
-                                ctx.moveTo(currX, currY);
-                            }
-                        }
-                        else if(j === size){
-                            let piece = j + ':' + currRoute[j] + ',' + (j - 1) + ':' + currRoute[j - 1];
-                            let margin = (size - Math.floor(j + 1/ 2)) * 16;
-                            let currX = currRoute[j] * 32 + margin;
-                            let currY = 32 + j * 16;
-                            if(shownPiecesBlack.filter(item => item && item === piece).length === 0){
-                                ctx.lineTo(currX, currY);
-                                ctx.strokeStyle = '#000000';
-                                ctx.stroke();
-                                shownPiecesBlack.push(piece);
-                            }
+                        let piece = j-1 + ':' + currRoute[j-1] + ',' + (j) + ':' + currRoute[j];
+                        let margin = (size - Math.floor(j + 1/ 2)) * 16;
+                        let currX = currRoute[j] * 32 + margin;
+                        let currY = 32 + j * 16;
+                        if(shownPiecesBlack.filter(item => item && item === piece).length === 0){
+                            ctx.lineTo(currX, currY);
+                            ctx.strokeStyle = '#000000';
+                            ctx.stroke();
+                            shownPiecesBlack.push(piece);
+                        }else{
+                            ctx.moveTo(currX, currY);
                         }
                     }
                     if(currRoute.length === size + 1){
