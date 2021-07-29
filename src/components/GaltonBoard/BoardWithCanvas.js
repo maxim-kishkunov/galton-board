@@ -54,7 +54,8 @@ class BoardWithCanvas extends Component {
                 let endAngle = Math.PI * 2; // End point on circle
                 let counterclockwise = i % 2 !== 0; // clockwise or counterclockwise
         
-	            ctx.fillText(j,x,y-16);
+	            // ctx.fillText(j,x,y-16); //index of point shown below point
+	            ctx.fillText('<'+j,x + 8,y+ 4); //index of point shown below point
                 ctx.arc(x, y, radius, startAngle, endAngle, counterclockwise);
                 ctx.fill();
             }
@@ -141,24 +142,43 @@ class BoardWithCanvas extends Component {
                     let startY = 32;// + i * 16;
                     ctx.beginPath();
                     ctx.moveTo(startX, startY);
+                    if(currRoute.length === size + 1){
+                        console.log('ololo');
+                    }
                     for(let j = 0; j < currRoute.length; j++){
-                        let piece = j + ':' + currRoute[j] + ',' + (j + 1) + ':' + currRoute[j + 1];
-                        let margin = (size - Math.floor(j + 1/ 2)) * 16;
-                        let currX = currRoute[j] * 32 + margin;
-                        let currY = 32 + j * 16;
-                        if(typeof shownPiecesBlack.find(item => item && item === piece) === 'undefined'){
-                            if(j > 0){
+                        if(j === size){
+                            console.log('ololo');
+                        }
+                        if(typeof currRoute[j + 1] === 'number'){
+                            let lastPiecePoint = j === size ? 'end' : currRoute[j + 1];
+                            let piece = j + ':' + currRoute[j] + ',' + (j + 1) + ':' + lastPiecePoint;
+                            let margin = (size - Math.floor(j + 1/ 2)) * 16;
+                            let currX = currRoute[j] * 32 + margin;
+                            let currY = 32 + j * 16;
+                            if(shownPiecesBlack.filter(item => item && item === piece).length === 0){
                                 ctx.lineTo(currX, currY);
                                 ctx.strokeStyle = '#000000';
                                 ctx.stroke();
+                                shownPiecesBlack.push(piece);
+                            }else{
+                                ctx.moveTo(currX, currY);
                             }
-                            shownPiecesBlack.push(piece);
-                        }else{
-                            ctx.moveTo(currX, currY);
+                        }
+                        else if(j === size){
+                            let piece = j + ':' + currRoute[j] + ',' + (j - 1) + ':' + currRoute[j - 1];
+                            let margin = (size - Math.floor(j + 1/ 2)) * 16;
+                            let currX = currRoute[j] * 32 + margin;
+                            let currY = 32 + j * 16;
+                            if(shownPiecesBlack.filter(item => item && item === piece).length === 0){
+                                ctx.lineTo(currX, currY);
+                                ctx.strokeStyle = '#000000';
+                                ctx.stroke();
+                                shownPiecesBlack.push(piece);
+                            }
                         }
                     }
                     if(currRoute.length === size + 1){
-                        lastShownRoute = i;
+                        lastShownRoute = i + 1;
                         shownRoutes.push(currRoute.join());
                     }
                 }else if(isThisRouteShown.length > 0){
