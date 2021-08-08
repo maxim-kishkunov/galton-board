@@ -123,9 +123,9 @@ class HomePage extends Component {
                             {...this.props} 
                             size={this.state.size} 
                             all_routes={this.state.allRoutes} 
+                            bar_chart_data={barChartData} 
                             routes_length={this.state.allRoutes.length}
                             setFirstRedStep={this.setFirstRedStep}  />
-                        <PseudoStackBarChart {...this.props} data={barChartData} size={this.state.size} /> 
                     </Col>
                 </div>
             </div>

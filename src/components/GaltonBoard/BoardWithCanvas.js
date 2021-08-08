@@ -126,7 +126,7 @@ class BoardWithCanvas extends Component {
 
     drawRoutesByPiece(){
         const {size, all_routes} = this.props;
-        let {lastShownRoute, shownRoutes, shownPiecesBlack, shownPiecesRed} = this.state;
+        let {lastShownRoute, shownRoutes, shownPiecesBlack} = this.state;
 
         const canvas = this.canvasRef.current;
         const ctx = canvas.getContext('2d');
@@ -196,6 +196,39 @@ class BoardWithCanvas extends Component {
             })
         }
     }
+
+    drawStackBarChart(){
+        const {size, bar_chart_data} = this.props;
+        
+        const canvas = this.canvasRef.current;
+        const ctx = canvas.getContext('2d');
+
+        let chartData = [];
+        let ratio = 1;
+
+        let maxDigitQuantity = Math.max(...bar_chart_data).toString().length - 1;
+        for(let i = 0; i < maxDigitQuantity; i++){
+            ratio = ratio / 10;
+        }
+        for(let i = 0; i <= size; i++){
+            let startX = 0;
+            let startY = 16 * size + 168;
+            let barLength = bar_chart_data[i] * ratio;
+            for(let j = 0; j < barLength; j++){
+                columns.push(
+                    <div key={`line-item${i}_${j}`} className="bar-line-item"></div>
+                )
+            }              
+            chartData.push(
+                <div key={`item_${i}`} className="bar-item">
+                    {columns}
+                    <div className="bar-item-quantity">
+                        {bar_chart_data[i]}
+                    </div>
+                </div>
+            )
+        }
+    }
       
     updateCanvas(){
         const {size, all_routes} = this.props;
@@ -205,6 +238,7 @@ class BoardWithCanvas extends Component {
         }
         if(!this.state.lastShownRoute !== all_routes.length){
             this.drawRoutesByPiece();
+            this.drawStackBarChart();
         }
     }
 
