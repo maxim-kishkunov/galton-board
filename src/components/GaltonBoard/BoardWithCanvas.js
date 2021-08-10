@@ -37,7 +37,7 @@ class BoardWithCanvas extends Component {
         const ctx = canvas.getContext('2d');
 
         ctx.canvas.width  = window.innerWidth /2;
-        ctx.canvas.height = 16 * (size + 2);
+        ctx.canvas.height = 16 * (size + 2) + 200;
     
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
     
@@ -47,7 +47,7 @@ class BoardWithCanvas extends Component {
                 ctx.fillStyle = '#000000';
                 ctx.beginPath();
                 
-                let x = 16 + j * 32 + margin; // x coordinate
+                let x = 32 + j * 32 + margin; // x coordinate
                 let y = 16 + i * 16; // y coordinate
                 let radius = 8; // Arc radius
                 let startAngle = 0; // Starting point on circle
@@ -55,7 +55,7 @@ class BoardWithCanvas extends Component {
                 let counterclockwise = i % 2 !== 0; // clockwise or counterclockwise
         
 	            // ctx.fillText(j,x,y-16); //index of point shown below point
-	            ctx.fillText('<'+j,x + 8,y+ 4); //index of point shown below point
+	            // ctx.fillText('<'+j,x + 8,y+ 4); //index of point shown below point
                 ctx.arc(x, y, radius, startAngle, endAngle, counterclockwise);
                 ctx.fill();
             }
@@ -82,7 +82,7 @@ class BoardWithCanvas extends Component {
 
                 let isThisRouteShown = shownRoutes.find(item => item && item === currRoute.join());
                 if(currRoute.join().length <= size || typeof isThisRouteShown === 'undefined'){
-                    let startX = (size - Math.floor(1/ 2)) * 16;
+                    let startX = 16 + (size - Math.floor(1/ 2)) * 16;
                     let startY = 32;// + i * 16;
                     ctx.beginPath();
                     ctx.moveTo(startX, startY);
@@ -138,20 +138,20 @@ class BoardWithCanvas extends Component {
                 let currRoute = all_routes[i];
                 let isThisRouteShown = shownRoutes.filter(item => item && item === currRoute.join());
                 if(currRoute.join().length <= size || isThisRouteShown.length === 0){
-                    let startX = (size - Math.floor(1/ 2)) * 16;
+                    let startX = 16 + (size - Math.floor(1/ 2)) * 16;
                     let startY = 32;// + i * 16;
                     ctx.beginPath();
                     ctx.moveTo(startX, startY);
-                    if(currRoute.length === size + 1){
-                        console.log('ololo');
-                    }
+                    // if(currRoute.length === size + 1){
+                    //     console.log('ololo');
+                    // }
                     for(let j = 1; j < currRoute.length; j++){
-                        if(j === size){
-                            console.log('ololo');
-                        }
+                        // if(j === size){
+                        //     console.log('ololo');
+                        // }
                         let piece = j-1 + ':' + currRoute[j-1] + ',' + (j) + ':' + currRoute[j];
                         let margin = (size - Math.floor(j + 1/ 2)) * 16;
-                        let currX = currRoute[j] * 32 + margin;
+                        let currX = 16 + currRoute[j] * 32 + margin;
                         let currY = 32 + j * 16;
                         if(shownPiecesBlack.filter(item => item && item === piece).length === 0){
                             ctx.lineTo(currX, currY);
@@ -173,13 +173,13 @@ class BoardWithCanvas extends Component {
                             firstRedStep: lastShownRoute,
                         })
                     }
-                    let startX = (size - Math.floor(1/ 2)) * 16;
+                    let startX = 16 + (size - Math.floor(1/ 2)) * 16;
                     let startY = 32;// + i * 16;
                     ctx.beginPath();
                     ctx.moveTo(startX, startY);
                     for(let j = 0; j < currRoute.length; j++){
                         let margin = (size - Math.floor(j + 1/ 2)) * 16;
-                        let currX = currRoute[j] * 32 + margin;
+                        let currX = 16 + currRoute[j] * 32 + margin;
                         let currY = 32 + j * 16;
                         if(j > 0){
                             ctx.lineTo(currX, currY);
@@ -202,31 +202,40 @@ class BoardWithCanvas extends Component {
         
         const canvas = this.canvasRef.current;
         const ctx = canvas.getContext('2d');
-
-        let chartData = [];
+        
+        ctx.beginPath();
         let ratio = 1;
 
         let maxDigitQuantity = Math.max(...bar_chart_data).toString().length - 1;
         for(let i = 0; i < maxDigitQuantity; i++){
             ratio = ratio / 10;
         }
+        ctx.clearRect(0, 32 + 16 * size, ctx.canvas.width, 200)
         for(let i = 0; i <= size; i++){
-            let startX = 0;
-            let startY = 16 * size + 168;
+            let startX = i * 32;
             let barLength = bar_chart_data[i] * ratio;
-            for(let j = 0; j < barLength; j++){
-                columns.push(
-                    <div key={`line-item${i}_${j}`} className="bar-line-item"></div>
-                )
-            }              
-            chartData.push(
-                <div key={`item_${i}`} className="bar-item">
-                    {columns}
-                    <div className="bar-item-quantity">
-                        {bar_chart_data[i]}
-                    </div>
-                </div>
-            )
+            let startY = (32 + 16 * size) + 15 * (10 - barLength);//16 * size + 168;
+                        
+            ctx.fillStyle='#070';
+            ctx.fillRect(startX,startY,30, barLength * 15);
+            ctx.fillStyle = '#000000';
+            ctx.fillText(bar_chart_data[i],startX + 10,startY - 1); //index of point shown below point
+
+            ctx.stroke();
+            
+            // for(let j = 0; j < barLength; j++){
+            //     columns.push(
+            //         <div key={`line-item${i}_${j}`} className="bar-line-item"></div>
+            //     )
+            // }              
+            // chartData.push(
+            //     <div key={`item_${i}`} className="bar-item">
+            //         {columns}
+            //         <div className="bar-item-quantity">
+            //             {bar_chart_data[i]}
+            //         </div>
+            //     </div>
+            // )
         }
     }
       
