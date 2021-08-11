@@ -4,6 +4,7 @@ import {
     Col,
     Button,
     InputNumber,
+    Divider,
 } from 'antd';
 // import BoardBlock from './BoardBlock'
 import BoardWithCanvas from './BoardWithCanvas'
@@ -16,12 +17,14 @@ class HomePage extends Component {
             size: 1,
             allRoutes: [],
             firstRedStep: -1,
+            reset_canvas: 0,
         };
         this.onChangeSlider = this.onChangeSlider.bind(this);
         this.handleStartTimer = this.handleStartTimer.bind(this);
         this.handleRestartTimer = this.handleRestartTimer.bind(this);
         this.handlePauseTimer = this.handlePauseTimer.bind(this);
         this.setFirstRedStep = this.setFirstRedStep.bind(this);
+        this.handleDropSome = this.handleDropSome.bind(this);
     }
 
     onChangeSlider(fieldName,fieldValue){
@@ -55,6 +58,23 @@ class HomePage extends Component {
         }, 30);
     }
 
+    handleDropSome(quantity) {
+        let allRoutes = [];
+
+        for(let i = 0; i < quantity; i ++){
+            let routeItem = [0];
+            for(let j = 1; j <= this.state.size; j ++){
+                let randAddNumber = Math.round(Math.random(0));
+                routeItem.push(routeItem[routeItem.length - 1] + randAddNumber);
+            }
+            allRoutes.push(routeItem);
+        }
+        this.setState({
+            allRoutes: allRoutes,
+            reset_canvas: this.state.reset_canvas + 0.00001
+        });
+    }
+
     handleRestartTimer() {
         this.setState({
             allRoutes: [],
@@ -79,16 +99,6 @@ class HomePage extends Component {
 
     render() {
         const {size, allRoutes} = this.state;
-        let barChartData = Array(size + 1);
-        for(let i = 0;i <= size;i ++){
-            barChartData[i] = 0;
-        }
-        for(let i = 0; i <= allRoutes.length; i++){
-            let currItem = allRoutes[i];
-            if(currItem && currItem.length === size + 1){
-                barChartData[+ currItem[currItem.length - 1]] ++;
-            }
-        }
         return (
             <div>
                 <div className="control-wrap">
@@ -100,10 +110,15 @@ class HomePage extends Component {
                         onChange={(val) => this.onChangeSlider('size',val)}
                         defaultValue={this.state.size}
                     />
+                    <Divider plain orientation="left">Бесконечные броски</Divider>
                     <div>
                         <Button disabled={this.timer} onClick={this.handleStartTimer}>Старт</Button>
                         <Button onClick={this.handlePauseTimer}>Пауза</Button>
                         <Button onClick={this.handleRestartTimer}>Рестарт</Button>
+                    </div>
+                    <Divider plain orientation="left">Кинуть несколько сразу</Divider>
+                    <div>
+                        <Button disabled={this.timer} onClick={() => this.handleDropSome(30)}>30</Button>
                     </div>
                     <div>
                         Всего бросков: {this.state.allRoutes.length}
@@ -118,22 +133,13 @@ class HomePage extends Component {
                 </div>
                 <div>
                     <Col span={12} style={{display:'flex',justifyContent: 'center', flexDirection: 'column'}}>
-                        {/* <BoardBlock {...this.props} size={this.state.size} allRoutes={this.state.allRoutes} /> */}
                         <BoardWithCanvas 
                             {...this.props} 
                             size={this.state.size} 
-                            all_routes={this.state.allRoutes} 
-                            bar_chart_data={barChartData} 
+                            all_routes={this.state.allRoutes}
+                            reset_canvas={this.state.reset_canvas}
                             routes_length={this.state.allRoutes.length}
                             setFirstRedStep={this.setFirstRedStep}  />
-
-                        {/* <PseudoStackBarChart
-                            {...this.props} 
-                            size={this.state.size} 
-                            all_routes={this.state.allRoutes} 
-                            data={barChartData} 
-                            routes_length={this.state.allRoutes.length}
-                            setFirstRedStep={this.setFirstRedStep}  /> */}
                     </Col>
                 </div>
             </div>
