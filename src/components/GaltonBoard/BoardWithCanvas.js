@@ -5,14 +5,12 @@ class BoardWithCanvas extends Component {
         super(props);
         this.state = {
             isPointDrawed: false,
-            isPointShown: false,
             storedSize: 0,
             lastShownRoute: 0,
             shownRoutes: [],
             firstRedStep: -1,
-            reset_canvas: 0,
-
             shownPiecesBlack: [],
+            reset_canvas: 0,
         }
         this.canvasRef = React.createRef();
 
@@ -70,67 +68,11 @@ class BoardWithCanvas extends Component {
             shownRoutes: [],
             lastShownRoute: 0,
             isPointDrawed: true,
+            firstRedStep: -1,
         },() => {
             this.drawRoutesByPiece();
             this.drawStackBarChart();
         })
-    }
-
-    drawRoutes(){
-        const {size, all_routes} = this.props;
-        let {lastShownRoute, shownRoutes} = this.state;
-
-        const canvas = this.canvasRef.current;
-        const ctx = canvas.getContext('2d');
-
-        let routesLength = all_routes.length;
-        
-        if(routesLength > 0){
-            for(let i = lastShownRoute; i < routesLength; i++){
-                let currRoute = all_routes[i];
-
-                let isThisRouteShown = shownRoutes.find(item => item && item === currRoute.join());
-                if(currRoute.join().length <= size || typeof isThisRouteShown === 'undefined'){
-                    let startX = 16 + (size - Math.floor(1/ 2)) * 16;
-                    let startY = 32;// + i * 16;
-                    ctx.beginPath();
-                    ctx.moveTo(startX, startY);
-                    for(let j = 0; j < currRoute.length; j++){
-                        let margin = (size - Math.floor(j + 1/ 2)) * 16;
-                        let currX = currRoute[j] * 32 + margin;
-                        let currY = 32 + j * 16;
-                        if(j > 0){
-                            ctx.lineTo(currX, currY);
-                            ctx.strokeStyle = '#000000';
-                            ctx.stroke();
-                        }
-                    }
-                    if(currRoute.length === size + 1){
-                        lastShownRoute = i;
-                        shownRoutes.push(currRoute.join());
-                    }
-                }else if(typeof isThisRouteShown !== 'undefined'){
-                    let startX = (size - Math.floor(1/ 2)) * 16;
-                    let startY = 32;// + i * 16;
-                    ctx.beginPath();
-                    ctx.moveTo(startX, startY);
-                    for(let j = 0; j < currRoute.length; j++){
-                        let margin = (size - Math.floor(j + 1/ 2)) * 16;
-                        let currX = currRoute[j] * 32 + margin;
-                        let currY = 32 + j * 16;
-                        if(j > 0){
-                            ctx.lineTo(currX, currY);
-                            ctx.strokeStyle = '#f00';
-                            ctx.stroke();
-                        }
-                    }
-                }
-            }
-            this.setState({
-                shownRoutes: shownRoutes,
-                lastShownRoute: lastShownRoute,
-            })
-        }
     }
 
     drawRoutesByPiece(){
@@ -249,10 +191,10 @@ class BoardWithCanvas extends Component {
     updateCanvas(){
         const {size, all_routes, reset_canvas} = this.props;
 
-        if(!this.state.isPointDrawed || this.state.storedSize !== size || reset_canvas != this.state.reset_canvas){
+        if(!this.state.isPointDrawed || this.state.storedSize !== size || reset_canvas !== this.state.reset_canvas){
             this.drawPoints();
         }
-        if(this.state.lastShownRoute !== all_routes.length){
+        if(this.state.lastShownRoute !== all_routes.length && reset_canvas === this.state.reset_canvas){
             this.drawRoutesByPiece();
             this.drawStackBarChart();
         }

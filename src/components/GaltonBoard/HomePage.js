@@ -31,6 +31,7 @@ class HomePage extends Component {
         this.setState({
             allRoutes: [],
             isPaused: false,
+            reset_canvas: + this.state.reset_canvas + 0.00001,
             [fieldName]: fieldValue
         })
     }
@@ -60,10 +61,13 @@ class HomePage extends Component {
 
     handleDropSome(quantity) {
         let allRoutes = [];
+        this.setState({
+            allRoutes: allRoutes,
+        });
 
         for(let i = 0; i < quantity; i ++){
             let routeItem = [0];
-            for(let j = 1; j <= this.state.size; j ++){
+            for(let j = 1; j <= this.state.size + 1; j ++){
                 let randAddNumber = Math.round(Math.random(0));
                 routeItem.push(routeItem[routeItem.length - 1] + randAddNumber);
             }
@@ -71,7 +75,8 @@ class HomePage extends Component {
         }
         this.setState({
             allRoutes: allRoutes,
-            reset_canvas: this.state.reset_canvas + 0.00001
+            firstRedStep: -1,
+            reset_canvas: + this.state.reset_canvas + 0.00001
         });
     }
 
@@ -79,6 +84,8 @@ class HomePage extends Component {
         this.setState({
             allRoutes: [],
             isPaused: false,
+            firstRedStep: -1,
+            reset_canvas: + this.state.reset_canvas + 0.00001
         },() => {
             clearInterval(this.timer);
             this.handleStartTimer();
@@ -99,6 +106,12 @@ class HomePage extends Component {
 
     render() {
         const {size, allRoutes} = this.state;
+
+        let lastPoints = '';
+        allRoutes.map((item, index, array) => {
+            lastPoints += item.pop() + (index < array.length ? ', ' : '');
+        });
+
         return (
             <div>
                 <div className="control-wrap">
@@ -119,6 +132,9 @@ class HomePage extends Component {
                     <Divider plain orientation="left">Кинуть несколько сразу</Divider>
                     <div>
                         <Button disabled={this.timer} onClick={() => this.handleDropSome(30)}>30</Button>
+                        <Button disabled={this.timer} onClick={() => this.handleDropSome(100)}>100</Button>
+                        <Button disabled={this.timer} onClick={() => this.handleDropSome(1000)}>1000</Button>
+                        <Button disabled={this.timer} onClick={() => this.handleDropSome(10000)}>10000</Button>
                     </div>
                     <div>
                         Всего бросков: {this.state.allRoutes.length}
@@ -127,6 +143,13 @@ class HomePage extends Component {
                         this.state.firstRedStep !== -1 ? 
                             <div>
                                 Первый повторившийся путь: {this.state.firstRedStep}
+                            </div>
+                        :('')
+                    }
+                    {
+                        lastPoints.length > 0 && lastPoints.length <= 30 ? 
+                            <div>
+                                Результаты: {lastPoints}
                             </div>
                         :('')
                     }
