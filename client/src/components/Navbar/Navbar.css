@@ -1,0 +1,9 @@
+@import '~antd/dist/antd.css';
+
+.menuBar{
+    font-size: 18px;
+    background: #fff;
+}
+.logo{
+    font-size: 20px;
+}
