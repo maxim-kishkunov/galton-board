@@ -13,6 +13,7 @@ class RegPage extends React.Component {
         super(props)
         this.state = { 
             email: "",
+            name: "",
             password: "",
         };
         this.handleSubmit = this.handleSubmit.bind(this);
@@ -25,6 +26,7 @@ class RegPage extends React.Component {
         axios.get(`/registrate`,{params: 
             {
                 email: this.state.email,
+                name: this.state.name,
                 password: this.state.password
             }}
         ).then(response => {
@@ -39,6 +41,7 @@ class RegPage extends React.Component {
                     JSON.stringify({
                         user_id: response.data.user_id,
                         user_email: response.data.user_email,
+                        user_name: response.data.user_name,
                     })
                 );
                 window.location.replace('/');
@@ -106,6 +109,20 @@ class RegPage extends React.Component {
                                 <Input
                                     type="email"
                                     name="email"
+                                    onChange={this.handleChangeText}/>
+                            </Form.Item>
+                            <Row style ={{ textAlign: 'left'}}>
+                                <Col span={12}>
+                                    <Text>Name</Text>
+                                </Col>
+                            </Row>
+                            <Form.Item style={{marginBottom: '0px'}} name="name" rules={[{ 
+                                        required: true, 
+                                        message: 'Введите имя!' 
+                                    }]}>
+                                <Input
+                                    type="name"
+                                    name="name"
                                     onChange={this.handleChangeText}/>
                             </Form.Item>
                             <Row style ={{ textAlign: 'left'}}>

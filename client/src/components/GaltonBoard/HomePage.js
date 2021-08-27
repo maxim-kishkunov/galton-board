@@ -10,7 +10,7 @@ import {
 import BoardWithCanvas from './BoardWithCanvas'
 import PseudoStackBarChart from './PseudoStackBarChart'
 
-class HomePage extends Component {
+class GBHomePage extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -170,4 +170,4 @@ class HomePage extends Component {
         
     }
 }
-export default HomePage;
+export default GBHomePage;

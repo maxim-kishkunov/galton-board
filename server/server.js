@@ -39,6 +39,7 @@ app.get("/migrate", async (req, res) => {
     queryText =  'CREATE TABLE users(';
     queryText += 'id UUID PRIMARY KEY, ';
     queryText += 'email VARCHAR(255) NOT NULL UNIQUE, ';
+    queryText += 'name VARCHAR(255) UNIQUE, ';
     queryText += 'encrypted_password VARCHAR(255) NOT NULL, ';
     queryText += 'token VARCHAR(255) NOT NULL, ';
     queryText += 'is_confirmed BOOLEAN NOT NULL, ';
@@ -89,10 +90,11 @@ app.get("/migrate", async (req, res) => {
         let adminUserID = '';
         let time = new Date();
         let lectPassword = await bcrypt.hashSync('unibiter', 10);
-        text = 'INSERT INTO users(id, email, encrypted_password, token, is_confirmed, created_at) VALUES($1, $2, $3, $4, $5, $6) RETURNING *';
+        text = 'INSERT INTO users(id, email, name, encrypted_password, token, is_confirmed, created_at) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *';
         values = [
           uuid.v4(),
           'lecturer@unibit.pro',
+          'lecturer',
           lectPassword,
           '123',
           true,
@@ -104,10 +106,11 @@ app.get("/migrate", async (req, res) => {
         });
 
         let admPassword = await bcrypt.hashSync('unibiter', 10);
-        text = 'INSERT INTO users(id, email, encrypted_password, token, is_confirmed, created_at) VALUES($1, $2, $3, $4, $5, $6) RETURNING *';
+        text = 'INSERT INTO users(id, email, name, encrypted_password, token, is_confirmed, created_at) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *';
         values = [
           uuid.v4(),
           'admin@unibit.pro',
+          'admin',
           admPassword,
           '123',
           true,
@@ -160,31 +163,31 @@ app.get("/migrate", async (req, res) => {
     queryText += ')';    
     await db.query(queryText);
 
-    //galton_results
-    queryText =  'CREATE TABLE galton_results(';
+    //galton_inputs
+    queryText =  'CREATE TABLE galton_inputs(';
     queryText += 'id UUID PRIMARY KEY, ';
     queryText += 'drops_quantity INTEGER NOT NULL, ';
     queryText += 'board_length INTEGER NOT NULL, ';
-    queryText += 'result_json VARCHAR(255) NOT NULL, ';
+    queryText += 'input_json VARCHAR(255) NOT NULL, ';
     queryText += 'random_shift integer, ';
     queryText += 'created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL';
     queryText += ')';    
     await db.query(queryText);
 
-    //group_results
-    queryText =  'CREATE TABLE group_results(';
+    //group_inputs
+    queryText =  'CREATE TABLE group_inputs(';
     queryText += 'id UUID PRIMARY KEY, ';
     queryText += 'group_id UUID NOT NULL, ';
-    queryText += 'result_id UUID NOT NULL, ';
+    queryText += 'input_id UUID NOT NULL, ';
     queryText += 'created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL';
     queryText += ')';    
     await db.query(queryText);
 
-    //user_results
-    queryText =  'CREATE TABLE user_results(';
+    //user_outputs
+    queryText =  'CREATE TABLE user_outputs(';
     queryText += 'id UUID PRIMARY KEY, ';
     queryText += 'user_id UUID NOT NULL, ';
-    queryText += 'result_json VARCHAR(255) NOT NULL, ';
+    queryText += 'output_json VARCHAR(255) NOT NULL, ';
     queryText += 'created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL';
     queryText += ')';    
     await db.query(queryText);
@@ -216,10 +219,11 @@ app.get("/registrate", async (req, res) => {
 
       let token = await makeid(10);
       let time = new Date();
-      queryText = 'INSERT INTO users(id, email, encrypted_password, token, is_confirmed, created_at) VALUES($1, $2, $3, $4, $5, $6) RETURNING *';
+      queryText = 'INSERT INTO users(id, email, name, encrypted_password, token, is_confirmed, created_at) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *';
       values = [
         uuid.v4(),
         query.email,
+        query.name,
         passwordHash,
         token,
         false,
@@ -243,6 +247,7 @@ app.get("/registrate", async (req, res) => {
       res.json({
         user_id: newUserID,
         user_email: query.email,
+        user_name: query.name,
         role_id: userRoleID,
         service_info: inner_results,
         code: 200
@@ -254,6 +259,56 @@ app.get("/registrate", async (req, res) => {
       });
     }
   });
+});
+
+app.get("/get_lect_data", async (req, res) => {     
+  let queryText =  `
+    SELECT
+      groups.id as group_id,
+      groups.name as group_name,
+      groups.is_active as group_is_active,
+      users.id as user_id,
+      users.name as user_name,
+      galton_inputs.drops_quantity as drops_quantity,
+      galton_inputs.board_length as board_length,
+      galton_inputs.input_json as input_json,
+      galton_inputs.random_shift as random_shift
+    FROM groups
+    LEFT JOIN group_users ON group_users.group_id = groups.id
+    LEFT JOIN users ON group_users.user_id = users.id
+    LEFT JOIN group_inputs ON group_users.group_id = group_inputs.group_id
+    LEFT JOIN galton_inputs ON galton_inputs.id = group_inputs.input_id`;
+
+  let table_data = [];
+  await db.query(queryText).then((result) => {
+    if(result.rows.length > 0)
+      table_data = result.rows;
+  });
+
+  if(table_data.length > 0 )
+    res.json({ role: table_data, code: 200 });
+  else
+    res.json({ message: 'Table data is not found', code: 404 });
+});
+
+app.get("/check_user_role", async (req, res) => {
+  let query = req.query;
+     
+  let queryText =  `SELECT * `;
+  queryText += `FROM user_roles `;
+  queryText += `LEFT JOIN roles ON roles.id = user_roles.role_id `;
+  queryText += `WHERE user_roles.user_id = '${query.user_id}'`;
+
+  let role_key = '';
+  await db.query(queryText).then((result) => {
+    if(result.rows.length > 0 && Object.keys(result.rows[0]).length > 0)
+      role_key = result.rows[0].key;
+  });
+
+  if(role_key.length > 0 )
+    res.json({ role: role_key, code: 200 });
+  else
+    res.json({ message: 'User role is not found', code: 401 });
 });
 
 app.get("/auth", async (req, res) => {

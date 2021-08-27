@@ -7,7 +7,8 @@ import { PrivateRoute } from './components/auth/PrivateRoute';
 import LoginPage from "./components/auth/LoginPage";
 import RegPage from "./components/auth/RegPage";
 import './App.css';
-import HomePage from './components/GaltonBoard/HomePage';
+import GBHomePage from './components/GaltonBoard/HomePage';
+import HomePage from './components/HomePage';
 import Navbar from './components/Navbar/Navbar';
 
 
@@ -25,6 +26,7 @@ function App() {
           <Switch>
             <Route path="/sign_up" render={routeProps => <RegPage {...routeProps}  t={t}  i18n={i18n}/>}/>
             <Route path="/login" render={routeProps => <LoginPage {...routeProps}  t={t}  i18n={i18n}/>}/>
+            <PrivateRoute path="/galton-board" t={t}  i18n={i18n} component={GBHomePage} exact />
             <PrivateRoute path="/" t={t}  i18n={i18n} component={HomePage} exact />
 
             <Route path="/galton-board" render={routeProps => <HomePage {...routeProps}/>}/>
