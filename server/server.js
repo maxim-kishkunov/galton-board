@@ -264,20 +264,38 @@ app.get("/registrate", async (req, res) => {
 app.get("/get_lect_data", async (req, res) => {     
   let queryText =  `
     SELECT
-      groups.id as group_id,
-      groups.name as group_name,
-      groups.is_active as group_is_active,
-      users.id as user_id,
-      users.name as user_name,
-      galton_inputs.drops_quantity as drops_quantity,
-      galton_inputs.board_length as board_length,
-      galton_inputs.input_json as input_json,
-      galton_inputs.random_shift as random_shift
-    FROM groups
-    LEFT JOIN group_users ON group_users.group_id = groups.id
-    LEFT JOIN users ON group_users.user_id = users.id
-    LEFT JOIN group_inputs ON group_users.group_id = group_inputs.group_id
-    LEFT JOIN galton_inputs ON galton_inputs.id = group_inputs.input_id`;
+    groups.id AS group_id,
+    groups.name AS group_name,
+    groups.is_active AS group_is_active,
+    users.id AS user_id,
+    users.name AS user_name,
+    galton_inputs.drops_quantity AS drops_quantity,
+    galton_inputs.board_length AS board_length,
+    galton_inputs.input_json AS input_json,
+    galton_inputs.random_shift AS random_shift,
+    roles.key AS role_key
+  FROM groups
+  LEFT JOIN group_users ON group_users.group_id = groups.id
+  LEFT JOIN users ON group_users.user_id = users.id
+  LEFT JOIN user_roles ON user_roles.user_id = users.id
+  LEFT JOIN roles ON user_roles.role_id = roles.id
+  LEFT JOIN group_inputs ON group_users.group_id = group_inputs.group_id
+  LEFT JOIN galton_inputs ON galton_inputs.id = group_inputs.input_id
+  UNION ALL
+  SELECT
+    '00000000-0000-0000-0000-000000000000' AS group_id,
+    'no_group' AS group_name,
+    'true' AS group_is_active,
+    users.id AS user_id,
+    users.name AS user_name,
+    '0' AS drops_quantity,
+    '0' AS board_length,
+    '' AS input_json,
+    '0' AS random_shift,
+    roles.key AS role_key
+  FROM users
+  LEFT JOIN user_roles ON user_roles.user_id = users.id
+  LEFT JOIN roles ON user_roles.role_id = roles.id`;
 
   let table_data = [];
   await db.query(queryText).then((result) => {
@@ -285,8 +303,23 @@ app.get("/get_lect_data", async (req, res) => {
       table_data = result.rows;
   });
 
+  let groupsWithUsers = {};
+  let groupData = [];
+  for(let i = 0; i < table_data.length; i++){
+    let item = table_data[i];
+    if(typeof groupsWithUsers[item.group_id] === 'undefined'){
+      groupsWithUsers[item.group_id] = [];
+      groupData.push({
+        id: item.group_id,
+        name: item.group_name,
+        is_active: item.group_is_active
+      })
+    }
+    groupsWithUsers[item.group_id].push(item);
+  }
+
   if(table_data.length > 0 )
-    res.json({ role: table_data, code: 200 });
+    res.json({ group_data: groupData, data: groupsWithUsers, code: 200 });
   else
     res.json({ message: 'Table data is not found', code: 404 });
 });
@@ -308,7 +341,7 @@ app.get("/check_user_role", async (req, res) => {
   if(role_key.length > 0 )
     res.json({ role: role_key, code: 200 });
   else
-    res.json({ message: 'User role is not found', code: 401 });
+    res.json({ message: 'User role is not found', code: 404 });
 });
 
 app.get("/auth", async (req, res) => {

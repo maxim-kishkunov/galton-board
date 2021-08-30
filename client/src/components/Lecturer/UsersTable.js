@@ -8,20 +8,17 @@ class LecturerHomePage extends Component {
     constructor(props) {
         super(props);
         this.state = {
+            tableData: [],
         };
-        this.getAllGroups = this.getAllGroups.bind(this);
+        this.getTableData = this.getTableData.bind(this);
     }
 
     componentDidMount() {
-        this.getAllGroups();
+        this.getTableData();
     }
 
-    getAllGroups(){        
-        axios.get(`/get_groups`,{params: 
-            {
-                user_id: currentUser.user_id
-            }}
-        ).then(response => {
+    getTableData(){        
+        axios.get(`/get_lect_data`).then(response => {
             if(response.data.code !== 200){
                 Modal.error({
                     title: 'Error!',
@@ -29,7 +26,7 @@ class LecturerHomePage extends Component {
                 });
             }else{
                 this.setState({
-                    userRole: response.data.role
+                    tableData: response.data.data
                 })
             }
         })
@@ -37,7 +34,15 @@ class LecturerHomePage extends Component {
 
     render() {
         return (
-            <div>LecturerHomePage</div>
+            <div className="users-table">
+                { 
+                    this.state.tableData.length > 0 ? (
+                        this.state.tableData.map(function (item, index) {
+                            return <div key={row.ProjectUID + index + '1'}><td>{item}</td></tr>
+                        })
+                    ):('')
+                }
+            </div>
         );
     }
 }

@@ -5,6 +5,7 @@ import {
  } from 'antd';
  import LecturerHomePage from './Lecturer/LecturerHomePage.js';
  import UserHomePage from './User/UserHomePage.js';
+ import Auth from './auth/Auth'
 
 class HomePage extends Component {
     constructor(props) {
@@ -28,10 +29,7 @@ class HomePage extends Component {
                 }}
             ).then(response => {
                 if(response.data.code !== 200){
-                    Modal.error({
-                        title: 'Error!',
-                        content: response.data.message,
-                    });
+                    Auth.logOut();
                 }else{
                     this.setState({
                         userRole: response.data.role

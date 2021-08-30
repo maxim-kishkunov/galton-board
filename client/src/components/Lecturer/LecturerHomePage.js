@@ -3,6 +3,7 @@ import React, { Component } from 'react';
 import { 
     Modal,
  } from 'antd';
+ import UsersTable from './UsersTable.js';
 
 class LecturerHomePage extends Component {
     constructor(props) {
@@ -19,7 +20,7 @@ class LecturerHomePage extends Component {
 
     render() {
         return (
-            <div>LecturerHomePage</div>
+            <UsersTable {...this.props} />
         );
     }
 }
