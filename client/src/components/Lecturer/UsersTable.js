@@ -23,7 +23,7 @@ class LecturerHomePage extends Component {
         this.getTableData = this.getTableData.bind(this);
         this.handleChangeText = this.handleChangeText.bind(this);
         this.newGroupChange = this.newGroupChange.bind(this);
-        this.createNewStatus = this.createNewStatus.bind(this);
+        this.createNewGroup = this.createNewGroup.bind(this);
     }
 
     componentDidMount() {
@@ -77,7 +77,7 @@ class LecturerHomePage extends Component {
                     value={this.state.newGroupName}
                     onChange={this.handleChangeText}
                 />
-                <Button icon={<CheckCircleOutlined />} onClick={() => this.createNewStatus()} />
+                <Button icon={<CheckCircleOutlined />} onClick={() => this.createNewGroup()} />
             </div>
         )
     }
@@ -88,19 +88,19 @@ class LecturerHomePage extends Component {
         })
     }
 
-    createNewStatus() {
+    createNewGroup() {
         this.setState({
             newStatusVisible: [],
         })
         let params = {
             name: this.state.newGroupName,
         };
-        return axios.post(`/create_new_group`, params)
-            .then(response => {
-                this.getTableData();
-            }).catch(error => {
-                console.error(error);
-            })
+        axios.post(`/create_new_group`, params)
+        .then(response => {
+            this.getTableData();
+        }).catch(error => {
+            console.error(error);
+        })
     }
 
     render() {
@@ -110,7 +110,6 @@ class LecturerHomePage extends Component {
                 Object.keys(this.state.tableData).length > 0 ? (
                     this.state.groupData.map(function (curr_group) {
                         let group_users = this.state.tableData[curr_group.id];
-                        console.log(curr_group);
                         return (
                             <div className="group-wrap" key={curr_group.id}>
                                 <div className="group-name">{curr_group.name === 'no_group' ? "Пользователи без группы" : curr_group.name}</div>
@@ -131,8 +130,8 @@ class LecturerHomePage extends Component {
                                                                     filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
                                                                 >
                                                                     {
-                                                                        this.props.groupData && this.props.groupData.length ? 
-                                                                            this.props.groupData.filter(item => item && item.name !== curr_group.name).map((select_group) => {
+                                                                        this.state.groupData && this.state.groupData.length ? 
+                                                                            this.state.groupData.filter(item => item && item.name !== curr_group.name).map((select_group) => {
                                                                                 return (
                                                                                     <Option key={select_group.id} value={select_group.id}>{select_group.name}</Option>
                                                                                 )

@@ -332,8 +332,7 @@ app.get("/get_lect_data", async (req, res) => {
 });
 
 app.post("/create_new_group", async (req, res) => {
-  console.log(JSON.stringify(req.body));
-  let query = req.query;
+  let query = req.body;
   let text = 'INSERT INTO groups (id, name, is_active, created_at) VALUES($1, $2, $3, $4) RETURNING *';
   let time = new Date();
   let values = [
@@ -351,7 +350,7 @@ app.post("/create_new_group", async (req, res) => {
   if(success)
     res.json({ message:inner_results, code: 200 });
   else
-    res.json({ message: 'Table data is not found', code: 401 });
+    res.json({ message: 'Error with creation of group', code: 401 });
 });
 
 app.get("/check_user_role", async (req, res) => {

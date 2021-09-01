@@ -189,3 +189,32 @@ code {
     }
   }
 }
+
+.users-table {
+
+  .group-wrap {
+
+    .group-name {
+      background: #e4e4e4;
+    }
+    .group-users { 
+
+      .user-wrap {
+        padding: 5px 0;
+        display: flex;
+
+        .user-name {
+          width: 85%;
+          text-align: left;
+          padding: 2px 10px;
+        }
+        .user-actions {
+          width: 15%;
+        }
+      }
+      .user-wrap:nth-child(even) {
+        background: #f5f5f5;
+      }
+    }
+  }
+}
