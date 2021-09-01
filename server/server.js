@@ -2,7 +2,7 @@ const express = require("express");
 const pg = require('pg');
 const bcrypt = require('bcrypt');
 const uuid = require('node-uuid');
-const e = require("express");
+const bodyParser = require('body-parser')
 
 const db = new pg.Pool({
  host: 'localhost',
@@ -14,6 +14,11 @@ const db = new pg.Pool({
 const PORT = process.env.PORT || 3001;
 
 const app = express();
+
+app.use( bodyParser.json() );
+app.use(bodyParser.urlencoded({
+  extended: true
+}));
 
 const makeid = function(length) {
   var result           = '';
@@ -295,7 +300,9 @@ app.get("/get_lect_data", async (req, res) => {
     roles.key AS role_key
   FROM users
   LEFT JOIN user_roles ON user_roles.user_id = users.id
-  LEFT JOIN roles ON user_roles.role_id = roles.id`;
+  LEFT JOIN roles ON user_roles.role_id = roles.id 
+  WHERE roles.key != 'lecturer' AND roles.key != 'admin'`;
+
 
   let table_data = [];
   await db.query(queryText).then((result) => {
@@ -322,6 +329,29 @@ app.get("/get_lect_data", async (req, res) => {
     res.json({ group_data: groupData, data: groupsWithUsers, code: 200 });
   else
     res.json({ message: 'Table data is not found', code: 404 });
+});
+
+app.post("/create_new_group", async (req, res) => {
+  console.log(JSON.stringify(req.body));
+  let query = req.query;
+  let text = 'INSERT INTO groups (id, name, is_active, created_at) VALUES($1, $2, $3, $4) RETURNING *';
+  let time = new Date();
+  let values = [
+    uuid.v4(),
+    query.name,
+    true,
+    time
+  ];
+  let success = false;
+  let inner_results = [];
+  db.query(text, values).then((result) => {
+    inner_results.push('Группа создана');
+    success = true;
+  });
+  if(success)
+    res.json({ message:inner_results, code: 200 });
+  else
+    res.json({ message: 'Table data is not found', code: 401 });
 });
 
 app.get("/check_user_role", async (req, res) => {

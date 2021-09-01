@@ -7,6 +7,7 @@
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "antd": "^4.16.6",
+    "body-parser": "^1.19.0",
     "echarts": "^5.1.2",
     "echarts-for-react": "^3.0.1",
     "node-sass": "^4.14.1",
