@@ -30,6 +30,20 @@ const makeid = function(length) {
  return result;
 }
 
+const dropSome = function(quantity, size) {
+  let allRoutes = [];
+
+  for(let i = 0; i < quantity; i ++){
+      let routeItem = [0];
+      for(let j = 1; j <= size; j ++){
+          let randAddNumber = Math.round(Math.random(0));
+          routeItem.push(routeItem[routeItem.length - 1] + randAddNumber);
+      }
+      allRoutes.push(routeItem);
+  }
+  return allRoutes;
+}
+
 app.get("/migrate", async (req, res) => {
   let queryText = "select exists(select FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'public' AND TABLE_NAME = 'users')";
   let tablesExist = false;
@@ -173,7 +187,7 @@ app.get("/migrate", async (req, res) => {
     queryText += 'id UUID PRIMARY KEY, ';
     queryText += 'drops_quantity INTEGER NOT NULL, ';
     queryText += 'board_length INTEGER NOT NULL, ';
-    queryText += 'input_json VARCHAR(255) NOT NULL, ';
+    queryText += 'input_json TEXT NOT NULL, ';
     queryText += 'random_shift integer, ';
     queryText += 'created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL';
     queryText += ')';    
@@ -303,7 +317,6 @@ app.get("/get_lect_data", async (req, res) => {
   LEFT JOIN roles ON user_roles.role_id = roles.id 
   WHERE roles.key != 'lecturer' AND roles.key != 'admin'`;
 
-
   let table_data = [];
   await db.query(queryText).then((result) => {
     if(result.rows.length > 0)
@@ -312,23 +325,101 @@ app.get("/get_lect_data", async (req, res) => {
 
   let groupsWithUsers = {};
   let groupData = [];
+  let ckeckedIds = [];
   for(let i = 0; i < table_data.length; i++){
     let item = table_data[i];
-    if(typeof groupsWithUsers[item.group_id] === 'undefined'){
-      groupsWithUsers[item.group_id] = [];
-      groupData.push({
-        id: item.group_id,
-        name: item.group_name,
-        is_active: item.group_is_active
-      })
+    if(!ckeckedIds.find(elt => elt && elt === item.user_id)){
+      if(typeof groupsWithUsers[item.group_id] === 'undefined'){
+        groupsWithUsers[item.group_id] = [];
+        groupData.push({
+          id: item.group_id,
+          name: item.group_name,
+          is_active: item.group_is_active,
+          drops_quantity: item.drops_quantity,
+          board_length: item.board_length,
+          input_json: item.input_json,
+          random_shift: item.random_shift,
+        })
+      }
+      groupsWithUsers[item.group_id].push(item);
+      ckeckedIds.push(item.user_id);
     }
-    groupsWithUsers[item.group_id].push(item);
   }
 
   if(table_data.length > 0 )
     res.json({ group_data: groupData, data: groupsWithUsers, code: 200 });
   else
     res.json({ message: 'Table data is not found', code: 404 });
+});
+
+app.post("/change_user_group", async (req, res) => {
+  let query = req.body;
+  let success = false;
+  let inner_results = [];
+  let queryText = `DELETE FROM group_users WHERE user_id = '${query.user_id}'`;
+  await db.query(queryText).then((result) => {
+    inner_results.push('Предыдущее значение группы пользователя удалено.');
+    success = true;
+  });
+
+  queryText = 'INSERT INTO group_users (id, group_id, user_id, created_at) VALUES($1, $2, $3, $4) RETURNING *';  
+  let time = new Date();
+  let values = [
+    uuid.v4(),
+    query.group_id,
+    query.user_id,
+    time
+  ];
+  await db.query(queryText, values).then((result) => {
+    inner_results.push('Новое значение группы пользователя добавлено.');
+    success = true;
+  });
+  if(success)
+    res.json({ message:inner_results, code: 200 });
+  else
+    res.json({ message: 'Error with creation of group', code: 401 });
+});
+
+app.post("/create_group_input", async (req, res) => {
+  let query = req.body;
+  let group_data = query.group_data;
+  let success = false;
+  let inner_results = [];
+
+  let queryText = 'INSERT INTO galton_inputs (id, drops_quantity, board_length, input_json, random_shift, created_at) VALUES($1, $2, $3, $4, $5, $6) RETURNING *';  
+  let input_json = await dropSome(group_data.drops_quantity, group_data.board_length);
+  let random_shift = Math.floor(Math.random() * 7) * (Math.random() >= 0.5 ? -1 : 1);
+  let time = new Date();
+  let new_input_id = uuid.v4();
+  let values = [
+    new_input_id,
+    group_data.drops_quantity,
+    group_data.board_length,
+    input_json,
+    random_shift,
+    time
+  ];
+  await db.query(queryText, values).then((result) => {
+    inner_results.push('Новое значение исходных данных добавлено.');
+    success = true;
+  });
+
+  queryText = 'INSERT INTO group_inputs (id, group_id, input_id, created_at) VALUES($1, $2, $3, $4) RETURNING *';  
+
+  values = [
+    uuid.v4(),
+    group_data.id,
+    new_input_id,
+    time
+  ];
+  await db.query(queryText, values).then((result) => {
+    inner_results.push('Значение исходных данных для группы добавлено.');
+    success = true;
+  });
+  if(success)
+    res.json({ message:inner_results, code: 200 });
+  else
+    res.json({ message: 'Error with creation!', code: 401 });
 });
 
 app.post("/create_new_group", async (req, res) => {

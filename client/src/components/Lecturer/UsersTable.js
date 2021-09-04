@@ -6,6 +6,8 @@ import {
     Select,
     Input,
     Popover,
+    InputNumber,
+    Form,
 } from 'antd';
 import { 
     PlusOutlined,
@@ -22,8 +24,10 @@ class LecturerHomePage extends Component {
         };
         this.getTableData = this.getTableData.bind(this);
         this.handleChangeText = this.handleChangeText.bind(this);
+        this.handleChangeNumber = this.handleChangeNumber.bind(this);
         this.newGroupChange = this.newGroupChange.bind(this);
         this.createNewGroup = this.createNewGroup.bind(this);
+        this.handleChangeUserGroup = this.handleChangeUserGroup.bind(this);
     }
 
     componentDidMount() {
@@ -47,10 +51,17 @@ class LecturerHomePage extends Component {
     }
 
     handleChangeUserGroup(key, option){
-        console.log(option);
-        this.setState({
-            userId: option.props.value,
-        });
+        let newGroupID = option.props.value;
+        let userID = option.props.user_id;
+        let params = {
+            group_id: newGroupID,
+            user_id: userID,
+        };
+        axios.post(`/change_user_group`, params).then(response => {
+            this.getTableData();
+        }).catch(error => {
+            console.error(error);
+        })
     }
 
     handleChangeText(event) {
@@ -61,6 +72,12 @@ class LecturerHomePage extends Component {
             [fleldName]: fleldVal,
             modified: true
         });
+    }
+
+    newGroupChange(visible){
+        this.setState({
+            newGroupVisible: visible
+        })
     }
 
     renderNewGroupPopover = () => {
@@ -82,12 +99,6 @@ class LecturerHomePage extends Component {
         )
     }
 
-    newGroupChange(visible){
-        this.setState({
-            newGroupVisible: visible
-        })
-    }
-
     createNewGroup() {
         this.setState({
             newStatusVisible: [],
@@ -103,6 +114,65 @@ class LecturerHomePage extends Component {
         })
     }
 
+    renderNewGroupInputsPopover = (input_json, group_id) => {
+        return (
+            <div className="group-inputs" style={{overflow: "auto", minWidth: '250px', display: 'flex'}}>
+                {
+                    input_json && input_json.length > 0 ? (
+                        <div>{input_json}</div>
+                    ):(
+                        <div className="group-input-wrap">
+                            <div className="controls">
+                                <Form>
+                                    <Form.Item  label="Количество точек" style={{marginBottom: '0px'}} name="drops_quantity">
+                                        <InputNumber
+                                            style={{ width: 100, float: 'right' }}
+                                            type="number"
+                                            name="drops_quantity"
+                                            onChange={(value) => this.handleChangeNumber(group_id, value,'drops_quantity')}/>
+                                    </Form.Item>
+                                    <Form.Item  label="Количество бросков" style={{marginBottom: '0px'}} name="board_length">
+                                        <InputNumber
+                                            style={{ width: 100, float: 'right' }}
+                                            type="number"
+                                            name="board_length"
+                                            onChange={(value) => this.handleChangeNumber(group_id, value,'board_length')}/>
+                                    </Form.Item>
+                                    <Form.Item style={{marginTop: '20px', marginBottom: '0px'}}>
+                                        <Button  style={{ width: '100%' }} type="primary"  htmlType="submit" onClick={() => this.handleSubmit(group_id)}>OK</Button>
+                                    </Form.Item>
+                                </Form>
+                            </div>
+                        </div>
+                    )
+                }
+            </div>
+        )
+    }
+
+    handleSubmit(group_id) {        
+        let { groupData } = this.state;
+        let currGroup = groupData.find(item => item && item.id === group_id);
+        let params = {
+            group_data: currGroup,
+        };
+        axios.post(`/create_group_input`, params)
+        .then(response => {
+            this.getTableData();
+        }).catch(error => {
+            console.error(error);
+        })
+    }
+
+    handleChangeNumber(group_id, value, fieldName) {
+        let { groupData } = this.state;
+        let currGroup = groupData.find(item => item && item.id === group_id);
+        currGroup[fieldName] = value;
+        this.setState({
+            groupData: groupData,
+        });
+    }
+
     render() {
         return (
             <div className="users-table">
@@ -112,7 +182,24 @@ class LecturerHomePage extends Component {
                         let group_users = this.state.tableData[curr_group.id];
                         return (
                             <div className="group-wrap" key={curr_group.id}>
-                                <div className="group-name">{curr_group.name === 'no_group' ? "Пользователи без группы" : curr_group.name}</div>
+                                <div className="group-data">
+                                    <div className="group-name">{curr_group.name === 'no_group' ? "Пользователи без группы" : curr_group.name}</div>
+                                    <div className="group-actions">
+                                        <Popover
+                                            placement="right"
+                                            content={() => this.renderNewGroupInputsPopover(curr_group.input_json, curr_group.id)}
+                                            trigger="click"
+                                            onVisibleChange={this.newGroupInputs}
+                                            visible={this.state.newGroupInputsVisible}
+                                        >
+                                            <Button
+                                                className="action-panel-button"
+                                            >
+                                                Исходные данные
+                                            </Button>
+                                        </Popover>
+                                    </div>
+                                </div>
                                 <div className="group-users">
                                 {
                                     group_users && group_users.length > 0 ? (
@@ -128,12 +215,13 @@ class LecturerHomePage extends Component {
                                                                     onChange={this.handleChangeUserGroup}
                                                                     showSearch
                                                                     filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                                                                    placeholder="Перенести в группу"
                                                                 >
                                                                     {
                                                                         this.state.groupData && this.state.groupData.length ? 
                                                                             this.state.groupData.filter(item => item && item.name !== curr_group.name).map((select_group) => {
                                                                                 return (
-                                                                                    <Option key={select_group.id} value={select_group.id}>{select_group.name}</Option>
+                                                                                    <Option key={select_group.id} value={select_group.id} user_id={users_data.user_id}>{select_group.name}</Option>
                                                                                 )
                                                                             }
                                                                         ) : ''
