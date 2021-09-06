@@ -42,7 +42,7 @@ class NavbarMP extends Component {
                         onClick={this.handleClick}
                         selectedKeys={['']}
                         mode="horizontal">
-                        <SubMenu title={JSON.parse(localStorage.currentUser).uid} >
+                        <SubMenu  key="submenu-logout" title={JSON.parse(localStorage.currentUser).uid} >
                             <Menu.Item key="logout">Выйти</Menu.Item>
                         </SubMenu>
                     </Menu>

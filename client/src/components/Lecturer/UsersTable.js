@@ -114,29 +114,59 @@ class LecturerHomePage extends Component {
         })
     }
 
-    renderNewGroupInputsPopover = (input_json, group_id) => {
+    renderNewGroupInputsPopover = (groupData) => {
+        const {
+            group_id,
+            input_json,
+            drops_quantity,
+            board_length,
+        } = groupData;
+
+        let jsonParsed = [];
+        if(input_json && input_json.length > 0){
+            let jsonArray = JSON.parse(input_json);
+            let row = [];
+            for (let i = 0; i < board_length; i++) {
+                let currRowJson = jsonArray[i];
+                for (let j = 0; j < drops_quantity; j++) {
+                    row.push(
+                        <td key={j}>{currRowJson[j]}</td>
+                    )
+                }
+                jsonParsed.push(<tr key={i}>{row}</tr>);
+            }
+        }
+
         return (
             <div className="group-inputs" style={{overflow: "auto", minWidth: '250px', display: 'flex'}}>
                 {
                     input_json && input_json.length > 0 ? (
-                        <div>{input_json}</div>
+                        <div>
+                            <table>
+                                <tbody>
+                                {
+                                    jsonParsed
+                                }
+                                </tbody>
+                            </table>
+                        </div>
                     ):(
                         <div className="group-input-wrap">
                             <div className="controls">
                                 <Form>
-                                    <Form.Item  label="Количество точек" style={{marginBottom: '0px'}} name="drops_quantity">
-                                        <InputNumber
-                                            style={{ width: 100, float: 'right' }}
-                                            type="number"
-                                            name="drops_quantity"
-                                            onChange={(value) => this.handleChangeNumber(group_id, value,'drops_quantity')}/>
-                                    </Form.Item>
-                                    <Form.Item  label="Количество бросков" style={{marginBottom: '0px'}} name="board_length">
+                                    <Form.Item  label="Размер доски" style={{marginBottom: '0px'}} name="board_length">
                                         <InputNumber
                                             style={{ width: 100, float: 'right' }}
                                             type="number"
                                             name="board_length"
                                             onChange={(value) => this.handleChangeNumber(group_id, value,'board_length')}/>
+                                    </Form.Item>
+                                    <Form.Item  label="Количество бросков" style={{marginBottom: '0px'}} name="drops_quantity">
+                                        <InputNumber
+                                            style={{ width: 100, float: 'right' }}
+                                            type="number"
+                                            name="drops_quantity"
+                                            onChange={(value) => this.handleChangeNumber(group_id, value,'drops_quantity')}/>
                                     </Form.Item>
                                     <Form.Item style={{marginTop: '20px', marginBottom: '0px'}}>
                                         <Button  style={{ width: '100%' }} type="primary"  htmlType="submit" onClick={() => this.handleSubmit(group_id)}>OK</Button>
@@ -187,7 +217,7 @@ class LecturerHomePage extends Component {
                                     <div className="group-actions">
                                         <Popover
                                             placement="right"
-                                            content={() => this.renderNewGroupInputsPopover(curr_group.input_json, curr_group.id)}
+                                            content={() => this.renderNewGroupInputsPopover(curr_group)}
                                             trigger="click"
                                             onVisibleChange={this.newGroupInputs}
                                             visible={this.state.newGroupInputsVisible}

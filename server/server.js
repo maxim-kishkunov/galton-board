@@ -395,7 +395,7 @@ app.post("/create_group_input", async (req, res) => {
     new_input_id,
     group_data.drops_quantity,
     group_data.board_length,
-    input_json,
+    JSON.stringify(input_json),
     random_shift,
     time
   ];
