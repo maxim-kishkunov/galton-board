@@ -1,8 +1,9 @@
 import axios from 'axios';
 import React, { Component } from 'react';
-import { 
-    Modal,
- } from 'antd';
+// import { 
+//     Modal,
+//  } from 'antd';
+ import InputsTable from './InputsTable'
 
 class UserHomePage extends Component {
     constructor(props) {
@@ -19,7 +20,7 @@ class UserHomePage extends Component {
 
     render() {
         return (
-            <div></div>
+            <InputsTable {...this.props} />
         );
     }
 }

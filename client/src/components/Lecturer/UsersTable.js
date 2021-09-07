@@ -125,12 +125,11 @@ class LecturerHomePage extends Component {
         let jsonParsed = [];
         if(input_json && input_json.length > 0){
             let jsonArray = JSON.parse(input_json);
-            let row = [];
-            for (let i = 0; i < board_length; i++) {
-                let currRowJson = jsonArray[i];
+            for (let i = 1; i <= board_length; i++) {
+                let row = [];
                 for (let j = 0; j < drops_quantity; j++) {
                     row.push(
-                        <td key={j}>{currRowJson[j]}</td>
+                        <td key={j}>{jsonArray[j][i]}</td>
                     )
                 }
                 jsonParsed.push(<tr key={i}>{row}</tr>);
@@ -142,7 +141,7 @@ class LecturerHomePage extends Component {
                 {
                     input_json && input_json.length > 0 ? (
                         <div>
-                            <table>
+                            <table className="inputs-table">
                                 <tbody>
                                 {
                                     jsonParsed

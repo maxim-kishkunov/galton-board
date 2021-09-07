@@ -61,3 +61,15 @@ code {
     }
   }
 }
+
+.inputs-table {
+  tr:last-child {
+    background: #defddd;
+  }
+  td {
+    width: 25px;
+    height: 25px;
+    border: 1px solid #e4e4e4;
+    text-align: center;
+  }
+}
