@@ -16,8 +16,8 @@ class HomePage extends Component {
         this.checkUserRole = this.checkUserRole.bind(this);
     }
 
-    componentDidMount() {
-        this.checkUserRole();
+    async componentDidMount() {
+        await this.checkUserRole();
     }
 
     checkUserRole(){
@@ -45,8 +45,10 @@ class HomePage extends Component {
             {
                 this.state.userRole === 'user' ? (
                     <UserHomePage {...this.props} />
-                ): (
-                    <LecturerHomePage {...this.props} />                        
+                ): this.state.userRole === 'lecturer' ? (
+                    <LecturerHomePage {...this.props} /> 
+                ):(
+                    <div></div>                     
                 )
             }
             </div>

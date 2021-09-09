@@ -12,10 +12,12 @@ class UserHomePage extends Component {
             userData: {},
         };
         this.getUserData = this.getUserData.bind(this);
+        this.checkResultStep = this.checkResultStep.bind(this);
     }
 
     componentDidMount() {
         this.getUserData();
+        this.checkResultStep(0,0);
     }
 
     getUserData(){        

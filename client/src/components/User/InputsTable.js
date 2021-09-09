@@ -29,12 +29,16 @@ class InputsTable extends Component {
         if(!disabledInput[inputName]){
             disabledInput[inputName] = true;
         }
-
+        if(!this.state[inputName])
+            return false;
+            
+        currStep += 1;
         this.setState({
             currStep: currStep,
             disabledInput: disabledInput
         },()=>{
-            this.props.checkResultStep(currStep,inputName);
+            let stepValue = this.state[inputName];
+            this.props.checkResultStep(currStep,stepValue);
         })
     }
 

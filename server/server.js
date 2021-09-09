@@ -359,9 +359,8 @@ app.get("/get_user_data", async (req, res) => {
   let queryText =  `
     SELECT
       user_outputs.output_json AS output_json,
-      galton_inputs.input_last_row_json AS input_last_row_json,
-      galton_inputs.drops_quantity AS drops_quantity,
-      user_outputs.result_json AS result_json
+      user_outputs.result_json AS result_json,
+      galton_inputs.drops_quantity AS drops_quantity
     FROM users
     LEFT JOIN group_users ON group_users.user_id = users.id
     LEFT JOIN group_inputs ON group_inputs.group_id = group_users.group_id
@@ -422,26 +421,46 @@ app.get("/check_result_step", async (req, res) => {
       let userOutput = JSON.parse(data.output_json);
       let userResult = JSON.parse(data.result_json);
 
-      userOutput[query.step] = + query.value;
-      userResult[query.step] = + resultRow[query.step] + query.value;
+      if(!userOutput)
+        userOutput = [];
+        if(!userResult)
+        userResult = [];
 
-      let queryText =  `
-        UPDATE user_outputs 
-        SET 
-          output_json = ${JSON.stringify(userOutput)},
-          result_json = ${JSON.stringify(userResult)},
-        WHERE id = ${data.id}
-      `;
-      await db.query(queryText).then((result) => {
+      userOutput[+ query.step - 1] = + query.value;
+      userResult[+ query.step - 1] = + resultRow[query.step] + parseInt(query.value);
+
+      let queryText =  ``;
+      let time = new Date();
+      let values = [];
+      if(data.id){
+        queryText = `
+          UPDATE user_outputs 
+          SET 
+            output_json = '${JSON.stringify(userOutput)}',
+            result_json = '${JSON.stringify(userResult)}'
+          WHERE id = '${data.id}'
+        `;
+      }else{
+        queryText = 'INSERT INTO user_outputs(id, user_id, output_json, result_json, created_at) VALUES($1, $2, $3, $4, $5) RETURNING *';
+        
+        values = [
+          uuid.v4(),
+          query.user_id,
+          JSON.stringify(userOutput),
+          JSON.stringify(userResult),
+          time
+        ];
+      }
+      await db.query(queryText, values).then((result) => {
         inner_results.push('Данные пользователя обновлены');
         success = true;
-        result_data.stepValue = userResult[query.step];
+        result_data.stepValue = userResult[+ query.step - 1];
       });
     }
   }
 
-  if(Object.keys(table_data).length > 0 )
-    res.json({ data: result_data, code: 200 });
+  if(Object.keys(result_data).length > 0 )
+    res.json({ data: result_data, inner_results: inner_results, code: 200 });
   else
     res.json({ message: 'User data is not found', code: 404 });
 });
@@ -487,8 +506,8 @@ app.post("/create_group_input", async (req, res) => {
   let new_input_id = uuid.v4();
 
   let inputLastRow = [];
-  let correction = Math.round(input_json.length / 2);
-  for(let i = 0; i <= input_json.length; i++){
+  let correction = Math.round(+ group_data.board_length / 2);
+  for(let i = 0; i < input_json.length; i++){
       let currItem = input_json[i];
       inputLastRow.push(currItem[currItem.length - 1] - correction + random_shift);
   }
