@@ -22,7 +22,7 @@ function App() {
             <Navbar t={t} i18n={i18n} history={history}/>
         ):('')}
 
-        <div style={{marginTop: 50}}>
+        <div className="page-layout-content">
           <Switch>
             <Route path="/sign_up" render={routeProps => <RegPage {...routeProps}  t={t}  i18n={i18n}/>}/>
             <Route path="/login" render={routeProps => <LoginPage {...routeProps}  t={t}  i18n={i18n}/>}/>

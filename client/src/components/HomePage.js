@@ -40,21 +40,17 @@ class HomePage extends Component {
     }
 
     render() {
-        if(this.state.userRole.length === 0){
-            return (
-                <div></div>
-            );
-        }else{
-            if(this.state.userRole === 'user'){
-                return (
+        return (
+            <div className="general-wrap">
+            {
+                this.state.userRole === 'user' ? (
                     <UserHomePage {...this.props} />
-                );
-            }else{
-                return (
-                    <LecturerHomePage {...this.props} />
-                );
+                ): (
+                    <LecturerHomePage {...this.props} />                        
+                )
             }
-        }
+            </div>
+        );
     }
 }
 export default HomePage;

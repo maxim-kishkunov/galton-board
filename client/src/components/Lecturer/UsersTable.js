@@ -116,7 +116,7 @@ class LecturerHomePage extends Component {
 
     renderNewGroupInputsPopover = (groupData) => {
         const {
-            group_id,
+            id,
             input_json,
             drops_quantity,
             board_length,
@@ -158,17 +158,17 @@ class LecturerHomePage extends Component {
                                             style={{ width: 100, float: 'right' }}
                                             type="number"
                                             name="board_length"
-                                            onChange={(value) => this.handleChangeNumber(group_id, value,'board_length')}/>
+                                            onChange={(value) => this.handleChangeNumber(id, value,'board_length')}/>
                                     </Form.Item>
                                     <Form.Item  label="Количество бросков" style={{marginBottom: '0px'}} name="drops_quantity">
                                         <InputNumber
                                             style={{ width: 100, float: 'right' }}
                                             type="number"
                                             name="drops_quantity"
-                                            onChange={(value) => this.handleChangeNumber(group_id, value,'drops_quantity')}/>
+                                            onChange={(value) => this.handleChangeNumber(id, value,'drops_quantity')}/>
                                     </Form.Item>
                                     <Form.Item style={{marginTop: '20px', marginBottom: '0px'}}>
-                                        <Button  style={{ width: '100%' }} type="primary"  htmlType="submit" onClick={() => this.handleSubmit(group_id)}>OK</Button>
+                                        <Button  style={{ width: '100%' }} type="primary"  htmlType="submit" onClick={() => this.handleSubmit(id)}>OK</Button>
                                     </Form.Item>
                                 </Form>
                             </div>

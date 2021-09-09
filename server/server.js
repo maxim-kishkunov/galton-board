@@ -63,7 +63,7 @@ app.get("/migrate", async (req, res) => {
     queryText += 'token VARCHAR(255) NOT NULL, ';
     queryText += 'is_confirmed BOOLEAN NOT NULL, ';
     queryText += 'created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL';
-    queryText += ')';    
+    queryText += ')';
     await db.query(queryText);
 
     //roles
@@ -188,6 +188,7 @@ app.get("/migrate", async (req, res) => {
     queryText += 'drops_quantity INTEGER NOT NULL, ';
     queryText += 'board_length INTEGER NOT NULL, ';
     queryText += 'input_json TEXT NOT NULL, ';
+    queryText += 'input_last_row_json TEXT NOT NULL, ';
     queryText += 'random_shift integer, ';
     queryText += 'created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL';
     queryText += ')';    
@@ -206,7 +207,8 @@ app.get("/migrate", async (req, res) => {
     queryText =  'CREATE TABLE user_outputs(';
     queryText += 'id UUID PRIMARY KEY, ';
     queryText += 'user_id UUID NOT NULL, ';
-    queryText += 'output_json VARCHAR(255) NOT NULL, ';
+    queryText += 'output_json TEXT NOT NULL, ';
+    queryText += 'result_json TEXT NOT NULL, ';
     queryText += 'created_at TIMESTAMP WITHOUT TIME ZONE NOT NULL';
     queryText += ')';    
     await db.query(queryText);
@@ -352,76 +354,96 @@ app.get("/get_lect_data", async (req, res) => {
     res.json({ message: 'Table data is not found', code: 404 });
 });
 
-app.get("/get_user_data", async (req, res) => {     
+app.get("/get_user_data", async (req, res) => {
+  let query = req.query;
   let queryText =  `
     SELECT
-    groups.id AS group_id,
-    groups.name AS group_name,
-    groups.is_active AS group_is_active,
-    users.id AS user_id,
-    users.name AS user_name,
-    galton_inputs.drops_quantity AS drops_quantity,
-    galton_inputs.board_length AS board_length,
-    galton_inputs.input_json AS input_json,
-    galton_inputs.random_shift AS random_shift,
-    roles.key AS role_key
-  FROM groups
-  LEFT JOIN group_users ON group_users.group_id = groups.id
-  LEFT JOIN users ON group_users.user_id = users.id
-  LEFT JOIN user_roles ON user_roles.user_id = users.id
-  LEFT JOIN roles ON user_roles.role_id = roles.id
-  LEFT JOIN group_inputs ON group_users.group_id = group_inputs.group_id
-  LEFT JOIN galton_inputs ON galton_inputs.id = group_inputs.input_id
-  UNION ALL
-  SELECT
-    '00000000-0000-0000-0000-000000000000' AS group_id,
-    'no_group' AS group_name,
-    'true' AS group_is_active,
-    users.id AS user_id,
-    users.name AS user_name,
-    '0' AS drops_quantity,
-    '0' AS board_length,
-    '' AS input_json,
-    '0' AS random_shift,
-    roles.key AS role_key
-  FROM users
-  LEFT JOIN user_roles ON user_roles.user_id = users.id
-  LEFT JOIN roles ON user_roles.role_id = roles.id 
-  WHERE roles.key != 'lecturer' AND roles.key != 'admin'`;
+      user_outputs.output_json AS output_json,
+      galton_inputs.input_last_row_json AS input_last_row_json,
+      galton_inputs.drops_quantity AS drops_quantity,
+      user_outputs.result_json AS result_json
+    FROM users
+    LEFT JOIN group_users ON group_users.user_id = users.id
+    LEFT JOIN group_inputs ON group_inputs.group_id = group_users.group_id
+    LEFT JOIN galton_inputs ON group_inputs.input_id = galton_inputs.id
+    LEFT JOIN user_outputs ON user_outputs.user_id = users.id
+    WHERE users.id = '${query.user_id}'
+  `;
 
-  let table_data = [];
+  let table_data = {};
   await db.query(queryText).then((result) => {
     if(result.rows.length > 0)
-      table_data = result.rows;
+      table_data = result.rows[0];
   });
 
-  let groupsWithUsers = {};
-  let groupData = [];
-  let ckeckedIds = [];
-  for(let i = 0; i < table_data.length; i++){
-    let item = table_data[i];
-    if(!ckeckedIds.find(elt => elt && elt === item.user_id)){
-      if(typeof groupsWithUsers[item.group_id] === 'undefined'){
-        groupsWithUsers[item.group_id] = [];
-        groupData.push({
-          id: item.group_id,
-          name: item.group_name,
-          is_active: item.group_is_active,
-          drops_quantity: item.drops_quantity,
-          board_length: item.board_length,
-          input_json: item.input_json,
-          random_shift: item.random_shift,
-        })
-      }
-      groupsWithUsers[item.group_id].push(item);
-      ckeckedIds.push(item.user_id);
+  if(Object.keys(table_data).length > 0 )
+    res.json({ data: table_data, code: 200 });
+  else
+    res.json({ message: 'User data is not found', code: 404 });
+});
+
+app.get("/check_result_step", async (req, res) => {
+  let inner_results = [];
+  let query = req.query;
+  let queryText =  `
+    SELECT
+      user_outputs.id AS id,
+      user_outputs.output_json AS output_json,
+      user_outputs.result_json AS result_json,
+      galton_inputs.input_last_row_json AS input_last_row_json,
+      galton_inputs.drops_quantity AS drops_quantity,
+      galton_inputs.board_length AS board_length
+    FROM users
+    LEFT JOIN group_users ON group_users.user_id = users.id
+    LEFT JOIN group_inputs ON group_inputs.group_id = group_users.group_id
+    LEFT JOIN galton_inputs ON group_inputs.input_id = galton_inputs.id
+    LEFT JOIN user_outputs ON user_outputs.user_id = users.id
+    WHERE users.id = '${query.user_id}'
+  `;
+
+  let data = {};
+  await db.query(queryText).then((result) => {
+    inner_results.push('Данные пользователя получены');
+    if(result.rows.length > 0)
+      data = result.rows[0];
+  });
+
+  result_data = {};
+  let success = false;
+
+  if(Object.keys(data).length > 0 ){
+    let resultRow = JSON.parse(data.input_last_row_json);
+    result_data.drops_quantity = data.drops_quantity;
+    result_data.board_length = data.board_length;
+    if(+query.step === 0){
+      inner_results.push('Это первый шаг, действий не выполняется');
+      result_data.stepValue = resultRow[0];
+    }else{
+      let userOutput = JSON.parse(data.output_json);
+      let userResult = JSON.parse(data.result_json);
+
+      userOutput[query.step] = + query.value;
+      userResult[query.step] = + resultRow[query.step] + query.value;
+
+      let queryText =  `
+        UPDATE user_outputs 
+        SET 
+          output_json = ${JSON.stringify(userOutput)},
+          result_json = ${JSON.stringify(userResult)},
+        WHERE id = ${data.id}
+      `;
+      await db.query(queryText).then((result) => {
+        inner_results.push('Данные пользователя обновлены');
+        success = true;
+        result_data.stepValue = userResult[query.step];
+      });
     }
   }
 
-  if(table_data.length > 0 )
-    res.json({ group_data: groupData, data: groupsWithUsers, code: 200 });
+  if(Object.keys(table_data).length > 0 )
+    res.json({ data: result_data, code: 200 });
   else
-    res.json({ message: 'Table data is not found', code: 404 });
+    res.json({ message: 'User data is not found', code: 404 });
 });
 
 app.post("/change_user_group", async (req, res) => {
@@ -458,16 +480,25 @@ app.post("/create_group_input", async (req, res) => {
   let success = false;
   let inner_results = [];
 
-  let queryText = 'INSERT INTO galton_inputs (id, drops_quantity, board_length, input_json, random_shift, created_at) VALUES($1, $2, $3, $4, $5, $6) RETURNING *';  
+  let queryText = 'INSERT INTO galton_inputs (id, drops_quantity, board_length, input_json, input_last_row_json, random_shift, created_at) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *';  
   let input_json = await dropSome(group_data.drops_quantity, group_data.board_length);
   let random_shift = Math.floor(Math.random() * 7) * (Math.random() >= 0.5 ? -1 : 1);
   let time = new Date();
   let new_input_id = uuid.v4();
+
+  let inputLastRow = [];
+  let correction = Math.round(input_json.length / 2);
+  for(let i = 0; i <= input_json.length; i++){
+      let currItem = input_json[i];
+      inputLastRow.push(currItem[currItem.length - 1] - correction + random_shift);
+  }
+
   let values = [
     new_input_id,
     group_data.drops_quantity,
     group_data.board_length,
     JSON.stringify(input_json),
+    JSON.stringify(inputLastRow),
     random_shift,
     time
   ];

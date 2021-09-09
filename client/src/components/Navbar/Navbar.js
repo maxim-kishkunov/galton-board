@@ -2,6 +2,9 @@ import React, { Component } from 'react';
 import { Menu, Layout } from 'antd';
 import Auth from '../auth/Auth'
 import './Navbar.css';
+import { 
+    LogoutOutlined,
+} from '@ant-design/icons';
 
 const SubMenu = Menu.SubMenu;
 
@@ -26,7 +29,7 @@ class NavbarMP extends Component {
         return (
             <Layout className="home-page-layout-header" style={{ height:"100%",width:"100%"}}>
                 <Content>
-                    <div className="logo" />
+                    {/* <div className="logo" />
                     <Menu
                         mode="horizontal"
                         theme="light"
@@ -34,7 +37,7 @@ class NavbarMP extends Component {
                         <Menu.Item
                             key='1'>
                         </Menu.Item>
-                    </Menu>
+                    </Menu> */}
                 </Content>
 
                 <Sider width={350}>
@@ -42,9 +45,11 @@ class NavbarMP extends Component {
                         onClick={this.handleClick}
                         selectedKeys={['']}
                         mode="horizontal">
-                        <SubMenu  key="submenu-logout" title={JSON.parse(localStorage.currentUser).uid} >
-                            <Menu.Item key="logout">Выйти</Menu.Item>
-                        </SubMenu>
+                        {/* <SubMenu  key="submenu-logout" title={JSON.parse(localStorage.currentUser).uid} > */}
+                            <Menu.Item key="logout" >
+                                <LogoutOutlined />&nbsp;Выйти
+                            </Menu.Item>
+                        {/* </SubMenu> */}
                     </Menu>
                 </Sider>
             </Layout>

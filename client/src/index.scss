@@ -21,6 +21,24 @@ code {
   }
 }
 
+.home-page-layout-header,.home-page-layout-header *{
+  height: 50px!important;
+  background: #fff;
+}
+.home-page-layout-header{
+  padding:0;
+  line-height:50;
+
+  .ant-menu{
+    flex-direction: row-reverse;
+
+    .ant-menu-title-content{
+      display: flex;
+      align-items: center;
+    }
+  }
+}
+
 .users-table {
 
   .group-wrap {
@@ -71,5 +89,14 @@ code {
     height: 25px;
     border: 1px solid #e4e4e4;
     text-align: center;
+  }
+}
+
+.user-page-wrap {
+  display: flex;
+  justify-content: center;
+
+  .user-inputs-table {
+    display: flex;
   }
 }

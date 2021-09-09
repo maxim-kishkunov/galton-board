@@ -8,7 +8,6 @@ import {
 } from 'antd';
 // import BoardBlock from './BoardBlock'
 import BoardWithCanvas from './BoardWithCanvas'
-import PseudoStackBarChart from './PseudoStackBarChart'
 
 class GBHomePage extends Component {
     constructor(props) {
