@@ -98,5 +98,17 @@ code {
 
   .user-inputs-table {
     display: flex;
+
+    .table-cell{
+      width:50px;
+
+      .ant-input-number-handler-wrap {
+        width: 15px;
+
+        .ant-input-number-handler-up-inner, .ant-input-number-handler-down-inner{
+          right:2px;
+        }
+      }
+    }
   }
 }

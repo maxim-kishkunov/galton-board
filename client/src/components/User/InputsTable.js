@@ -52,7 +52,7 @@ class InputsTable extends Component {
                 tableColumns.push(
                     <div className="table-cell">
                         <InputNumber
-                            style={{ width: 55 }}
+                            style={{ width: '100%' }}
                             disabled={disabledInput[currInputName] || this.state.currStep !== i}
                             onBlur={(e)=>this.handleOnBlur(i,currInputName)}
                             type="number"
