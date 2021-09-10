@@ -300,7 +300,7 @@ app.get("/get_lect_data", async (req, res) => {
   LEFT JOIN users ON group_users.user_id = users.id
   LEFT JOIN user_roles ON user_roles.user_id = users.id
   LEFT JOIN roles ON user_roles.role_id = roles.id
-  LEFT JOIN group_inputs ON group_users.group_id = group_inputs.group_id
+  LEFT JOIN group_inputs ON groups.id = group_inputs.group_id
   LEFT JOIN galton_inputs ON galton_inputs.id = group_inputs.input_id
   UNION ALL
   SELECT
@@ -423,7 +423,7 @@ app.get("/check_result_step", async (req, res) => {
 
       if(!userOutput)
         userOutput = [];
-        if(!userResult)
+      if(!userResult)
         userResult = [];
 
       userOutput[+ query.step - 1] = + query.value;
