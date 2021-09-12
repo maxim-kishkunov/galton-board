@@ -293,6 +293,7 @@ app.get("/get_lect_data", async (req, res) => {
     galton_inputs.drops_quantity AS drops_quantity,
     galton_inputs.board_length AS board_length,
     galton_inputs.input_json AS input_json,
+    galton_inputs.input_last_row_json AS input_last_row_json,
     galton_inputs.random_shift AS random_shift,
     roles.key AS role_key
   FROM groups
@@ -312,6 +313,7 @@ app.get("/get_lect_data", async (req, res) => {
     '0' AS drops_quantity,
     '0' AS board_length,
     '' AS input_json,
+    '' AS input_last_row_json,
     '0' AS random_shift,
     roles.key AS role_key
   FROM users
@@ -414,9 +416,11 @@ app.get("/check_result_step", async (req, res) => {
     let resultRow = JSON.parse(data.input_last_row_json);
     result_data.drops_quantity = data.drops_quantity;
     result_data.board_length = data.board_length;
-    if(+query.step === 0){
+    if(+query.step === 0 && data.result_json === null){
       inner_results.push('Это первый шаг, действий не выполняется');
       result_data.stepValue = resultRow[0];
+      result_data.userResult = [resultRow[0]];
+      result_data.userOutput = [];
     }else{
       let userOutput = JSON.parse(data.output_json);
       let userResult = JSON.parse(data.result_json);
@@ -424,10 +428,10 @@ app.get("/check_result_step", async (req, res) => {
       if(!userOutput)
         userOutput = [];
       if(!userResult)
-        userResult = [];
+        userResult = [resultRow[0]];
 
       userOutput[+ query.step - 1] = + query.value;
-      userResult[+ query.step - 1] = + resultRow[query.step] + parseInt(query.value);
+      userResult[+ query.step] = + resultRow[query.step] + parseInt(query.value);
 
       let queryText =  ``;
       let time = new Date();
@@ -455,6 +459,8 @@ app.get("/check_result_step", async (req, res) => {
         inner_results.push('Данные пользователя обновлены');
         success = true;
         result_data.stepValue = userResult[+ query.step - 1];
+        result_data.userResult = userResult;
+        result_data.userOutput = userOutput;
       });
     }
   }

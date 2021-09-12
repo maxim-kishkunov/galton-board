@@ -25,12 +25,13 @@ class InputsTable extends Component {
     }
 
     handleOnBlur(currStep, inputName) {
+        if(typeof this.state[inputName] === 'undefined')
+            return false;
+            
         const {disabledInput} = this.state;
         if(!disabledInput[inputName]){
             disabledInput[inputName] = true;
         }
-        if(!this.state[inputName])
-            return false;
             
         currStep += 1;
         this.setState({
@@ -50,7 +51,7 @@ class InputsTable extends Component {
             for(let i = 0; i < drops_quantity; i ++){
                 let currInputName = `output_${i}`;
                 tableColumns.push(
-                    <div className="table-cell">
+                    <div  key={`input-cell_${i}`} className="table-cell">
                         <InputNumber
                             style={{ width: '100%' }}
                             disabled={disabledInput[currInputName] || this.state.currStep !== i}
