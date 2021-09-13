@@ -66,11 +66,17 @@ class UserHomePage extends Component {
 
     render() {
         let chartData = [];
+        let userResult = [];
+        let initialResult = [];
         let initialData = [];
         let board_length = 0;
+        let drops_quantity = 0;
         if(Object.keys(this.state.userData).length > 0){
+            if(this.state.userData.drops_quantity && typeof this.state.userData.drops_quantity !== 'undefined'){
+                drops_quantity = this.state.userData.drops_quantity;
+            }
             if(this.state.userData.userResult && this.state.userData.userResult.length > 0){
-                let userResult = this.state.userData.userResult;
+                userResult = this.state.userData.userResult;
                 for(let i = 0; i < this.state.userData.drops_quantity; i++){
                     let currKey = userResult[i];
                     if(Object.keys(chartData).length > 0 && typeof chartData[currKey] !== 'undefined')
@@ -80,7 +86,7 @@ class UserHomePage extends Component {
                 }
             }
             if(this.state.userData.initialResult && this.state.userData.initialResult.length > 0){
-                let initialResult = this.state.userData.initialResult;
+                initialResult = this.state.userData.initialResult;
                 for(let i = 0; i < this.state.userData.drops_quantity; i++){
                     let currKey = initialResult[i];
                     if(Object.keys(initialData).length > 0 && typeof initialData[currKey] !== 'undefined')
@@ -95,25 +101,14 @@ class UserHomePage extends Component {
         return (
             <div className="user-page-wrap">
                 <div>
-                    <ResultsRow
-                        {...this.props}
-                        user_data={this.state.userData} />
-                    <InputsTable
-                        {...this.props}
-                        checkResultStep={this.checkResultStep}
-                        user_data={this.state.userData} />
-                    <div style={{display:'flex',justifyContent: 'center', flexDirection: 'column'}}>
-                        <div style={{width: '50%'}}>
-                            <StackBarChart {...this.props}
-                                size={board_length}
-                                chart_data={chartData}
-                            />
-                        </div>
-                    </div>
                     {
                         Object.keys(initialData).length > 0 ? (
                             <div style={{display:'flex',justifyContent: 'center', flexDirection: 'column'}}>
                                 <div>Начальные результаты</div>
+                                <ResultsRow
+                                    {...this.props}
+                                    drops_quantity={drops_quantity}
+                                    result_data={initialResult} />
                                 <div style={{width: '50%'}}>
                                     <StackBarChart {...this.props}
                                         size={board_length}
@@ -123,6 +118,22 @@ class UserHomePage extends Component {
                             </div>
                         ):('')
                     }
+                    <div style={{display:'flex',justifyContent: 'center', flexDirection: 'column'}}>
+                        <ResultsRow
+                            {...this.props}
+                            drops_quantity={drops_quantity}
+                            result_data={userResult} />
+                        <InputsTable
+                            {...this.props}
+                            checkResultStep={this.checkResultStep}
+                            user_data={this.state.userData} />
+                        <div style={{width: '50%'}}>
+                            <StackBarChart {...this.props}
+                                size={board_length}
+                                chart_data={chartData}
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         )

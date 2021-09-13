@@ -18,13 +18,13 @@ class ResultsRow extends Component {
     render() {
         const {
             drops_quantity,
-            userResult
-        } = this.props.user_data;
+            result_data
+        } = this.props;
         let tableColumns = [];
-        if(drops_quantity && userResult){
+        if(drops_quantity && result_data){
             for(let i = 0; i < drops_quantity; i ++){
                 tableColumns.push(
-                    <div key={`result-cell_${i}`} className="table-cell">{userResult[i]}</div>
+                    <div key={`result-cell_${i}`} className="table-cell">{result_data[i]}</div>
                 )
             }
         }
