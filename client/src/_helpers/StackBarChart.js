@@ -33,27 +33,33 @@ class StackBarChart extends Component {
         const canvas = this.canvasRef.current;
         const ctx = canvas.getContext('2d');
 
-        ctx.canvas.width  = window.innerWidth /2;
-        ctx.canvas.height = 16 * (size + 2) + 200;
+        ctx.canvas.width  = 50 * ((size * 2) + 1);
+        ctx.canvas.height = 16 * (size + 2) + 150;
     
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         
         ctx.beginPath();
 
         let k = 0;
-        for(let i = Math.floor(-1 * size / 2); i <= size / 2; i++){
-            let startX = k * 32;
-            let barLength = chart_data[k] ? chart_data[k] : 0;
+        for(let i = Math.floor(-1 * size); i <= size; i++){
+            let startX = k * 50;
+            let barLength = chart_data[i] ? chart_data[i] : 0;
             let startY = (16 * size) + 15 * (10 - barLength);//16 * size + 168;
                         
-            ctx.fillStyle='#070';
-            ctx.fillRect(startX,startY,30, barLength * 15);
+            ctx.fillStyle = '#acacac';
+            if(i >= -1 && i <= 1)
+                ctx.fillStyle='#070';
+            ctx.fillRect(startX,startY,48, barLength * 15);
 
             ctx.fillStyle = '#000000';
-            ctx.fillText(chart_data[k] ? chart_data[k] : '',startX + 10,startY - 1); //value of the bar
-            ctx.fillText(i,startX + 10,startY + barLength * 15 + 10); //index of the bar
-            ctx.fillRect(startX,startY + barLength * 15,32, 1);
-
+            ctx.fillText(chart_data[i] ? chart_data[i] : '',startX + 10,startY - 1); //value of the bar
+            ctx.fillRect(startX,startY + barLength * 15,48, 1);
+            if(i >= -1 && i <= 1){
+                ctx.fillStyle = '#acacac';
+                ctx.fillRect(startX,startY + barLength * 15,48, 14);
+            }
+            ctx.fillStyle = '#000000';
+            ctx.fillText(i,startX + 20,startY + barLength * 15 + 12); //index of the bar
             ctx.stroke();
             k++;
         }

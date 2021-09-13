@@ -15,7 +15,18 @@ class InputsTable extends Component {
         this.handleOnBlur = this.handleOnBlur.bind(this);
     }
 
-    componentDidMount() {
+    componentDidUpdate(prevProps) {
+        if(this.props.user_data && 
+            prevProps.user_data &&
+            prevProps.user_data !== this.props.user_data &&
+            this.props.user_data.output_json &&
+            this.props.user_data.output_json.length
+        ){
+            let outputData = JSON.parse(this.props.user_data.output_json);
+            this.setState({
+                currStep: outputData.length
+            })
+        }
     }
 
     handleChangeCell(value, fieldName) {
@@ -48,17 +59,28 @@ class InputsTable extends Component {
         const {disabledInput} = this.state;
         let tableColumns = [];
         if(drops_quantity){
+            let outputData = [];
+            if(this.props.user_data.userOutput)
+                outputData = this.props.user_data.userOutput;
+
             for(let i = 0; i < drops_quantity; i ++){
                 let currInputName = `output_${i}`;
                 tableColumns.push(
                     <div  key={`input-cell_${i}`} className="table-cell">
-                        <InputNumber
-                            style={{ width: '100%' }}
-                            disabled={disabledInput[currInputName] || this.state.currStep !== i}
-                            onBlur={(e)=>this.handleOnBlur(i,currInputName)}
-                            type="number"
-                            name={currInputName}
-                            onChange={(value) => this.handleChangeCell(value,currInputName)}/>
+                        {
+                            typeof outputData[i] !== 'undefined' ? 
+                                outputData[i]
+                            :(
+                                <InputNumber
+                                    style={{ width: '100%' }}
+                                    disabled={disabledInput[currInputName] || this.state.currStep !== i}
+                                    onBlur={(e)=>this.handleOnBlur(i,currInputName)}
+                                    type="number"
+                                    name={currInputName}
+                                    onChange={(value) => this.handleChangeCell(value,currInputName)}/>
+                            )
+                        }
+                        
                     </div>
                 )
             }

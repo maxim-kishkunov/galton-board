@@ -414,6 +414,10 @@ app.get("/check_result_step", async (req, res) => {
 
   if(Object.keys(data).length > 0 ){
     let resultRow = JSON.parse(data.input_last_row_json);
+    let userOutput = JSON.parse(data.output_json);
+    if(!userOutput)
+      userOutput = [];
+
     result_data.drops_quantity = data.drops_quantity;
     result_data.board_length = data.board_length;
     if(+query.step === 0 && data.result_json === null){
@@ -421,12 +425,15 @@ app.get("/check_result_step", async (req, res) => {
       result_data.stepValue = resultRow[0];
       result_data.userResult = [resultRow[0]];
       result_data.userOutput = [];
+      result_data.initialResult = [];
+    }else if(userOutput.length === result_data.drops_quantity){
+      let userResult = JSON.parse(data.result_json);
+      result_data.userResult = userResult;
+      result_data.userOutput = userOutput;
+      result_data.initialResult = resultRow;
     }else{
-      let userOutput = JSON.parse(data.output_json);
       let userResult = JSON.parse(data.result_json);
 
-      if(!userOutput)
-        userOutput = [];
       if(!userResult)
         userResult = [resultRow[0]];
 
@@ -461,6 +468,7 @@ app.get("/check_result_step", async (req, res) => {
         result_data.stepValue = userResult[+ query.step - 1];
         result_data.userResult = userResult;
         result_data.userOutput = userOutput;
+        result_data.initialResult = [];
       });
     }
   }
