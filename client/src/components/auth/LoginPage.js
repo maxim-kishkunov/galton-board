@@ -20,9 +20,7 @@ class LoginPage extends React.Component {
     }
 
     handleLogin(e){
-        e.preventDefault();
-        const {t} = this.props;
-        
+        e.preventDefault();        
         axios.get(`/auth`,{params: 
             {
                 email: this.state.email,
@@ -65,8 +63,6 @@ class LoginPage extends React.Component {
 
     render () {
 
-        const {t} = this.props;
-
         return (
             <Layout 
                 className={`auth-page-layout ${this.props.dark_theme === 'true' ? ' dark' : ''}`}
@@ -85,7 +81,6 @@ class LoginPage extends React.Component {
                         position: 'absolute', 
                         alignItems: 'center',
                         display: 'flex',
-                        alignItems: 'center',
                         justifyContent: 'center',
                     }}
                 >

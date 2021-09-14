@@ -1,8 +1,8 @@
-import axios from 'axios';
+// import axios from 'axios';
 import React, { Component } from 'react';
-import { 
-    Modal,
- } from 'antd';
+// import { 
+//     Modal,
+//  } from 'antd';
  import UsersTable from './UsersTable.js';
 
 class LecturerHomePage extends Component {

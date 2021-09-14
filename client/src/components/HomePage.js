@@ -1,8 +1,8 @@
 import axios from 'axios';
 import React, { Component } from 'react';
-import { 
-    Modal,
- } from 'antd';
+// import { 
+//     Modal,
+//  } from 'antd';
  import LecturerHomePage from './Lecturer/LecturerHomePage.js';
  import UserHomePage from './User/UserHomePage.js';
  import Auth from './auth/Auth'

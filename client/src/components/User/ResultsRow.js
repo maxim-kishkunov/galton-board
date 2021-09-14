@@ -1,8 +1,7 @@
-import axios from 'axios';
 import React, { Component } from 'react';
-import { 
-    InputNumber,
- } from 'antd';
+// import { 
+//     InputNumber,
+//  } from 'antd';
 
 class ResultsRow extends Component {
     constructor(props) {

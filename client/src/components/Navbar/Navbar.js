@@ -6,7 +6,7 @@ import {
     LogoutOutlined,
 } from '@ant-design/icons';
 
-const SubMenu = Menu.SubMenu;
+// const SubMenu = Menu.SubMenu;
 
 const {
     Sider, Content,

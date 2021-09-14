@@ -104,7 +104,7 @@ class GBHomePage extends Component {
     }
 
     render() {
-        const {size, allRoutes} = this.state;
+        const {allRoutes} = this.state;
 
         let lastPoints = '';
         allRoutes.map((item, index, array) => {

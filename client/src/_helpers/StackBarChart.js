@@ -69,7 +69,7 @@ class StackBarChart extends Component {
     }
       
     updateCanvas(){
-        const {size, chart_data, reset_canvas} = this.props;
+        const { chart_data, reset_canvas} = this.props;
 
         if(!this.state.chart_data || this.state.chart_data !== chart_data || reset_canvas !== this.state.reset_canvas){
             this.drawStackBarChart();
