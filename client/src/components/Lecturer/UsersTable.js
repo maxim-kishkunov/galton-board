@@ -13,9 +13,11 @@ import {
     PlusOutlined,
     CheckCircleOutlined,
 } from '@ant-design/icons';
+import GroupItem from './GroupItem'
+
 const Option = Select.Option;
 
-class LecturerHomePage extends Component {
+class UsersTable extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -208,64 +210,18 @@ class LecturerHomePage extends Component {
             { 
                 Object.keys(this.state.tableData).length > 0 ? (
                     this.state.groupData.map(function (curr_group) {
-                        let group_users = this.state.tableData[curr_group.id];
-                        return (
-                            <div className="group-wrap" key={curr_group.id}>
-                                <div className="group-data">
-                                    <div className="group-name">{curr_group.name === 'no_group' ? "Пользователи без группы" : curr_group.name}</div>
-                                    <div className="group-actions">
-                                        <Popover
-                                            placement="right"
-                                            content={() => this.renderNewGroupInputsPopover(curr_group)}
-                                            trigger="click"
-                                            onVisibleChange={this.newGroupInputs}
-                                            visible={this.state.newGroupInputsVisible}
-                                        >
-                                            <Button
-                                                className="action-panel-button"
-                                            >
-                                                Исходные данные
-                                            </Button>
-                                        </Popover>
-                                    </div>
-                                </div>
-                                <div className="group-users">
-                                {
-                                    group_users && group_users.length > 0 ? (
-                                        group_users.map(function (users_data) {
-                                            return (
-                                                <div className="user-wrap" key={users_data.user_id}>
-                                                    <div className="user-name">{users_data.user_name}</div>
-                                                    <div className="user-actions">
-                                                        {
-                                                            this.state.groupData.length > 1 ? (
-                                                                <Select
-                                                                    style={{ width: '100%' }}
-                                                                    onChange={this.handleChangeUserGroup}
-                                                                    showSearch
-                                                                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                                                                    placeholder="Перенести в группу"
-                                                                >
-                                                                    {
-                                                                        this.state.groupData && this.state.groupData.length ? 
-                                                                            this.state.groupData.filter(item => item && item.name !== curr_group.name).map((select_group) => {
-                                                                                return (
-                                                                                    <Option key={select_group.id} value={select_group.id} user_id={users_data.user_id}>{select_group.name}</Option>
-                                                                                )
-                                                                            }
-                                                                        ) : ''
-                                                                    }
-                                                                </Select>
-                                                            ):('')
-                                                        }
-                                                    </div>
-                                                </div>
-                                            )
-                                        }, this)
-                                    ):('')
-                                }
-                                </div>
-                            </div>
+                        return(
+                            <GroupItem 
+                                {...this.props} 
+                                curr_group={curr_group}
+                                tableData={this.state.tableData}
+                                newGroupInputsVisible={this.state.newGroupInputsVisible}
+                                newGroupName={this.state.newGroupName}
+                                groupData={this.state.groupData}
+                                handleChangeUserGroup={this.handleChangeUserGroup}
+                                renderNewGroupInputsPopover={this.renderNewGroupInputsPopover}
+                                createNewGroup={this.createNewGroup}
+                            />
                         )
                     }, this)
                 ):('')
@@ -290,4 +246,4 @@ class LecturerHomePage extends Component {
         );
     }
 }
-export default LecturerHomePage;
+export default UsersTable;
