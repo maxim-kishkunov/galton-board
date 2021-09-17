@@ -71,6 +71,9 @@ class UserHomePage extends Component {
         let initialData = [];
         let board_length = 0;
         let drops_quantity = 0;
+        let statMethodResult = [];
+        let statMethodChanges = [];
+        let statMethodData = [];
         if(Object.keys(this.state.userData).length > 0){
             if(this.state.userData.drops_quantity && typeof this.state.userData.drops_quantity !== 'undefined'){
                 drops_quantity = this.state.userData.drops_quantity;
@@ -93,6 +96,25 @@ class UserHomePage extends Component {
                         initialData[currKey] += 1;
                     else
                         initialData[currKey] = 1;
+                }
+                let partSum = 0;
+                let correction = 0;
+                for(let i = 0; i < this.state.userData.drops_quantity; i++){
+                    let currKey = initialResult[i];
+                    partSum += currKey;
+                    if(i % 5 === 0 && i > 0){
+                        correction = -1 * Math.round((correction + partSum) / 5);
+                        partSum = 0;
+                    }
+                    statMethodResult.push(currKey + correction);
+                    statMethodChanges.push(correction);
+                }
+                for(let i = 0; i < this.state.userData.drops_quantity; i++){
+                    let currKey = statMethodResult[i];
+                    if(Object.keys(statMethodData).length > 0 && typeof statMethodData[currKey] !== 'undefined')
+                        statMethodData[currKey] += 1;
+                    else
+                        statMethodData[currKey] = 1;
                 }
             }
             if(this.state.userData.board_length)
@@ -134,6 +156,29 @@ class UserHomePage extends Component {
                             />
                         </div>
                     </div>
+                    {
+                        Object.keys(initialData).length > 0 ? (
+                            <div style={{display:'flex',justifyContent: 'center', flexDirection: 'column'}}>
+                                <div>Результаты статистического метода</div>
+                                <ResultsRow
+                                    {...this.props}
+                                    drops_quantity={drops_quantity}
+                                    result_data={statMethodResult} />
+                                <div>Изменения статистического метода</div>
+                                <ResultsRow
+                                    {...this.props}
+                                    drops_quantity={drops_quantity}
+                                    result_data={statMethodChanges} />
+                                <div style={{width: '50%'}}>
+                                    <StackBarChart {...this.props}
+                                        size={board_length}
+                                        chart_data={statMethodData}
+                                    />
+                                </div>
+                            </div>
+                        ):('')
+                    }
+
                 </div>
             </div>
         )

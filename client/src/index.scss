@@ -29,12 +29,18 @@ code {
   padding:0;
   line-height:50;
 
-  .ant-menu{
-    flex-direction: row-reverse;
+  .ant-layout-sider{
+    background: #fff;
+    display: block;
+    max-height: 50px;
 
-    .ant-menu-title-content{
-      display: flex;
-      align-items: center;
+    .ant-menu{
+      flex-direction: row-reverse;
+
+      .ant-menu-title-content{
+        display: flex;
+        align-items: center;
+      }
     }
   }
 }

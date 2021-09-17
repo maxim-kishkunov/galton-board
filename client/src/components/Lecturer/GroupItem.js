@@ -33,11 +33,14 @@ class GroupItem extends Component {
                             trigger="click"
                             visible={this.props.newGroupInputsVisible}
                         >
-                            <Button
-                                className="action-panel-button"
-                            >
-                                Исходные данные
-                            </Button>
+                            {
+                                curr_group.name !== 'no_group' &&
+                                    <Button
+                                        className="action-panel-button"
+                                    >
+                                        Исходные данные
+                                    </Button>
+                            }      
                         </Popover>
                     </div>
                 </div>

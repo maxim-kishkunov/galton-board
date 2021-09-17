@@ -608,6 +608,7 @@ app.get("/auth", async (req, res) => {
     users.id as id,
     users.email as email,
     users.encrypted_password as encrypted_password,
+    users.is_confirmed as is_confirmed,
     roles.id as role_id
   FROM users 
   LEFT JOIN user_roles ON user_roles.user_id = users.id
@@ -618,15 +619,19 @@ app.get("/auth", async (req, res) => {
     if(result.rows.length > 0 && Object.keys(result.rows[0]).length > 0){
       let currItem = result.rows[0];
       bcrypt.compare(query.password, currItem.encrypted_password).then(function(cmpRes) {
-        if(cmpRes)
-          res.json({
-            user_id: currItem.id,
-            user_email: currItem.email,
-            role_id: currItem.role_id,
-            message: 'Success!', 
-            code: 200
-          });
-        else
+        if(cmpRes){
+          if(currItem.is_confirmed){
+            res.json({
+              user_id: currItem.id,
+              user_email: currItem.email,
+              role_id: currItem.role_id,
+              message: 'Success!', 
+              code: 200
+            });
+          }else{
+            res.json({ message: 'Your account is not activated', code: 401 });
+          }
+        }else
           res.json({ message: 'Wrong email or password', code: 401 });
       });
     }else
