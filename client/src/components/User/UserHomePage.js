@@ -125,7 +125,7 @@ class UserHomePage extends Component {
                 <div>
                     {
                         Object.keys(initialData).length > 0 ? (
-                            <div style={{display:'flex',justifyContent: 'center', flexDirection: 'column'}}>
+                            <div className="result-with-chart-block">
                                 <div>Начальные результаты</div>
                                 <ResultsRow
                                     {...this.props}
@@ -134,13 +134,14 @@ class UserHomePage extends Component {
                                 <div style={{width: '50%'}}>
                                     <StackBarChart {...this.props}
                                         size={board_length}
+                                        bar_height={15}
                                         chart_data={initialData}
                                     />
                                 </div>
                             </div>
                         ):('')
                     }
-                    <div style={{display:'flex',justifyContent: 'center', flexDirection: 'column'}}>
+                    <div className="result-with-chart-block">
                         <ResultsRow
                             {...this.props}
                             drops_quantity={drops_quantity}
@@ -152,13 +153,14 @@ class UserHomePage extends Component {
                         <div style={{width: '50%'}}>
                             <StackBarChart {...this.props}
                                 size={board_length}
+                                bar_height={15}
                                 chart_data={chartData}
                             />
                         </div>
                     </div>
                     {
                         Object.keys(initialData).length > 0 ? (
-                            <div style={{display:'flex',justifyContent: 'center', flexDirection: 'column'}}>
+                            <div className="result-with-chart-block">
                                 <div>Результаты статистического метода</div>
                                 <ResultsRow
                                     {...this.props}
@@ -172,6 +174,7 @@ class UserHomePage extends Component {
                                 <div style={{width: '50%'}}>
                                     <StackBarChart {...this.props}
                                         size={board_length}
+                                        bar_height={15}
                                         chart_data={statMethodData}
                                     />
                                 </div>

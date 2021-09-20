@@ -28,13 +28,26 @@ class StackBarChart extends Component {
     }
 
     drawStackBarChart(){
-        const {size, chart_data} = this.props;
+        const {
+            size,
+            chart_data,
+            bar_width,
+            bar_height
+        } = this.props;
         
         const canvas = this.canvasRef.current;
         const ctx = canvas.getContext('2d');
 
-        ctx.canvas.width  = 50 * ((size * 2) + 1);
-        ctx.canvas.height = 16 * (size + 2) + 150;
+        let maxInData = 1;
+        if(chart_data){
+            Object.keys(chart_data).forEach(function(key){
+                let val = chart_data[key];
+                if(val > maxInData)
+                    maxInData = val;
+            });
+        }
+        ctx.canvas.width  = (bar_width - 2) * ((size * 2) + 1);
+        ctx.canvas.height = maxInData * bar_height + 28;
     
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         
@@ -42,24 +55,24 @@ class StackBarChart extends Component {
 
         let k = 0;
         for(let i = Math.floor(-1 * size); i <= size; i++){
-            let startX = k * 50;
+            let startX = k * (bar_width - 2);
             let barLength = chart_data[i] ? chart_data[i] : 0;
-            let startY = (16 * size) + 15 * (10 - barLength);//16 * size + 168;
-                        
+            let startY = maxInData * bar_height + 14 - bar_height * barLength;//16 * size + 168;
+            
             ctx.fillStyle = '#acacac';
             if(i >= -1 && i <= 1)
                 ctx.fillStyle='#070';
-            ctx.fillRect(startX,startY,48, barLength * 15);
+            ctx.fillRect(startX,startY,bar_width, barLength * bar_height);
 
             ctx.fillStyle = '#000000';
-            ctx.fillText(chart_data[i] ? chart_data[i] : '',startX + 10,startY - 1); //value of the bar
-            ctx.fillRect(startX,startY + barLength * 15,48, 1);
+            ctx.fillText(chart_data[i] ? chart_data[i] : '',startX + (bar_width / 3),startY - 1); //value of the bar
+            ctx.fillRect(startX,startY + barLength * bar_height,bar_width, 1);
             if(i >= -1 && i <= 1){
                 ctx.fillStyle = '#acacac';
-                ctx.fillRect(startX,startY + barLength * 15,48, 14);
+                ctx.fillRect(startX,startY + barLength * bar_height,bar_width, 14);
             }
             ctx.fillStyle = '#000000';
-            ctx.fillText(i,startX + 20,startY + barLength * 15 + 12); //index of the bar
+            ctx.fillText(i,startX + (bar_width / 3),startY + barLength * bar_height + 12); //index of the bar
             ctx.stroke();
             k++;
         }

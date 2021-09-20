@@ -207,25 +207,30 @@ class UsersTable extends Component {
     render() {
         return (
             <div className="users-table">
-            { 
-                Object.keys(this.state.tableData).length > 0 ? (
-                    this.state.groupData.map(function (curr_group) {
-                        return(
-                            <GroupItem 
-                                {...this.props} 
-                                curr_group={curr_group}
-                                tableData={this.state.tableData}
-                                newGroupInputsVisible={this.state.newGroupInputsVisible}
-                                newGroupName={this.state.newGroupName}
-                                groupData={this.state.groupData}
-                                handleChangeUserGroup={this.handleChangeUserGroup}
-                                renderNewGroupInputsPopover={this.renderNewGroupInputsPopover}
-                                createNewGroup={this.createNewGroup}
-                            />
-                        )
-                    }, this)
-                ):('')
-            }
+                <div className="header-wrap">
+                    <div className="name">ФИО пользователя</div>
+                    <div className="result-points">Количество попаданий</div>
+                    <div className="result-chart">Гистрограмма по результатам</div>
+                    <div className="actions">Действия</div>
+                </div>
+                { 
+                    Object.keys(this.state.tableData).length > 0 ? (
+                        this.state.groupData.map(function (curr_group) {
+                            return(
+                                <GroupItem 
+                                    {...this.props}
+                                    key={curr_group.id}
+                                    curr_group={curr_group}
+                                    table_data={this.state.tableData}
+                                    new_group_inputs_visible={this.state.newGroupInputsVisible}
+                                    group_data={this.state.groupData}
+                                    handle_change_user_group={this.handleChangeUserGroup}
+                                    render_new_group_inputs_popover={this.renderNewGroupInputsPopover}
+                                />
+                            )
+                        }, this)
+                    ):('')
+                }
                 <div className="group-add" key="new-group">
                     <Popover
                         placement="right"

@@ -15,23 +15,30 @@ class GroupItem extends Component {
     render() {
         const {
             curr_group,
-            tableData,
-            groupData
+            table_data,
+            group_data
         } = this.props;
         let group_users = []
-        if(tableData && curr_group) 
-            group_users = tableData[curr_group.id];
+        if(table_data && curr_group) 
+            group_users = table_data[curr_group.id];
 
         return (
             <div className="group-wrap" key={curr_group.id}>
                 <div className="group-data">
                     <div className="group-name">{curr_group.name === 'no_group' ? "Пользователи без группы" : curr_group.name}</div>
+                    {
+                        curr_group.name !== 'no_group' && typeof curr_group.random_shift !== 'undefined' ? (
+                            <div className="group-chars">
+                                <div className="char-wrap">{`Смещение: ` + curr_group.random_shift}</div>
+                            </div>
+                        ):('')
+                    }
                     <div className="group-actions">
                         <Popover
                             placement="right"
-                            content={() => this.props.renderNewGroupInputsPopover(curr_group)}
+                            content={() => this.props.render_new_group_inputs_popover(curr_group)}
                             trigger="click"
-                            visible={this.props.newGroupInputsVisible}
+                            visible={this.props.new_group_inputs_visible}
                         >
                             {
                                 curr_group.name !== 'no_group' &&
@@ -51,6 +58,7 @@ class GroupItem extends Component {
                             return (
                                 <UserItem
                                     {...this.props}
+                                    key={user_data.user_id}
                                     user_data={user_data}
                                 />
                             )

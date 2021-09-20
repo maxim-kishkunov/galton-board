@@ -35,15 +35,19 @@ class RegPage extends React.Component {
                     content: response.data.message,
                 });
             }else{
-                localStorage.setItem('role', response.data.role_id);
-                localStorage.setItem('currentUser',
-                    JSON.stringify({
-                        user_id: response.data.user_id,
-                        user_email: response.data.user_email,
-                        user_name: response.data.user_name,
-                    })
-                );
-                window.location.replace('/');
+                Modal.success({
+                    title: 'Success!',
+                    content: 'Activate your accaunt or message administrator',
+                });
+                // localStorage.setItem('role', response.data.role_id);
+                // localStorage.setItem('currentUser',
+                //     JSON.stringify({
+                //         user_id: response.data.user_id,
+                //         user_email: response.data.user_email,
+                //         user_name: response.data.user_name,
+                //     })
+                // );
+                // window.location.replace('/');
             }
         }).catch(function (error) {
             if (error.response && error.response.status === 401) {

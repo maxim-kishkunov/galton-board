@@ -52,13 +52,14 @@ code {
     .group-data {
       display: flex;
       background: #e4e4e4;
+      justify-content: space-between;
+      line-height: 32px;
 
       .group-name {
         background: #e4e4e4;
-        width: 50%;
+        width: 20%;
       }
       .group-actions {
-        width: 50%;
         background: none;
         display: flex;
         justify-content: end;
@@ -69,19 +70,50 @@ code {
       .user-wrap {
         padding: 5px 0;
         display: flex;
+        justify-content: space-between;
+        line-height: 38px;
 
+        .user-result-chart {
+          width: 600px;
+          display: flex;
+          align-items: center;      
+        }        
+        .user-result-points {
+            width: 15%;
+        }
         .user-name {
-          width: 85%;
+          width: 150px;
           text-align: left;
           padding: 2px 10px;
         }
         .user-actions {
-          width: 15%;
+          width: 300px;
         }
       }
       .user-wrap:nth-child(even) {
         background: #f5f5f5;
       }
+    }
+  }
+  .header-wrap{
+    padding: 5px 0;
+    display: flex;
+    justify-content: space-between;
+    line-height: 38px;
+
+    .result-chart {
+      width: 600px;
+    }        
+    .result-points {
+        width: 15%;
+    }
+    .name {
+      width: 150px;
+      text-align: left;
+      padding: 2px 10px;
+    }
+    .actions {
+      width: 300px;
     }
   }
 }
@@ -129,4 +161,13 @@ code {
       align-items: center;
     }
   }
+}
+
+.result-with-chart-block{
+  display:flex;
+  justify-content: center;
+  flex-direction: column;
+  border-bottom: 1px dashed #acacac;
+  margin-bottom: 20px;
+  padding-bottom: 15px;
 }

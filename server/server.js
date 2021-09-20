@@ -285,41 +285,44 @@ app.get("/registrate", async (req, res) => {
 app.get("/get_lect_data", async (req, res) => {     
   let queryText =  `
     SELECT
-    groups.id AS group_id,
-    groups.name AS group_name,
-    groups.is_active AS group_is_active,
-    users.id AS user_id,
-    users.name AS user_name,
-    galton_inputs.drops_quantity AS drops_quantity,
-    galton_inputs.board_length AS board_length,
-    galton_inputs.input_json AS input_json,
-    galton_inputs.input_last_row_json AS input_last_row_json,
-    galton_inputs.random_shift AS random_shift,
-    roles.key AS role_key
-  FROM groups
-  LEFT JOIN group_users ON group_users.group_id = groups.id
-  LEFT JOIN users ON group_users.user_id = users.id
-  LEFT JOIN user_roles ON user_roles.user_id = users.id
-  LEFT JOIN roles ON user_roles.role_id = roles.id
-  LEFT JOIN group_inputs ON groups.id = group_inputs.group_id
-  LEFT JOIN galton_inputs ON galton_inputs.id = group_inputs.input_id
-  UNION ALL
-  SELECT
-    '00000000-0000-0000-0000-000000000000' AS group_id,
-    'no_group' AS group_name,
-    'true' AS group_is_active,
-    users.id AS user_id,
-    users.name AS user_name,
-    '0' AS drops_quantity,
-    '0' AS board_length,
-    '' AS input_json,
-    '' AS input_last_row_json,
-    '0' AS random_shift,
-    roles.key AS role_key
-  FROM users
-  LEFT JOIN user_roles ON user_roles.user_id = users.id
-  LEFT JOIN roles ON user_roles.role_id = roles.id 
-  WHERE roles.key != 'lecturer' AND roles.key != 'admin'`;
+      groups.id AS group_id,
+      groups.name AS group_name,
+      groups.is_active AS group_is_active,
+      users.id AS user_id,
+      users.name AS user_name,
+      galton_inputs.drops_quantity AS drops_quantity,
+      galton_inputs.board_length AS board_length,
+      galton_inputs.input_json AS input_json,
+      galton_inputs.input_last_row_json AS input_last_row_json,
+      galton_inputs.random_shift AS random_shift,
+      user_outputs.result_json AS result_json,
+      roles.key AS role_key
+    FROM groups
+    LEFT JOIN group_users ON group_users.group_id = groups.id
+    LEFT JOIN user_outputs ON user_outputs.user_id = group_users.user_id
+    LEFT JOIN users ON group_users.user_id = users.id
+    LEFT JOIN user_roles ON user_roles.user_id = users.id
+    LEFT JOIN roles ON user_roles.role_id = roles.id
+    LEFT JOIN group_inputs ON groups.id = group_inputs.group_id
+    LEFT JOIN galton_inputs ON galton_inputs.id = group_inputs.input_id
+    UNION ALL
+    SELECT
+      '00000000-0000-0000-0000-000000000000' AS group_id,
+      'no_group' AS group_name,
+      'true' AS group_is_active,
+      users.id AS user_id,
+      users.name AS user_name,
+      '0' AS drops_quantity,
+      '0' AS board_length,
+      '' AS input_json,
+      '' AS input_last_row_json,
+      '0' AS random_shift,
+      '' AS result_json,
+      roles.key AS role_key
+    FROM users
+    LEFT JOIN user_roles ON user_roles.user_id = users.id
+    LEFT JOIN roles ON user_roles.role_id = roles.id 
+    WHERE roles.key != 'lecturer' AND roles.key != 'admin'`;
 
   let table_data = [];
   await db.query(queryText).then((result) => {
