@@ -74,6 +74,7 @@ class UserHomePage extends Component {
         let statMethodResult = [];
         let statMethodChanges = [];
         let statMethodData = [];
+        let curr_step = 0;
         if(Object.keys(this.state.userData).length > 0){
             if(this.state.userData.drops_quantity && typeof this.state.userData.drops_quantity !== 'undefined'){
                 drops_quantity = this.state.userData.drops_quantity;
@@ -82,11 +83,12 @@ class UserHomePage extends Component {
                 userResult = this.state.userData.userResult;
                 for(let i = 0; i < this.state.userData.drops_quantity; i++){
                     let currKey = userResult[i];
-                    if(Object.keys(chartData).length > 0 && typeof chartData[currKey] !== 'undefined')
+                    if(typeof currKey !== 'undefined' && Object.keys(chartData).length > 0 && typeof chartData[currKey] !== 'undefined')
                         chartData[currKey] += 1;
                     else
                         chartData[currKey] = 1;
                 }
+                curr_step = userResult[userResult.length - 1];  
             }
             if(this.state.userData.initialResult && this.state.userData.initialResult.length > 0){
                 initialResult = this.state.userData.initialResult;
@@ -135,6 +137,7 @@ class UserHomePage extends Component {
                                     <StackBarChart {...this.props}
                                         size={board_length}
                                         bar_height={15}
+                                        bar_width={50}
                                         chart_data={initialData}
                                     />
                                 </div>
@@ -142,10 +145,12 @@ class UserHomePage extends Component {
                         ):('')
                     }
                     <div className="result-with-chart-block">
+                        <div>Попадание</div>
                         <ResultsRow
                             {...this.props}
                             drops_quantity={drops_quantity}
                             result_data={userResult} />
+                        <div>Поправка</div>
                         <InputsTable
                             {...this.props}
                             checkResultStep={this.checkResultStep}
@@ -154,6 +159,8 @@ class UserHomePage extends Component {
                             <StackBarChart {...this.props}
                                 size={board_length}
                                 bar_height={15}
+                                bar_width={50}
+                                curr_step={curr_step}
                                 chart_data={chartData}
                             />
                         </div>
@@ -175,6 +182,7 @@ class UserHomePage extends Component {
                                     <StackBarChart {...this.props}
                                         size={board_length}
                                         bar_height={15}
+                                        bar_width={50}
                                         chart_data={statMethodData}
                                     />
                                 </div>

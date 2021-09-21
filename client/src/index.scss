@@ -73,21 +73,27 @@ code {
         justify-content: space-between;
         line-height: 38px;
 
-        .user-result-chart {
-          width: 600px;
-          display: flex;
-          align-items: center;      
-        }        
-        .user-result-points {
-            width: 15%;
-        }
         .user-name {
-          width: 150px;
+          width: 15%;
           text-align: left;
           padding: 2px 10px;
+          border-right: 1px solid #acacac;
+        }
+        .user-result-points {
+          width: 15%;
+          border-right: 1px solid #acacac;
+        }
+        .user-result-chart {
+          width: 50%;
+          display: flex;
+          justify-content: center;
+          align-items: center;   
+          border-right: 1px solid #acacac;   
         }
         .user-actions {
-          width: 300px;
+          width: 20%;
+          padding: 0 10px;
+          border-left: 1px solid #acacac;
         }
       }
       .user-wrap:nth-child(even) {
@@ -101,19 +107,22 @@ code {
     justify-content: space-between;
     line-height: 38px;
 
-    .result-chart {
-      width: 600px;
-    }        
-    .result-points {
-        width: 15%;
-    }
     .name {
-      width: 150px;
+      width: 15%;
       text-align: left;
       padding: 2px 10px;
+      border-right: 1px solid #acacac;
+    }
+    .result-points {
+      width: 15%;
+      border-right: 1px solid #acacac;
+    }
+    .result-chart {
+      width: 50%;
+      border-right: 1px solid #acacac;
     }
     .actions {
-      width: 300px;
+      width: 20%;
     }
   }
 }

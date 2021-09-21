@@ -15,13 +15,12 @@ class InputsTable extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        if(this.props.user_data && 
-            prevProps.user_data &&
+        if(this.props.user_data &&
             prevProps.user_data !== this.props.user_data &&
-            this.props.user_data.output_json &&
-            this.props.user_data.output_json.length
+            this.props.user_data.userOutput &&
+            this.props.user_data.userOutput.length > 0
         ){
-            let outputData = JSON.parse(this.props.user_data.output_json);
+            let outputData = this.props.user_data.userOutput;
             this.setState({
                 currStep: outputData.length
             })
