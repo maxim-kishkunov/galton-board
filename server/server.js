@@ -146,13 +146,13 @@ app.get("/get_lect_data", async (req, res) => {
       groups.invite_token AS group_invite_token,
       users.id AS user_id,
       users.name AS user_name,
+      users.output_json AS output_json,
+      users.result_json AS result_json,
       galton_inputs.drops_quantity AS drops_quantity,
       galton_inputs.board_length AS board_length,
       galton_inputs.input_json AS input_json,
       galton_inputs.input_last_row_json AS input_last_row_json,
-      galton_inputs.random_shift AS random_shift,
-      user_outputs.result_json AS result_json,
-      roles.key AS role_key
+      galton_inputs.random_shift AS random_shift
     FROM groups
     LEFT JOIN users ON users.group_id = groups.id
     LEFT JOIN group_inputs ON groups.id = group_inputs.group_id
@@ -176,6 +176,7 @@ app.get("/get_lect_data", async (req, res) => {
           id: item.group_id,
           name: item.group_name,
           is_active: item.group_is_active,
+          invite_token: item.group_invite_token,
           drops_quantity: item.drops_quantity,
           board_length: item.board_length,
           input_json: item.input_json,
@@ -187,7 +188,7 @@ app.get("/get_lect_data", async (req, res) => {
     }
   }
 
-  if(table_data.length > 0 )
+  if(Object.keys(groupData).length > 0 )
     res.json({ group_data: groupData, data: groupsWithUsers, code: 200 });
   else
     res.json({ message: 'Table data is not found', code: 404 });
@@ -343,6 +344,28 @@ app.get("/check_result_step", async (req, res) => {
     res.json({ message: 'User data is not found', code: 404 });
 });
 
+app.get("/check_token", async (req, res) => {
+  let inner_results = [];
+  let query = req.query;
+  let queryText =  `
+    SELECT
+      groups.id as group_id
+    FROM groups
+    WHERE invite_token = '${query.token}'
+  `;
+
+  let group_id = '';
+  await db.query(queryText).then((result) => {
+    if(result.rows.length > 0)
+    group_id = result.rows;
+  });
+
+  if(group_id.length > 0 )
+    res.json({ group_id: group_id, code: 200 });
+  else
+    res.json({ message: 'Group is not found', code: 404 });
+});
+
 app.post("/change_user_group", async (req, res) => {
   let query = req.body;
   let success = false;
@@ -424,17 +447,19 @@ app.post("/create_group_input", async (req, res) => {
 
 app.post("/create_new_group", async (req, res) => {
   let query = req.body;
-  let text = 'INSERT INTO groups (id, name, is_active, created_at) VALUES($1, $2, $3, $4) RETURNING *';
+  let text = 'INSERT INTO groups (id, name, is_active, invite_token, created_at) VALUES($1, $2, $3, $4, $5) RETURNING *';
   let time = new Date();
+  let token = await makeid(10);
   let values = [
     uuid.v4(),
     query.name,
     true,
+    token,
     time
   ];
   let success = false;
   let inner_results = [];
-  db.query(text, values).then((result) => {
+  await db.query(text, values).then((result) => {
     inner_results.push('Группа создана');
     success = true;
   });
@@ -444,24 +469,23 @@ app.post("/create_new_group", async (req, res) => {
     res.json({ message: 'Error with creation of group', code: 401 });
 });
 
-app.get("/check_user_role", async (req, res) => {
+app.get("/check_user", async (req, res) => {
   let query = req.query;
      
   let queryText =  `SELECT * `;
-  queryText += `FROM user_roles `;
-  queryText += `LEFT JOIN roles ON roles.id = user_roles.role_id `;
-  queryText += `WHERE user_roles.user_id = '${query.user_id}'`;
+  queryText += `FROM admins `;
+  queryText += `WHERE admins.id = '${query.user_id}'`;
 
-  let role_key = '';
+  let admin_name = '';
   await db.query(queryText).then((result) => {
     if(result.rows.length > 0 && Object.keys(result.rows[0]).length > 0)
-      role_key = result.rows[0].key;
+      admin_name = result.rows[0].name;
   });
 
-  if(role_key.length > 0 )
-    res.json({ role: role_key, code: 200 });
+  if(admin_name.length > 0 )
+    res.json({ name: admin_name, code: 200 });
   else
-    res.json({ message: 'User role is not found', code: 404 });
+    res.json({ message: 'User is not found', code: 404 });
 });
 
 app.get("/auth", async (req, res) => {
@@ -469,15 +493,12 @@ app.get("/auth", async (req, res) => {
   let passwordHash = await bcrypt.hashSync(query.password, 10);
 
   let queryText = `SELECT
-    users.id as id,
-    users.email as email,
-    users.encrypted_password as encrypted_password,
-    users.is_confirmed as is_confirmed,
-    roles.id as role_id
-  FROM users 
-  LEFT JOIN user_roles ON user_roles.user_id = users.id
-  LEFT JOIN roles ON user_roles.role_id = roles.id
-  WHERE users.email = '${query.email}'`
+    admins.id as id,
+    admins.email as email,
+    admins.encrypted_password as encrypted_password,
+    admins.is_confirmed as is_confirmed
+  FROM admins
+  WHERE admins.email = '${query.email}'`
 
   db.query(queryText).then((result) => {
     if(result.rows.length > 0 && Object.keys(result.rows[0]).length > 0){

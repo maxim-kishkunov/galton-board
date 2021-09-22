@@ -2,14 +2,38 @@ import React, { Component } from 'react';
 import { 
     Button,
     Popover,
+    Input,
 } from 'antd';
 import UserItem from './UserItem'
+import {
+    CopyOutlined,
+} from '@ant-design/icons';
+import { serverLink } from '../../_helpers/const'
+
 
 class GroupItem extends Component {
     constructor(props) {
         super(props);
         this.state = {
         };
+    }
+
+    renderInvitePopover(curr_group){
+        return (
+            <div style={{overflow: "auto", minWidth: '450px', display: 'flex'}}>
+                <Input
+                    style={{
+                        width: '100%',
+                        height: '32px',
+                        fontSize: '12px',
+                    }}
+                    type="text"
+                    name="inviteLink"
+                    value={`${serverLink}/group/${curr_group.invite_token}`}
+                />
+                {/* <Button icon={<CopyOutlined />} onClick={() => {}} /> */}
+            </div>
+        )
     }
 
     render() {
@@ -29,14 +53,20 @@ class GroupItem extends Component {
                     {
                         curr_group.name !== 'no_group' && typeof curr_group.random_shift !== 'undefined' ? (
                             <div className="group-chars">
-                                <div className="char-wrap">{`Смещение: ` + curr_group.random_shift}</div>
+                                <div className="char-wrap">
+                                {
+                                    typeof curr_group.random_shift === 'number' ? 
+                                        `Смещение: ` + curr_group.random_shift 
+                                    : ''
+                                }
+                                </div>
                             </div>
                         ):('')
                     }
                     <div className="group-actions">
                         <Popover
                             placement="right"
-                            content={() => this.props.render_group_invite_popover(curr_group)}
+                            content={() => this.renderInvitePopover(curr_group)}
                             trigger="click"
                             visible={this.props.new_group_inputs_visible}
                         >
@@ -45,7 +75,7 @@ class GroupItem extends Component {
                                     <Button
                                         className="action-panel-button"
                                     >
-                                        Исходные данные
+                                        Приглашение
                                     </Button>
                             }      
                         </Popover>

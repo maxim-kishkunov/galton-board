@@ -41,10 +41,10 @@ class UsersTable extends Component {
     getTableData(){        
         axios.get(`/get_lect_data`).then(response => {
             if(response.data.code !== 200){
-                Modal.error({
-                    title: 'Error!',
-                    content: response.data.message,
-                });
+                // Modal.error({
+                //     title: 'Error!',
+                //     content: response.data.message,
+                // });
             }else{
                 this.setState({
                     tableData: response.data.data,
@@ -207,23 +207,23 @@ class UsersTable extends Component {
     }
 
     getInviteLink(group_id){    
-        axios.get(`/get_invite_link`,{params: 
-            {
-                user_id: currentUser.user_id
-            }}
-        ).then(response => {
-            if(response.data.code !== 200){
-                Modal.error({
-                    title: 'Error!',
-                    content: response.data.message,
-                });
-            }else{
-                this.setState({
-                    tableData: response.data.data,
-                    groupData: response.data.group_data
-                })
-            }
-        })
+        // axios.get(`/get_invite_link`,{params: 
+        //     {
+        //         group_id: currentUser.user_id
+        //     }}
+        // ).then(response => {
+        //     if(response.data.code !== 200){
+        //         Modal.error({
+        //             title: 'Error!',
+        //             content: response.data.message,
+        //         });
+        //     }else{
+        //         this.setState({
+        //             tableData: response.data.data,
+        //             groupData: response.data.group_data
+        //         })
+        //     }
+        // })
     }
 
     toggleInviteModal(group_id){

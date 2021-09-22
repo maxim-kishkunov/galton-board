@@ -11,19 +11,19 @@ class HomePage extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            userRole: '',
+            userName: '',
         };
-        this.checkUserRole = this.checkUserRole.bind(this);
+        this.checkUser = this.checkUser.bind(this);
     }
 
     async componentDidMount() {
-        await this.checkUserRole();
+        await this.checkUser();
     }
 
-    checkUserRole(){
+    checkUser(){
         let currentUser = JSON.parse(localStorage.getItem('currentUser'));
         if(currentUser && Object.keys(currentUser).length > 0){
-            axios.get(`/check_user_role`,{params: 
+            axios.get(`/check_user`,{params: 
                 {
                     user_id: currentUser.user_id
                 }}
@@ -32,7 +32,7 @@ class HomePage extends Component {
                     Auth.logOut();
                 }else{
                     this.setState({
-                        userRole: response.data.role
+                        userName: response.data.name
                     })
                 }
             })
@@ -43,9 +43,7 @@ class HomePage extends Component {
         return (
             <div className="general-wrap">
             {
-                this.state.userRole === 'user' ? (
-                    <UserHomePage {...this.props} />
-                ): this.state.userRole === 'lecturer' ? (
+                this.state.userName.length > 0 ? (
                     <LecturerHomePage {...this.props} /> 
                 ):(
                     <div></div>                     
