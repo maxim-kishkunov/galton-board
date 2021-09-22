@@ -36,6 +36,21 @@ class GroupItem extends Component {
                     <div className="group-actions">
                         <Popover
                             placement="right"
+                            content={() => this.props.render_group_invite_popover(curr_group)}
+                            trigger="click"
+                            visible={this.props.new_group_inputs_visible}
+                        >
+                            {
+                                curr_group.name !== 'no_group' &&
+                                    <Button
+                                        className="action-panel-button"
+                                    >
+                                        Исходные данные
+                                    </Button>
+                            }      
+                        </Popover>
+                        <Popover
+                            placement="right"
                             content={() => this.props.render_new_group_inputs_popover(curr_group)}
                             trigger="click"
                             visible={this.props.new_group_inputs_visible}

@@ -23,6 +23,7 @@ class UsersTable extends Component {
         this.state = {
             tableData: {},
             groupData: [],
+            inviteModalVisible: false,
         };
         this.getTableData = this.getTableData.bind(this);
         this.handleChangeText = this.handleChangeText.bind(this);
@@ -30,6 +31,7 @@ class UsersTable extends Component {
         this.newGroupChange = this.newGroupChange.bind(this);
         this.createNewGroup = this.createNewGroup.bind(this);
         this.handleChangeUserGroup = this.handleChangeUserGroup.bind(this);
+        this.getInviteLink = this.getInviteLink.bind(this);
     }
 
     componentDidMount() {
@@ -204,6 +206,35 @@ class UsersTable extends Component {
         });
     }
 
+    getInviteLink(group_id){    
+        axios.get(`/get_invite_link`,{params: 
+            {
+                user_id: currentUser.user_id
+            }}
+        ).then(response => {
+            if(response.data.code !== 200){
+                Modal.error({
+                    title: 'Error!',
+                    content: response.data.message,
+                });
+            }else{
+                this.setState({
+                    tableData: response.data.data,
+                    groupData: response.data.group_data
+                })
+            }
+        })
+    }
+
+    toggleInviteModal(group_id){
+        if(!this.state.inviteModalVisible){
+            this.getInviteLink(group_id);
+        }
+        this.setState({
+            inviteModalVisible: !this.state.inviteModalVisible,
+        })
+    }
+
     render() {
         return (
             <div className="users-table">
@@ -225,6 +256,7 @@ class UsersTable extends Component {
                                     new_group_inputs_visible={this.state.newGroupInputsVisible}
                                     group_data={this.state.groupData}
                                     handle_change_user_group={this.handleChangeUserGroup}
+                                    render_group_invite_popover={this.renderGroupInvite_popover}
                                     render_new_group_inputs_popover={this.renderNewGroupInputsPopover}
                                 />
                             )
