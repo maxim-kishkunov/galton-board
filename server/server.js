@@ -221,49 +221,20 @@ app.get("/get_user_data", async (req, res) => {
     res.json({ message: 'User data is not found', code: 404 });
 });
 
-app.get("/get_invite_token", async (req, res) => {
-  let query = req.query;
-  let queryText =  `
-    SELECT
-      user_outputs.output_json AS output_json,
-      user_outputs.result_json AS result_json,
-      galton_inputs.drops_quantity AS drops_quantity
-    FROM users
-    LEFT JOIN group_users ON group_users.user_id = users.id
-    LEFT JOIN group_inputs ON group_inputs.group_id = group_users.group_id
-    LEFT JOIN galton_inputs ON group_inputs.input_id = galton_inputs.id
-    LEFT JOIN user_outputs ON user_outputs.user_id = users.id
-    WHERE users.id = '${query.group_id}'
-  `;
-
-  let table_data = {};
-  await db.query(queryText).then((result) => {
-    if(result.rows.length > 0)
-      table_data = result.rows[0];
-  });
-
-  if(Object.keys(table_data).length > 0 )
-    res.json({ data: table_data, code: 200 });
-  else
-    res.json({ message: 'User data is not found', code: 404 });
-});
-
 app.get("/check_result_step", async (req, res) => {
   let inner_results = [];
   let query = req.query;
   let queryText =  `
     SELECT
-      user_outputs.id AS id,
-      user_outputs.output_json AS output_json,
-      user_outputs.result_json AS result_json,
+      users.id AS id,
+      users.output_json AS output_json,
+      users.result_json AS result_json,
       galton_inputs.input_last_row_json AS input_last_row_json,
       galton_inputs.drops_quantity AS drops_quantity,
       galton_inputs.board_length AS board_length
     FROM users
-    LEFT JOIN group_users ON group_users.user_id = users.id
-    LEFT JOIN group_inputs ON group_inputs.group_id = group_users.group_id
+    LEFT JOIN group_inputs ON group_inputs.group_id = users.group_id
     LEFT JOIN galton_inputs ON group_inputs.input_id = galton_inputs.id
-    LEFT JOIN user_outputs ON user_outputs.user_id = users.id
     WHERE users.id = '${query.user_id}'
   `;
 
@@ -344,8 +315,7 @@ app.get("/check_result_step", async (req, res) => {
     res.json({ message: 'User data is not found', code: 404 });
 });
 
-app.get("/check_token", async (req, res) => {
-  let inner_results = [];
+app.get("/auth_by_token", async (req, res) => {
   let query = req.query;
   let queryText =  `
     SELECT
@@ -355,9 +325,27 @@ app.get("/check_token", async (req, res) => {
   `;
 
   let group_id = '';
-  await db.query(queryText).then((result) => {
-    if(result.rows.length > 0)
-    group_id = result.rows;
+  let user_data = '';
+  await db.query(queryText).then(async(result) => {
+    if(result.rows.length > 0){
+      group_id = result.rows[0].group_id;
+      queryText = 'INSERT INTO users (id, name, group_id, output_json, result_json, points, created_at) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *'; 
+      
+      let time = new Date();
+      let values = [
+        uuid.v4(),
+        query.name,
+        group_id,
+        '',
+        '',
+        0,
+        time
+      ];
+      await db.query(queryText, values).then((result) => {
+        if(result.rows.length > 0)
+          user_data = result.rows[0];
+      });
+    }
   });
 
   if(group_id.length > 0 )

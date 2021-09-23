@@ -20,12 +20,13 @@ class GroupItem extends Component {
 
     renderInvitePopover(curr_group){
         return (
-            <div style={{overflow: "auto", minWidth: '450px', display: 'flex'}}>
+            <div style={{overflow: "auto", minWidth: '300px', display: 'flex'}}>
                 <Input
                     style={{
                         width: '100%',
                         height: '32px',
                         fontSize: '12px',
+                        textAlign: 'center'
                     }}
                     type="text"
                     name="inviteLink"

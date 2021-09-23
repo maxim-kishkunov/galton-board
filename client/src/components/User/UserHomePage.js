@@ -17,8 +17,9 @@ class UserHomePage extends Component {
         this.checkResultStep = this.checkResultStep.bind(this);
     }
 
-    componentDidMount() {
-        this.checkResultStep(0,0);
+    componentDidUpdate() {
+        if(this.props.group_id)
+            this.checkResultStep(group_id,0,0);
     }
 
     getUserData(){        
@@ -41,11 +42,12 @@ class UserHomePage extends Component {
         })
     }
 
-    checkResultStep(currStep,value){
+    checkResultStep(group_id,currStep,value){
         let currentUser = JSON.parse(localStorage.getItem('currentUser'));
         let userData = this.state.userData;
         axios.get(`/check_result_step`,{params: 
             {
+                group_id: group_id,
                 user_id: currentUser.user_id,
                 step: currStep,
                 value: value,
