@@ -251,28 +251,27 @@ app.get("/check_result_step", async (req, res) => {
   if(Object.keys(data).length > 0 ){
     let resultRow = JSON.parse(data.input_last_row_json);
     let userOutput = JSON.parse(data.output_json);
+    let userResult = JSON.parse(data.result_json);
     if(!userOutput)
       userOutput = [];
+    if(!userResult)
+      userResult = [resultRow[0]];
 
     result_data.drops_quantity = data.drops_quantity;
     result_data.board_length = data.board_length;
-    if(+query.step === 0 && data.result_json === null){
+    if(+query.step === 0 && userResult.length === 0){
       inner_results.push('Это первый шаг, действий не выполняется');
       result_data.stepValue = resultRow[0];
       result_data.userResult = [resultRow[0]];
       result_data.userOutput = [];
       result_data.initialResult = [];
     }else if(userOutput.length === result_data.drops_quantity){
-      let userResult = JSON.parse(data.result_json);
       result_data.userResult = userResult;
       result_data.userOutput = userOutput;
       result_data.initialResult = resultRow;
     }else{
-      let userResult = JSON.parse(data.result_json);
-
-      if(!userResult)
-        userResult = [resultRow[0]];
-
+      if(parseInt(query.step) === 1)
+        userResult[0] = resultRow[0];
       userOutput[+ query.step - 1] = + query.value;
       userResult[+ query.step] = + resultRow[query.step] + parseInt(query.value);
 
@@ -281,31 +280,21 @@ app.get("/check_result_step", async (req, res) => {
       let values = [];
       if(data.id){
         queryText = `
-          UPDATE user_outputs 
+          UPDATE users 
           SET 
             output_json = '${JSON.stringify(userOutput)}',
             result_json = '${JSON.stringify(userResult)}'
           WHERE id = '${data.id}'
         `;
-      }else{
-        queryText = 'INSERT INTO user_outputs(id, user_id, output_json, result_json, created_at) VALUES($1, $2, $3, $4, $5) RETURNING *';
-        
-        values = [
-          uuid.v4(),
-          query.user_id,
-          JSON.stringify(userOutput),
-          JSON.stringify(userResult),
-          time
-        ];
+        await db.query(queryText, values).then((result) => {
+          inner_results.push('Данные пользователя обновлены');
+          success = true;
+          result_data.stepValue = userResult[+ query.step - 1];
+          result_data.userResult = userResult;
+          result_data.userOutput = userOutput;
+          result_data.initialResult = [];
+        });
       }
-      await db.query(queryText, values).then((result) => {
-        inner_results.push('Данные пользователя обновлены');
-        success = true;
-        result_data.stepValue = userResult[+ query.step - 1];
-        result_data.userResult = userResult;
-        result_data.userOutput = userOutput;
-        result_data.initialResult = [];
-      });
     }
   }
 
@@ -336,8 +325,8 @@ app.get("/auth_by_token", async (req, res) => {
         uuid.v4(),
         query.name,
         group_id,
-        '',
-        '',
+        '[]',
+        '[]',
         0,
         time
       ];
@@ -347,11 +336,20 @@ app.get("/auth_by_token", async (req, res) => {
       });
     }
   });
+});
 
-  if(group_id.length > 0 )
-    res.json({ group_id: group_id, code: 200 });
-  else
-    res.json({ message: 'Group is not found', code: 404 });
+app.post("/delete_user", async (req, res) => {
+  let query = req.body;
+  let queryText =  `
+    DELETE
+    FROM
+      users
+    WHERE id = '${query.user_id}'
+  `;
+
+  await db.query(queryText);
+
+  res.json({ code: 200 });
 });
 
 app.post("/change_user_group", async (req, res) => {

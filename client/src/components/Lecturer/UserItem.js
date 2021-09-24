@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { 
     Select,
+    Popconfirm,
+    Button,
 } from 'antd';
 import StackBarChart from '../../_helpers/StackBarChart';
 const Option = Select.Option;
@@ -58,27 +60,19 @@ class UserItem extends Component {
                     }
                     </div>
                     <div className="user-actions">
-                        {
-                            group_data && group_data.length > 1 ? (
-                                <Select
-                                    style={{ width: '100%' }}
-                                    onChange={this.props.handle_change_user_group}
-                                    showSearch
-                                    filterOption={(input, option) => option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
-                                    placeholder="Перенести в группу"
-                                >
-                                    {
-                                        group_data && group_data.length ? 
-                                            group_data.filter(item => item && item.name !== curr_group.name).map((select_group) => {
-                                                return (
-                                                    <Option key={select_group.id} value={select_group.id} user_id={user_data.user_id}>{select_group.name}</Option>
-                                                )
-                                            }
-                                        ) : ''
-                                    }
-                                </Select>
-                            ):('')
-                        }
+                        <Popconfirm 
+                            title="Вы уверены, что хотите удалить этого пользователя?" 
+                            onCancel={(e) => e.stopPropagation()} 
+                            onConfirm={(e) => {
+                                e.stopPropagation(); 
+                                this.props.delete_user(user_data.user_id)
+                            }}  
+                            okText="OK" 
+                            cancelText="Cancel"
+                            placement="topRight"
+                        >
+                          <Button onClick={(e) => e.stopPropagation()} type="danger">Delete</Button>
+                        </Popconfirm>
                     </div>
                 </div>
             )

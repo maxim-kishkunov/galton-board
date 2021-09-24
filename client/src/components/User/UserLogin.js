@@ -1,8 +1,19 @@
 import axios from 'axios';
-// import { Input } from 'antd';
+import { 
+    Layout,
+    Divider,
+    Form,
+    Row,
+    Col,
+    Typography,
+    Input,
+    Button,
+ } from 'antd';
 import React, { Component } from 'react';
 import UserHomePage from './UserHomePage';
 
+const { Text } = Typography;
+const { Content } = Layout;
 const uuidv4 = function() {
     return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
         var r = Math.random() * 16 | 0, v = c == 'x' ? r : (r & 0x3 | 0x8);
@@ -13,15 +24,17 @@ class UserLogin extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isTokenActive: false,
-            groupId: ''
+            isTokenActive: JSON.parse(localStorage.getItem('currentUser')) ? true : false,
+            groupId: JSON.parse(localStorage.getItem('currentUser')) ? JSON.parse(localStorage.getItem('currentUser')).group_id : '',
+            userId: JSON.parse(localStorage.getItem('currentUser')) ? JSON.parse(localStorage.getItem('currentUser')).user_id : '',
+            name: ''
         };
         this.checkToken = this.checkToken.bind(this);
         this.handleChangeText = this.handleChangeText.bind(this);
     }
 
     componentDidMount() {
-        if(!this.state.isTokenActive)
+        // if(!this.state.isTokenActive)
             //this.checkToken();
     }
 
@@ -35,36 +48,29 @@ class UserLogin extends Component {
 
     checkToken(){
         let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        axios.get(`/auth_by_token`,{params:{
-            token: this.props.match.params.token
-        }}).then(response => {
-            if(response.data.code !== 200){
+        if(currentUser === null){
+            axios.get(`/auth_by_token`,{params:{
+                name: this.state.name,
+                token: this.props.match.params.token
+            }}).then(response => {
+                if(response.data.code !== 200){
 
-            }else{
-                if(typeof currentUser !== 'undefined'){
+                }else{
                     localStorage.setItem('currentUser',
                         JSON.stringify({
-                            user_id: uuidv4(),
+                            user_id: response.data.user_data.id,
+                            group_id: response.data.group_id,
                         })
                     )
+                    this.setState({
+                        isTokenActive: true,
+                        userId: response.data.user_data.id,
+                        groupId: response.data.group_id
+                    })
                 }
-                this.setState({
-                    isTokenActive: true,
-                    groupId: response.data.group_id
-                })
-            }
-        })
+            })
+        }
     }
-
-    // render() {
-    //     return (
-    //         this.state.isTokenActive ? (
-    //             <UserHomePage {...this.props} group_id={this.state.groupId} />
-    //         ):(
-    //             <div></div>
-    //         )
-    //     );
-    // }
 
     render () {
 
@@ -113,7 +119,7 @@ class UserLogin extends Component {
                                         onChange={this.handleChangeText}/>
                                 </Form.Item>
                                 <Form.Item style={{marginTop: '20px', marginBottom: '0px'}}>
-                                    <Button  style={{ width: '100%' }} type="primary"  htmlType="submit" onClick={this.handleLogin}>OK</Button>
+                                    <Button  style={{ width: '100%' }} type="primary"  htmlType="submit" onClick={this.checkToken}>OK</Button>
                                 </Form.Item>
                             </Form>
                         </div>

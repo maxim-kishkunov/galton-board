@@ -17,9 +17,9 @@ class UserHomePage extends Component {
         this.checkResultStep = this.checkResultStep.bind(this);
     }
 
-    componentDidUpdate() {
+    componentDidMount() {
         if(this.props.group_id)
-            this.checkResultStep(group_id,0,0);
+            this.checkResultStep(this.props.group_id,0,0);
     }
 
     getUserData(){        

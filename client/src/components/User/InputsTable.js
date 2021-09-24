@@ -48,7 +48,7 @@ class InputsTable extends Component {
             disabledInput: disabledInput
         },()=>{
             let stepValue = this.state[inputName];
-            this.props.checkResultStep(currStep,stepValue);
+            this.props.checkResultStep(this.props.group_id, currStep,stepValue);
         })
     }
 
@@ -61,7 +61,7 @@ class InputsTable extends Component {
             if(this.props.user_data.userOutput)
                 outputData = this.props.user_data.userOutput;
 
-            for(let i = 0; i < drops_quantity; i ++){
+            for(let i = 0; i < drops_quantity - 1; i ++){
                 let currInputName = `output_${i}`;
                 tableColumns.push(
                     <div  key={`input-cell_${i}`} className="table-cell">

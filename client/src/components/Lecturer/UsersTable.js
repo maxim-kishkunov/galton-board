@@ -32,6 +32,7 @@ class UsersTable extends Component {
         this.createNewGroup = this.createNewGroup.bind(this);
         this.handleChangeUserGroup = this.handleChangeUserGroup.bind(this);
         this.getInviteLink = this.getInviteLink.bind(this);
+        this.deleteUser = this.deleteUser.bind(this);
     }
 
     componentDidMount() {
@@ -62,6 +63,16 @@ class UsersTable extends Component {
             user_id: userID,
         };
         axios.post(`/change_user_group`, params).then(response => {
+            this.getTableData();
+        }).catch(error => {
+            console.error(error);
+        })
+    }
+
+    deleteUser(user_id){
+        axios.post(`/delete_user`, {
+            user_id: user_id,
+        }).then(response => {
             this.getTableData();
         }).catch(error => {
             console.error(error);
@@ -258,6 +269,7 @@ class UsersTable extends Component {
                                     handle_change_user_group={this.handleChangeUserGroup}
                                     render_group_invite_popover={this.renderGroupInvite_popover}
                                     render_new_group_inputs_popover={this.renderNewGroupInputsPopover}
+                                    delete_user={this.deleteUser}
                                 />
                             )
                         }, this)
