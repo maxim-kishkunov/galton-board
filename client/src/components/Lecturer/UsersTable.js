@@ -31,7 +31,6 @@ class UsersTable extends Component {
         this.newGroupChange = this.newGroupChange.bind(this);
         this.createNewGroup = this.createNewGroup.bind(this);
         this.handleChangeUserGroup = this.handleChangeUserGroup.bind(this);
-        this.getInviteLink = this.getInviteLink.bind(this);
         this.deleteUser = this.deleteUser.bind(this);
     }
 
@@ -215,26 +214,6 @@ class UsersTable extends Component {
         this.setState({
             groupData: groupData,
         });
-    }
-
-    getInviteLink(group_id){    
-        // axios.get(`/get_invite_link`,{params: 
-        //     {
-        //         group_id: currentUser.user_id
-        //     }}
-        // ).then(response => {
-        //     if(response.data.code !== 200){
-        //         Modal.error({
-        //             title: 'Error!',
-        //             content: response.data.message,
-        //         });
-        //     }else{
-        //         this.setState({
-        //             tableData: response.data.data,
-        //             groupData: response.data.group_data
-        //         })
-        //     }
-        // })
     }
 
     toggleInviteModal(group_id){

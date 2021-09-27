@@ -144,6 +144,7 @@ app.get("/get_lect_data", async (req, res) => {
       groups.name AS group_name,
       groups.is_active AS group_is_active,
       groups.invite_token AS group_invite_token,
+      groups.created_at AS created_at,
       users.id AS user_id,
       users.name AS user_name,
       users.output_json AS output_json,
@@ -180,7 +181,9 @@ app.get("/get_lect_data", async (req, res) => {
           drops_quantity: item.drops_quantity,
           board_length: item.board_length,
           input_json: item.input_json,
+          initialResult: item.input_last_row_json,
           random_shift: item.random_shift,
+          created_at: item.created_at,
         })
       }
       groupsWithUsers[item.group_id].push(item);
@@ -336,6 +339,10 @@ app.get("/auth_by_token", async (req, res) => {
       });
     }
   });
+  if(Object.keys(user_data).length > 0 )
+    res.json({ user_data: user_data, group_id: group_id,code: 200 });
+  else
+    res.json({ message: 'Group is not found', code: 404 });
 });
 
 app.post("/delete_user", async (req, res) => {

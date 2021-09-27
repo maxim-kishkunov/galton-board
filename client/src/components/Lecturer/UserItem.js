@@ -18,12 +18,7 @@ class UserItem extends Component {
         const {
             curr_group,
             user_data,
-            table_data,
-            group_data
         } = this.props;
-        let group_users = []
-        if(table_data && curr_group) 
-            group_users = table_data[curr_group.id];
         let chartData = [];
         let userPoints = 0;
         if(user_data.result_json && user_data.result_json.length > 0){

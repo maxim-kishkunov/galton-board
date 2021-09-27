@@ -81,6 +81,7 @@ class UserHomePage extends Component {
             if(this.state.userData.drops_quantity && typeof this.state.userData.drops_quantity !== 'undefined'){
                 drops_quantity = this.state.userData.drops_quantity;
             }
+            //  User chart results
             if(this.state.userData.userResult && this.state.userData.userResult.length > 0){
                 userResult = this.state.userData.userResult;
                 for(let i = 0; i < this.state.userData.drops_quantity; i++){
@@ -90,8 +91,9 @@ class UserHomePage extends Component {
                     else
                         chartData[currKey] = 1;
                 }
-                curr_step = userResult[userResult.length - 1];  
+                curr_step = userResult[userResult.length - 1];
             }
+            //  /User chart results
             if(this.state.userData.initialResult && this.state.userData.initialResult.length > 0){
                 initialResult = this.state.userData.initialResult;
                 for(let i = 0; i < this.state.userData.drops_quantity; i++){
