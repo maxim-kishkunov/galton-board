@@ -286,11 +286,11 @@ app.get("/check_result_step", async (req, res) => {
           UPDATE users 
           SET 
             output_json = '${JSON.stringify(userOutput)}',
-            result_json = '${JSON.stringify(userResult)}'
+            result_json = '${JSON.stringify(userResult)}',
             points = '${points}'
           WHERE id = '${data.id}'
         `;
-        await db.query(queryText, values).then((result) => {
+        await db.query(queryText).then((result) => {
           inner_results.push('Данные пользователя обновлены');
           success = true;
           result_data.stepValue = userResult[+ query.step - 1];
