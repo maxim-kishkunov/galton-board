@@ -44,9 +44,11 @@ class GroupItem extends Component {
             group_data
         } = this.props;
         let group_users = [];
-        if(table_data && curr_group) 
+        let userLeaderId = '';
+        if(table_data && curr_group) {
             group_users = table_data[curr_group.id];
-
+            userLeaderId = group_users.sort((a,b) => a.point > b.points)[0].user_id;
+        }
         let groupDate = '';
         if(curr_group.created_at){
             let date_created = new Date(curr_group.created_at);
@@ -151,12 +153,13 @@ class GroupItem extends Component {
                 }
                 {
                     group_users && group_users.length > 0 ? (
-                        group_users.map(function (user_data) {
+                        group_users.sort((a , b) => a.points > b.points).map(function (user_data) {
                             return (
                                 <UserItem
                                     {...this.props}
                                     key={user_data.user_id}
                                     user_data={user_data}
+                                    is_leader={userLeaderId === user_data.user_id}
                                 />
                             )
                         }, this)
@@ -169,7 +172,7 @@ class GroupItem extends Component {
                             key="stat_method_user"
                             user_data={{
                                 user_id: 'stat_method',
-                                user_name: 'Static Process Control',
+                                user_name: 'Statistic Process Control',
                                 drops_quantity: drops_quantity,
                                 board_length: board_length,
                                 result_json: JSON.stringify(statMethodResult),

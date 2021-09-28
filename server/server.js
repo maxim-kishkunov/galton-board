@@ -149,6 +149,7 @@ app.get("/get_lect_data", async (req, res) => {
       users.name AS user_name,
       users.output_json AS output_json,
       users.result_json AS result_json,
+      users.points AS points,
       galton_inputs.drops_quantity AS drops_quantity,
       galton_inputs.board_length AS board_length,
       galton_inputs.input_json AS input_json,
@@ -278,15 +279,15 @@ app.get("/check_result_step", async (req, res) => {
       userOutput[+ query.step - 1] = + query.value;
       userResult[+ query.step] = + resultRow[query.step] + parseInt(query.value);
 
-      let queryText =  ``;
-      let time = new Date();
-      let values = [];
+      let points = userResult.filter( item => typeof item !== 'indefined' && (item === -1 || item === 0 || item === 1)).length;
+      queryText =  ``;
       if(data.id){
         queryText = `
           UPDATE users 
           SET 
             output_json = '${JSON.stringify(userOutput)}',
             result_json = '${JSON.stringify(userResult)}'
+            points = '${points}'
           WHERE id = '${data.id}'
         `;
         await db.query(queryText, values).then((result) => {

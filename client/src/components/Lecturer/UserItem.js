@@ -1,11 +1,13 @@
 import React, { Component } from 'react';
 import { 
-    Select,
     Popconfirm,
     Button,
 } from 'antd';
 import StackBarChart from '../../_helpers/StackBarChart';
-const Option = Select.Option;
+
+import { 
+    CrownOutlined,
+} from '@ant-design/icons';
 
 class UserItem extends Component {
     constructor(props) {
@@ -35,7 +37,7 @@ class UserItem extends Component {
         if(user_data && user_data.user_id){
             return (
                 <div className="user-wrap" key={user_data.user_id}>
-                    <div className="user-name">{user_data.user_name}</div>
+                    <div className="user-name">{user_data.user_name}{this.props.is_leader ? <CrownOutlined style={{color: '#eecf27'}} /> : ('')}</div>
                     <div className="user-result-points">
                     {
                         curr_group.name !== 'no_group' ? userPoints :('')
@@ -48,7 +50,7 @@ class UserItem extends Component {
                                 {...this.props}
                                 size={user_data.board_length}
                                 bar_height={2}
-                                bar_width={20}
+                                bar_width={15}
                                 chart_data={chartData}
                             />
                         ):('')
