@@ -59,15 +59,25 @@ class GroupItem extends Component {
 
         let statMethodResult = [];
         let initialResult = [];
+        let initialData = [];
         let drops_quantity = 0;
         let board_length = 0;
+        let initialPoints = 0;
         
         if(curr_group.drops_quantity && typeof curr_group.drops_quantity !== 'undefined'){
             drops_quantity = curr_group.drops_quantity;
             board_length = curr_group.board_length;
         }
         if(curr_group.initialResult && curr_group.initialResult.length > 0){
-            initialResult = JSON.parse(curr_group.initialResult);
+            initialResult = JSON.parse(curr_group.initialResult);            
+            for(let i = 0; i < curr_group.drops_quantity; i++){
+                let currKey = initialResult[i];
+                if(Object.keys(initialData).length > 0 && typeof initialData[currKey] !== 'undefined')
+                    initialData[currKey] += 1;
+                else
+                    initialData[currKey] = 1;
+            }
+            initialPoints = (initialData['-1'] ? initialData['-1'] : 0) + (initialData['0'] ? initialData['0'] : 0) + (initialData['1'] ? initialData['1'] : 0);
             let partSum = 0;
             let correction = 0;
             for(let i = 0; i < curr_group.drops_quantity; i++){
@@ -141,6 +151,7 @@ class GroupItem extends Component {
                         <UserItem
                             {...this.props}
                             key="initial_user"
+                            is_user={false}
                             user_data={{
                                 user_id: 'initial',
                                 user_name: 'Начальные данные',
@@ -159,6 +170,8 @@ class GroupItem extends Component {
                                     {...this.props}
                                     key={user_data.user_id}
                                     user_data={user_data}
+                                    initial_points={initialPoints}
+                                    is_user={true}
                                     is_leader={userLeaderId === user_data.user_id}
                                 />
                             )
@@ -170,6 +183,8 @@ class GroupItem extends Component {
                         <UserItem
                             {...this.props}
                             key="stat_method_user"
+                            is_user={false}
+                            initial_points={initialPoints}
                             user_data={{
                                 user_id: 'stat_method',
                                 user_name: 'Statistic Process Control',

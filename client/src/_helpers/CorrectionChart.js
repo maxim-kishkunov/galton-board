@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-class StackBarChart extends Component {
+class CorrectionChart extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -29,63 +29,60 @@ class StackBarChart extends Component {
 
     drawChart(){
         const {
-            size,
             chart_data,
             bar_width,
-            bar_height,
-            curr_step
+            bar_height
         } = this.props;
         
         const canvas = this.canvasRef.current;
         const ctx = canvas.getContext('2d');
-
         let maxInData = 1;
+        let minInData = 1;
         if(chart_data){
             Object.keys(chart_data).forEach(function(key){
-                let val = chart_data[key];
-                if(val > maxInData)
-                    maxInData = val;
+              let val = chart_data[key];
+              if(val > maxInData)
+                maxInData = val;
+              if(val < minInData)
+                minInData = val;
             });
         }
-        ctx.canvas.width  = (bar_width - 2) * ((size * 2) + 1);
-        ctx.canvas.height = maxInData * bar_height + 28;
-    
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-        
-        ctx.beginPath();
+        ctx.canvas.width  = bar_width * (chart_data.length + 2);
+        ctx.canvas.height = (maxInData - minInData + 2) * bar_height;
 
-        let k = 0;
-        for(let i = Math.floor(-1 * size); i <= size; i++){
-            let startX = k * (bar_width);
-            let barLength = chart_data[i] ? chart_data[i] : 0;
-            let startY = maxInData * bar_height + 14 - bar_height * barLength;//16 * size + 168;
-            
-            
-            ctx.fillStyle = '#acacac';
-            if(i >= -1 && i <= 1)
-                ctx.fillStyle='#070';
-            if(curr_step && curr_step === i){
-                ctx.rect(startX,startY,bar_width, bar_height);
-                ctx.fill();
-                ctx.lineWidth = 1;
-                ctx.strokeStyle = "black";             
+        console.log(bar_width * (chart_data.length + 2))
+        //	Axis
+        for(let i = -8; i <= 8; i ++ )
+        {
+            if(i % 2 === 0){
+                ctx.beginPath();
+                if(i === 0){
+                    ctx.strokeStyle = '#000';
+                    ctx.lineWidth = 2;
+                }else{
+                    ctx.strokeStyle = '#acacac';
+                    ctx.lineWidth = 1;
+                }
+                let yVal = (-1) * i * bar_height + maxInData * bar_height + bar_height;;
+                ctx.moveTo(7, yVal);
+                ctx.lineTo(bar_width * (chart_data.length + 1), yVal);
+                ctx.stroke();
+                ctx.closePath();
+                ctx.fillStyle = '#000000';
+                ctx.font = "8px Arial";
+                ctx.fillText(i,0,yVal+3); //index of the bar
             }
-                
-            ctx.fillRect(startX,startY,bar_width, barLength * bar_height);   
-
-            ctx.fillStyle = '#000000';
-            ctx.fillText(chart_data[i] ? chart_data[i] : '',startX + (bar_width / 2 - 4),startY - 1); //value of the bar
-            ctx.fillRect(startX,startY + barLength * bar_height,bar_width, 1); // axis
-            if(i >= -1 && i <= 1){
-                ctx.rect(startX,startY + barLength * bar_height,bar_width, 14);
-                ctx.lineWidth = 1;
-                ctx.strokeStyle = "black";
-            }
-            ctx.fillStyle = '#000000';
-            ctx.fillText(i,startX + (bar_width / 2 - 4),startY + barLength * bar_height + 12); //index of the bar
-            ctx.stroke();
-            k++;
         }
+        //  /Axis
+
+        ctx.beginPath();
+        ctx.moveTo(7, 0);
+        ctx.strokeStyle = '#4472c4';
+        for(let i = 0; i < chart_data.length; i++){
+            ctx.lineTo(bar_width + bar_width * (i + 1), (-1) * chart_data[i] * bar_height + maxInData * bar_height + bar_height); 
+        }
+        ctx.stroke();
+        
         this.setState({
             chart_data: chart_data
         })
@@ -107,4 +104,4 @@ class StackBarChart extends Component {
     }    
 }
 
-export default StackBarChart
+export default CorrectionChart

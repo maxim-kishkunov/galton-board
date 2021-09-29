@@ -4,6 +4,7 @@ import {
     Button,
 } from 'antd';
 import StackBarChart from '../../_helpers/StackBarChart';
+import CorrectionChart from '../../_helpers/CorrectionChart';
 
 import { 
     CrownOutlined,
@@ -40,7 +41,9 @@ class UserItem extends Component {
                     <div className="user-name">{user_data.user_name}{this.props.is_leader ? <CrownOutlined style={{color: '#eecf27'}} /> : ('')}</div>
                     <div className="user-result-points">
                     {
-                        curr_group.name !== 'no_group' ? userPoints :('')
+                        curr_group.name !== 'no_group' ? (
+                            userPoints + (typeof this.props.initial_points !== 'undefined' ? `(${Math.abs(this.props.initial_points - userPoints)})` : '')
+                        ) :('')
                     }
                     </div>
                     <div className="user-result-chart">
@@ -54,6 +57,19 @@ class UserItem extends Component {
                                 chart_data={chartData}
                             />
                         ):('')
+                    }
+                    {
+                        this.props.is_user ?
+                            user_data && user_data.output_json && user_data.output_json.length > 0 ? (
+                                <CorrectionChart 
+                                    {...this.props}
+                                    size={user_data.drops_quantity}
+                                    bar_height={4}
+                                    bar_width={12}
+                                    chart_data={JSON.parse(user_data.output_json)}
+                                />
+                            ):('')
+                        :(<div style={{width:user_data.drops_quantity * 12}}></div>)
                     }
                     </div>
                     <div className="user-actions">

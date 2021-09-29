@@ -71,22 +71,27 @@ code {
         padding: 5px 0;
         display: flex;
         justify-content: space-between;
-        line-height: 38px;
+        line-height: 16px;
 
         .user-name {
           width: 15%;
           text-align: left;
           padding: 2px 10px;
           border-right: 1px solid #acacac;
+          display: flex;
+          align-items: center;
         }
         .user-result-points {
           width: 5%;
           border-right: 1px solid #acacac;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
         .user-result-chart {
           width: 60%;
           display: flex;
-          justify-content: center;
+          justify-content: space-around;
           align-items: center;   
           border-right: 1px solid #acacac;   
         }
@@ -94,6 +99,9 @@ code {
           width: 20%;
           padding: 0 10px;
           border-left: 1px solid #acacac;
+          display: flex;
+          align-items: center;
+          justify-content: center;
         }
       }
       .user-wrap:nth-child(even) {
@@ -105,24 +113,36 @@ code {
     padding: 5px 0;
     display: flex;
     justify-content: space-between;
-    line-height: 38px;
+    line-height: 16px;
 
     .name {
       width: 15%;
       text-align: left;
       padding: 2px 10px;
       border-right: 1px solid #acacac;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .result-points {
       width: 5%;
       border-right: 1px solid #acacac;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .result-chart {
       width: 60%;
       border-right: 1px solid #acacac;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     .actions {
       width: 20%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
   }
 }
