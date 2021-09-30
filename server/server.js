@@ -322,21 +322,32 @@ app.get("/auth_by_token", async (req, res) => {
   await db.query(queryText).then(async(result) => {
     if(result.rows.length > 0){
       group_id = result.rows[0].group_id;
-      queryText = 'INSERT INTO users (id, name, group_id, output_json, result_json, points, created_at) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *'; 
-      
-      let time = new Date();
-      let values = [
-        uuid.v4(),
-        query.name,
-        group_id,
-        '[]',
-        '[]',
-        0,
-        time
-      ];
-      await db.query(queryText, values).then((result) => {
-        if(result.rows.length > 0)
-          user_data = result.rows[0];
+      let queryText =  `
+        SELECT * FROM users
+        WHERE group_id = '${group_id}' AND name = '${query.name}'
+      `;
+      let user_id = '';
+      await db.query(queryText).then(async(result) => {
+        if(result.rows.length > 0){
+          res.json({ message: 'Пользователь с таким именем уже существует', code: 401 });
+        }else{
+          queryText = 'INSERT INTO users (id, name, group_id, output_json, result_json, points, created_at) VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *'; 
+          
+          let time = new Date();
+          let values = [
+            uuid.v4(),
+            query.name,
+            group_id,
+            '[]',
+            '[]',
+            0,
+            time
+          ];
+          await db.query(queryText, values).then((result) => {
+            if(result.rows.length > 0)
+              user_data = result.rows[0];
+          });
+        }
       });
     }
   });

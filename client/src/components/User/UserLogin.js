@@ -8,6 +8,7 @@ import {
     Typography,
     Input,
     Button,
+    Modal,
  } from 'antd';
 import React, { Component } from 'react';
 import UserHomePage from './UserHomePage';
@@ -54,7 +55,10 @@ class UserLogin extends Component {
                 token: this.props.match.params.token
             }}).then(response => {
                 if(response.data.code !== 200){
-
+                    Modal.error({
+                        title: 'Ошибка!',
+                        content: response.data.message,
+                    });
                 }else{
                     localStorage.setItem('currentUser',
                         JSON.stringify({
