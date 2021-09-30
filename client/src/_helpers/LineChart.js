@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 
-class CorrectionChart extends Component {
+class LineChart extends Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -104,4 +104,4 @@ class CorrectionChart extends Component {
     }    
 }
 
-export default CorrectionChart
+export default LineChart
