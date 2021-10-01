@@ -1,4 +1,7 @@
 import React, { Component } from 'react'
+import { 
+    Modal,
+} from 'antd';
 
 class LineChart extends Component {
     constructor(props) {
@@ -38,6 +41,7 @@ class LineChart extends Component {
         const ctx = canvas.getContext('2d');
         let maxInData = 1;
         let minInData = 1;
+        let middleLine = chart_data.reduce((a, b) => (a + b)) / chart_data.length;
         if(chart_data){
             Object.keys(chart_data).forEach(function(key){
               let val = chart_data[key];
@@ -50,7 +54,6 @@ class LineChart extends Component {
         ctx.canvas.width  = bar_width * (chart_data.length + 2);
         ctx.canvas.height = (maxInData - minInData + 2) * bar_height;
 
-        console.log(bar_width * (chart_data.length + 2))
         //	Axis
         for(let i = -8; i <= 8; i ++ )
         {
@@ -74,6 +77,13 @@ class LineChart extends Component {
             }
         }
         //  /Axis
+
+        ctx.beginPath();        
+        ctx.strokeStyle = '#f5a700';
+        ctx.moveTo(7, (-1) * middleLine * bar_height + maxInData * bar_height + bar_height);
+        ctx.lineTo(bar_width + bar_width * (chart_data.length), (-1) * middleLine * bar_height + maxInData * bar_height + bar_height); 
+        ctx.stroke();
+        ctx.closePath();
 
         ctx.beginPath();
         ctx.moveTo(7, 0);
@@ -99,7 +109,14 @@ class LineChart extends Component {
 
     render() {
         return (
-            <canvas ref={this.canvasRef} {...this.props}/>
+            <canvas ref={this.canvasRef} {...this.props} onClick={()=>{
+                return(
+                    Modal.info({
+                        title: 'Ошибка!',
+                        content: <div classame="chart-modal"></div>,
+                    })
+                );
+            }}/>
         );
     }    
 }

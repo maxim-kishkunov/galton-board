@@ -60,7 +60,7 @@ class UserItem extends Component {
                     }
                     {
                         //this.props.is_user ?
-                            user_data && user_data.result_json && user_data.result_json.length > 0 ? (
+                            user_data && user_data.result_json && user_data.result_json.length > 2 ? (
                                 <LineChart 
                                     {...this.props}
                                     size={user_data.drops_quantity}

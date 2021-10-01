@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { 
-    InputNumber,
+    InputNumber, Modal,
  } from 'antd';
 
 class InputsTable extends Component {
@@ -23,6 +23,8 @@ class InputsTable extends Component {
             let outputData = this.props.user_data.userOutput;
             this.setState({
                 currStep: outputData.length
+            },() => {                
+                this.unitInput.focus();
             })
         }
     }
@@ -37,19 +39,31 @@ class InputsTable extends Component {
         if(typeof this.state[inputName] === 'undefined')
             return false;
             
-        const {disabledInput} = this.state;
-        if(!disabledInput[inputName]){
-            disabledInput[inputName] = true;
+        if(this.props.user_data && 
+            this.props.user_data.board_length && 
+            this.props.user_data.board_length > 0 && 
+            Math.abs(this.state[inputName]) < this.props.user_data.board_length
+        ){
+            const {disabledInput} = this.state;
+            if(!disabledInput[inputName]){
+                disabledInput[inputName] = true;
+            }
+                
+            currStep += 1;
+            this.setState({
+                currStep: currStep,
+                disabledInput: disabledInput
+            },()=>{
+                let stepValue = this.state[inputName];
+                this.props.checkResultStep(this.props.group_id, currStep,stepValue);
+            })
+        }else{
+            Modal.error({
+                title: 'Ошибка!',
+                content: `Введенное значение выходит з пределы доски`,
+            });
+            return false;
         }
-            
-        currStep += 1;
-        this.setState({
-            currStep: currStep,
-            disabledInput: disabledInput
-        },()=>{
-            let stepValue = this.state[inputName];
-            this.props.checkResultStep(this.props.group_id, currStep,stepValue);
-        })
     }
 
     render() {
@@ -75,7 +89,10 @@ class InputsTable extends Component {
                                     onBlur={(e)=>this.handleOnBlur(i,currInputName)}
                                     type="number"
                                     name={currInputName}
-                                    onChange={(value) => this.handleChangeCell(value,currInputName)}/>
+                                    ref={node => this.state.currStep === i ? this.unitInput = node : ''}
+                                    onChange={(value) => this.handleChangeCell(value,currInputName)}
+                                    onPressEnter={(e)=>this.handleOnBlur(i,currInputName)}
+                                />
                             )
                         }
                         
