@@ -4,7 +4,7 @@ import {
     Button,
 } from 'antd';
 import StackBarChart from '../../_helpers/StackBarChart';
-import CorrectionChart from '../../_helpers/CorrectionChart';
+import LineChart from '../../_helpers/LineChart';
 
 import { 
     CrownOutlined,
@@ -59,17 +59,17 @@ class UserItem extends Component {
                         ):('')
                     }
                     {
-                        this.props.is_user ?
-                            user_data && user_data.output_json && user_data.output_json.length > 0 ? (
-                                <CorrectionChart 
+                        //this.props.is_user ?
+                            user_data && user_data.result_json && user_data.result_json.length > 0 ? (
+                                <LineChart 
                                     {...this.props}
                                     size={user_data.drops_quantity}
                                     bar_height={4}
                                     bar_width={12}
-                                    chart_data={JSON.parse(user_data.output_json)}
+                                    chart_data={JSON.parse(user_data.result_json)}
                                 />
                             ):('')
-                        :(<div style={{width:user_data.drops_quantity * 12}}></div>)
+                        //:(<div style={{width:user_data.drops_quantity * 12}}></div>)
                     }
                     </div>
                     <div className="user-actions">

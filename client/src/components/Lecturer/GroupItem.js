@@ -47,7 +47,7 @@ class GroupItem extends Component {
         let userLeaderId = '';
         if(table_data && curr_group) {
             group_users = table_data[curr_group.id];
-            userLeaderId = group_users.sort((a,b) => a.point > b.points)[0].user_id;
+            userLeaderId = group_users.sort((a,b) => (a.points > b.points) ? 1 : ((b.points < a.points) ? -1 : 0))[0].user_id;
         }
         let groupDate = '';
         if(curr_group.created_at){
