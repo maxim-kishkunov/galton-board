@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { 
     Modal,
 } from 'antd';
+import LineChartChild from './LineChart';
 
 class LineChart extends Component {
     constructor(props) {
@@ -89,6 +90,14 @@ class LineChart extends Component {
         ctx.moveTo(7, 0);
         ctx.strokeStyle = '#4472c4';
         for(let i = 0; i < chart_data.length; i++){
+            if(this.props.is_child){
+                ctx.font = "10px Arial";
+                ctx.fillText(
+                    chart_data[i],
+                    bar_width + bar_width * (i + 1) - 2,
+                    (-1) * chart_data[i] * bar_height + maxInData * bar_height + bar_height + 3
+                ); //index of the bar
+            }
             ctx.lineTo(bar_width + bar_width * (i + 1), (-1) * chart_data[i] * bar_height + maxInData * bar_height + bar_height); 
         }
         ctx.stroke();
@@ -110,12 +119,22 @@ class LineChart extends Component {
     render() {
         return (
             <canvas ref={this.canvasRef} {...this.props} onClick={()=>{
-                return(
-                    Modal.info({
-                        title: 'Ошибка!',
-                        content: <div classame="chart-modal"></div>,
-                    })
-                );
+                if(!this.props.is_child)
+                    return(
+                        Modal.info({
+                            width: 35 * this.props.size + 100,
+                            content: <div classame="chart-modal">
+                                <LineChartChild 
+                                    {...this.props}
+                                    is_child={true}
+                                    bar_height={20}
+                                    bar_width={35}
+                                />
+                            </div>,
+                        })
+                    );
+                else
+                        return '';
             }}/>
         );
     }    
