@@ -28,10 +28,12 @@ class UserItem extends Component {
             let userResult = JSON.parse(user_data.result_json);
             for(let i = 0; i < user_data.drops_quantity; i++){
                 let currKey = userResult[i];
-                if(Object.keys(chartData).length > 0 && typeof chartData[currKey] !== 'undefined')
-                    chartData[currKey] += 1;
-                else
-                    chartData[currKey] = 1;
+                if(typeof currKey !== 'undefined'){
+                    if(Object.keys(chartData).length > 0 && typeof chartData[currKey] !== 'undefined')
+                        chartData[currKey] += 1;
+                    else
+                        chartData[currKey] = 1;
+                }
             }
             userPoints = (chartData['-1'] ? chartData['-1'] : 0) + (chartData['0'] ? chartData['0'] : 0) + (chartData['1'] ? chartData['1'] : 0);
         }
@@ -48,7 +50,7 @@ class UserItem extends Component {
                     </div>
                     <div className="user-result-chart">
                     {
-                        chartData.length > 0 ? (
+                        Object.keys(chartData).length > 0 ? (
                             <StackBarChart 
                                 {...this.props}
                                 size={user_data.board_length}
@@ -90,9 +92,7 @@ class UserItem extends Component {
                 </div>
             )
         }else{
-            return (
-                <div className="user-wrap empty">&nbsp;</div>
-            );
+            return ('');
         }
     }
 }

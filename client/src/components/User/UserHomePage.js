@@ -91,7 +91,7 @@ class UserHomePage extends Component {
                     else
                         chartData[currKey] = 1;
                 }
-                curr_step = userResult[userResult.length - 1];
+                curr_step = userResult.length - 1;
             }
             //  /User chart results
             if(this.state.userData.initialResult && this.state.userData.initialResult.length > 0){

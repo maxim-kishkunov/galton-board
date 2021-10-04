@@ -269,7 +269,7 @@ app.get("/check_result_step", async (req, res) => {
       result_data.userResult = [resultRow[0]];
       result_data.userOutput = [];
       result_data.initialResult = [];
-    }else if(userOutput.length === result_data.drops_quantity){
+    }else if(userOutput.length === result_data.drops_quantity - 1){
       result_data.userResult = userResult;
       result_data.userOutput = userOutput;
       result_data.initialResult = resultRow;

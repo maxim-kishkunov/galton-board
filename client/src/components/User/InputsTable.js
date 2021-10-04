@@ -24,7 +24,8 @@ class InputsTable extends Component {
             this.setState({
                 currStep: outputData.length
             },() => {                
-                this.unitInput.focus();
+                if(typeof this.unitInput !== 'undefined')
+                    this.unitInput.focus();
             })
         }
     }

@@ -63,7 +63,7 @@ class StackBarChart extends Component {
             ctx.fillStyle = '#acacac';
             if(i >= -1 && i <= 1)
                 ctx.fillStyle='#070';
-            if(curr_step && curr_step === i){
+            if(curr_step && curr_step === i - 1){
                 ctx.rect(startX,startY,bar_width, bar_height);
                 ctx.fill();
                 ctx.lineWidth = 1;
