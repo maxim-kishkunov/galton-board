@@ -44,7 +44,7 @@ class UserItem extends Component {
                     <div className="user-result-points">
                     {
                         curr_group.name !== 'no_group' ? (
-                            userPoints + (typeof this.props.initial_points !== 'undefined' ? `(${Math.abs(this.props.initial_points - userPoints)})` : '')
+                            userPoints + (typeof this.props.initial_points !== 'undefined' ? `(${userPoints - this.props.initial_points})` : '')
                         ) :('')
                     }
                     </div>

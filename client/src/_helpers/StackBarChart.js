@@ -1,4 +1,8 @@
-import React, { Component } from 'react'
+import React, { Component } from 'react';
+import { 
+    Modal,
+} from 'antd';
+import StackBarChartChild from './StackBarChart';
 
 class StackBarChart extends Component {
     constructor(props) {
@@ -101,7 +105,25 @@ class StackBarChart extends Component {
 
     render() {
         return (
-            <canvas ref={this.canvasRef} {...this.props}/>
+            <canvas ref={this.canvasRef} {...this.props} onClick={()=>{
+                if(!this.props.is_child)
+                    return(
+                        Modal.info({
+                            className: "chart-modal",
+                            width: 35 * this.props.size * 2 + 40,
+                            content: <div>
+                                <StackBarChartChild  
+                                    {...this.props}
+                                    is_child={true}
+                                    bar_height={20}
+                                    bar_width={35}
+                                />
+                            </div>,
+                        })
+                    );
+                else
+                    return '';
+            }}/>
         );
     }    
 }

@@ -101,7 +101,7 @@ class LineChart extends Component {
                         (-1) * chart_data[i] * bar_height + // Высота * значение * -1( потому что [0,0] слева вверху)
                         maxInData * bar_height +            // Поправка на самое большое значение
                         bar_height +                        // Отступ
-                        (chart_data[i] > 0 ? -3 : 8)        // Поправка над/под точкой
+                        (chart_data[i] > 0 ? -4 : 10)        // Поправка над/под точкой
                     )
                 ); 
             }
@@ -132,8 +132,8 @@ class LineChart extends Component {
                         Modal.info({
                             className: "chart-modal",
                             width: 35 * this.props.size + 100,
-                            content: <div classame="chart-modal">
-                                <LineChartChild 
+                            content: <div>
+                                <LineChartChild  
                                     {...this.props}
                                     is_child={true}
                                     bar_height={20}
