@@ -273,6 +273,62 @@ app.get("/check_result_step", async (req, res) => {
       result_data.userResult = userResult;
       result_data.userOutput = userOutput;
       result_data.initialResult = resultRow;
+      let queryText =  `
+        SELECT
+          groups.id AS group_id,
+          groups.name AS group_name,
+          groups.is_active AS group_is_active,
+          groups.invite_token AS group_invite_token,
+          groups.created_at AS created_at,
+          users.id AS user_id,
+          users.name AS user_name,
+          users.output_json AS output_json,
+          users.result_json AS result_json,
+          users.points AS points,
+          galton_inputs.drops_quantity AS drops_quantity,
+          galton_inputs.board_length AS board_length,
+          galton_inputs.input_json AS input_json,
+          galton_inputs.input_last_row_json AS input_last_row_json,
+          galton_inputs.random_shift AS random_shift
+        FROM groups
+        LEFT JOIN users ON users.group_id = groups.id
+        LEFT JOIN group_inputs ON groups.id = group_inputs.group_id
+        LEFT JOIN galton_inputs ON galton_inputs.id = group_inputs.input_id
+        WHERE groups.id = '${query.group_id}'`;
+    
+      let table_data = [];
+      await db.query(queryText).then((result) => {
+        if(result.rows.length > 0)
+          table_data = result.rows;
+      });
+    
+      let groupsWithUsers = {};
+      let groupData = [];
+      let ckeckedIds = [];
+      for(let i = 0; i < table_data.length; i++){
+        let item = table_data[i];
+        if(!ckeckedIds.find(elt => elt && elt === item.user_id)){
+          if(typeof groupsWithUsers[item.group_id] === 'undefined'){
+            groupsWithUsers[item.group_id] = [];
+            groupData.push({
+              id: item.group_id,
+              name: item.group_name,
+              is_active: item.group_is_active,
+              invite_token: item.group_invite_token,
+              drops_quantity: item.drops_quantity,
+              board_length: item.board_length,
+              input_json: item.input_json,
+              initialResult: item.input_last_row_json,
+              random_shift: item.random_shift,
+              created_at: item.created_at,
+            })
+          }
+          groupsWithUsers[item.group_id].push(item);
+          ckeckedIds.push(item.user_id);
+        }
+      }
+      result_data.groupsWithUsers = groupsWithUsers;
+      result_data.group_data = groupData;
     }else{
       if(parseInt(query.step) === 1)
         userResult[0] = resultRow[0];
@@ -290,13 +346,71 @@ app.get("/check_result_step", async (req, res) => {
             points = '${points}'
           WHERE id = '${data.id}'
         `;
-        await db.query(queryText).then((result) => {
+        await db.query(queryText).then(async(result) => {
           inner_results.push('Данные пользователя обновлены');
           success = true;
           result_data.stepValue = userResult[+ query.step - 1];
           result_data.userResult = userResult;
           result_data.userOutput = userOutput;
-          result_data.initialResult = [];
+          if(result_data.userOutput.length === result_data.drops_quantity - 1){
+            let queryText =  `
+              SELECT
+                groups.id AS group_id,
+                groups.name AS group_name,
+                groups.is_active AS group_is_active,
+                groups.invite_token AS group_invite_token,
+                groups.created_at AS created_at,
+                users.id AS user_id,
+                users.name AS user_name,
+                users.output_json AS output_json,
+                users.result_json AS result_json,
+                users.points AS points,
+                galton_inputs.drops_quantity AS drops_quantity,
+                galton_inputs.board_length AS board_length,
+                galton_inputs.input_json AS input_json,
+                galton_inputs.input_last_row_json AS input_last_row_json,
+                galton_inputs.random_shift AS random_shift
+              FROM groups
+              LEFT JOIN users ON users.group_id = groups.id
+              LEFT JOIN group_inputs ON groups.id = group_inputs.group_id
+              LEFT JOIN galton_inputs ON galton_inputs.id = group_inputs.input_id
+              WHERE groups.id = '${query.group_id}'`;
+          
+            let table_data = [];
+            await db.query(queryText).then((result) => {
+              if(result.rows.length > 0)
+                table_data = result.rows;
+            });
+          
+            let groupsWithUsers = {};
+            let groupData = [];
+            let ckeckedIds = [];
+            for(let i = 0; i < table_data.length; i++){
+              let item = table_data[i];
+              if(!ckeckedIds.find(elt => elt && elt === item.user_id)){
+                if(typeof groupsWithUsers[item.group_id] === 'undefined'){
+                  groupsWithUsers[item.group_id] = [];
+                  groupData.push({
+                    id: item.group_id,
+                    name: item.group_name,
+                    is_active: item.group_is_active,
+                    invite_token: item.group_invite_token,
+                    drops_quantity: item.drops_quantity,
+                    board_length: item.board_length,
+                    input_json: item.input_json,
+                    initialResult: item.input_last_row_json,
+                    random_shift: item.random_shift,
+                    created_at: item.created_at,
+                  })
+                }
+                groupsWithUsers[item.group_id].push(item);
+                ckeckedIds.push(item.user_id);
+              }
+            }
+            result_data.groupsWithUsers = groupsWithUsers;
+            result_data.group_data = groupData;
+            result_data.initialResult = resultRow;
+          }
         });
       }
     }

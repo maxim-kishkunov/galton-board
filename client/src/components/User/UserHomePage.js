@@ -6,12 +6,15 @@ import {
  import InputsTable from './InputsTable';
  import ResultsRow from './ResultsRow';
  import StackBarChart from '../../_helpers/StackBarChart';
+ import GroupItem from '../Lecturer/GroupItem';
 
 class UserHomePage extends Component {
     constructor(props) {
         super(props);
         this.state = {
             userData: {},
+            tableData: {},
+            groupData: [],
         };
         this.getUserData = this.getUserData.bind(this);
         this.checkResultStep = this.checkResultStep.bind(this);
@@ -140,7 +143,7 @@ class UserHomePage extends Component {
                                 <div style={{width: '50%'}}>
                                     <StackBarChart {...this.props}
                                         size={board_length}
-                                        bar_height={15}
+                                        bar_height={3}
                                         bar_width={50}
                                         chart_data={initialData}
                                     />
@@ -162,7 +165,7 @@ class UserHomePage extends Component {
                         <div style={{width: '50%'}}>
                             <StackBarChart {...this.props}
                                 size={board_length}
-                                bar_height={15}
+                                bar_height={3}
                                 bar_width={50}
                                 curr_step={curr_step}
                                 chart_data={chartData}
@@ -185,7 +188,7 @@ class UserHomePage extends Component {
                                 <div style={{width: '50%'}}>
                                     <StackBarChart {...this.props}
                                         size={board_length}
-                                        bar_height={15}
+                                        bar_height={3}
                                         bar_width={50}
                                         chart_data={statMethodData}
                                     />
@@ -193,7 +196,34 @@ class UserHomePage extends Component {
                             </div>
                         ):('')
                     }
-
+                    { 
+                        Object.keys(this.state.userData).length > 0 && Object.keys(this.state.userData.groupsWithUsers).length > 0 ? (
+                            this.state.userData.group_data.map(function (curr_group) {
+                                return(
+                                    <div className="users-table">
+                                        <div className="header-wrap">
+                                            <div className="name">ФИО пользователя</div>
+                                            <div className="result-points">Количество попаданий</div>
+                                            <div className="result-chart">Гистрограмма по результатам</div>
+                                        </div>
+                                        <GroupItem 
+                                            {...this.props}
+                                            is_user_page="true"
+                                            key={curr_group.id}
+                                            curr_group={curr_group}
+                                            table_data={this.state.userData.groupsWithUsers}
+                                            new_group_inputs_visible={false}
+                                            group_data={this.state.userData.groupData}
+                                            handle_change_user_group={()=> false}
+                                            render_group_invite_popover={()=> false}
+                                            render_new_group_inputs_popover={()=> false}
+                                            delete_user={()=> false}
+                                        />
+                                    </div>
+                                )
+                            }, this)
+                        ):('')
+                    }
                 </div>
             </div>
         )

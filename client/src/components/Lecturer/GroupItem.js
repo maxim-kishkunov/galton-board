@@ -47,7 +47,7 @@ class GroupItem extends Component {
         let userLeaderId = '';
         if(table_data && curr_group) {
             group_users = table_data[curr_group.id];
-            userLeaderId = group_users.sort((a,b) => (a.points > b.points) ? 1 : ((b.points < a.points) ? -1 : 0))[0].user_id;
+            userLeaderId = group_users.sort((a,b) => (a.points > b.points) ? -1 : ((b.points < a.points) ? 1 : 0))[0].user_id;
         }
         let groupDate = '';
         if(curr_group.created_at){
@@ -92,59 +92,63 @@ class GroupItem extends Component {
         }
         return (
             <div className="group-wrap" key={curr_group.id}>
-                <div className="group-data">
-                    <div className="group-name">{curr_group.name === 'no_group' ? "Пользователи без группы" : curr_group.name}</div>
-                    {
-                        curr_group.name !== 'no_group' && typeof curr_group.random_shift !== 'undefined' ? (
-                            <div className="group-date">{groupDate}</div>
-                        ):('')
-                    }
-                    {
-                        curr_group.name !== 'no_group' && typeof curr_group.random_shift !== 'undefined' ? (
-                            <div className="group-chars">
-                                <div className="char-wrap">
-                                {
-                                    typeof curr_group.random_shift === 'number' ? 
-                                        `Смещение: ` + curr_group.random_shift 
-                                    : ''
-                                }
-                                </div>
+                {
+                    !!!this.props.is_user_page ? 
+                        <div className="group-data">
+                            <div className="group-name">{curr_group.name === 'no_group' ? "Пользователи без группы" : curr_group.name}</div>
+                            {
+                                curr_group.name !== 'no_group' && typeof curr_group.random_shift !== 'undefined' ? (
+                                    <div className="group-date">{groupDate}</div>
+                                ):('')
+                            }
+                            {
+                                curr_group.name !== 'no_group' && typeof curr_group.random_shift !== 'undefined' ? (
+                                    <div className="group-chars">
+                                        <div className="char-wrap">
+                                        {
+                                            typeof curr_group.random_shift === 'number' ? 
+                                                `Смещение: ` + curr_group.random_shift 
+                                            : ''
+                                        }
+                                        </div>
+                                    </div>
+                                ):('')
+                            }
+                            <div className="group-actions">
+                                <Popover
+                                    placement="right"
+                                    content={() => this.renderInvitePopover(curr_group)}
+                                    trigger="click"
+                                    visible={this.props.new_group_inputs_visible}
+                                >
+                                    {
+                                        curr_group.name !== 'no_group' &&
+                                            <Button
+                                                className="action-panel-button"
+                                            >
+                                                Приглашение
+                                            </Button>
+                                    }      
+                                </Popover>
+                                <Popover
+                                    placement="right"
+                                    content={() => this.props.render_new_group_inputs_popover(curr_group)}
+                                    trigger="click"
+                                    visible={this.props.new_group_inputs_visible}
+                                >
+                                    {
+                                        curr_group.name !== 'no_group' &&
+                                            <Button
+                                                className="action-panel-button"
+                                            >
+                                                Исходные данные
+                                            </Button>
+                                    }      
+                                </Popover>
                             </div>
-                        ):('')
-                    }
-                    <div className="group-actions">
-                        <Popover
-                            placement="right"
-                            content={() => this.renderInvitePopover(curr_group)}
-                            trigger="click"
-                            visible={this.props.new_group_inputs_visible}
-                        >
-                            {
-                                curr_group.name !== 'no_group' &&
-                                    <Button
-                                        className="action-panel-button"
-                                    >
-                                        Приглашение
-                                    </Button>
-                            }      
-                        </Popover>
-                        <Popover
-                            placement="right"
-                            content={() => this.props.render_new_group_inputs_popover(curr_group)}
-                            trigger="click"
-                            visible={this.props.new_group_inputs_visible}
-                        >
-                            {
-                                curr_group.name !== 'no_group' &&
-                                    <Button
-                                        className="action-panel-button"
-                                    >
-                                        Исходные данные
-                                    </Button>
-                            }      
-                        </Popover>
-                    </div>
-                </div>
+                        </div>
+                    :('')
+                }
                 <div className="group-users">
                 {
                     initialResult.length > 0 ? (
@@ -164,7 +168,7 @@ class GroupItem extends Component {
                 }
                 {
                     group_users && group_users.length > 0 ? (
-                        group_users.sort((a,b) => (a.points > b.points) ? -1 : ((b.points > a.points) ? 1 : 0)).map(function (user_data) {
+                        group_users.sort((a,b) => (a.points > b.points) ? -1 : ((b.points < a.points) ? 1 : 0)).map(function (user_data) {
                             return (
                                 <UserItem
                                     {...this.props}

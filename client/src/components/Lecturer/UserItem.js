@@ -22,6 +22,7 @@ class UserItem extends Component {
             curr_group,
             user_data,
         } = this.props;
+        let currentUser = JSON.parse(localStorage.getItem('currentUser'));
         let chartData = [];
         let userPoints = 0;
         if(user_data.result_json && user_data.result_json.length > 0){
@@ -40,7 +41,11 @@ class UserItem extends Component {
         if(user_data && user_data.user_id){
             return (
                 <div className="user-wrap" key={user_data.user_id}>
-                    <div className="user-name">{user_data.user_name}{this.props.is_leader ? <CrownOutlined style={{color: '#eecf27'}} /> : ('')}</div>
+                    <div className="user-name">
+                        {user_data.user_name}
+                        {currentUser.user_id === user_data.user_id ? '(Вы)' : ('')}
+                        {this.props.is_leader ? <CrownOutlined style={{color: '#eecf27'}} /> : ('')}
+                    </div>
                     <div className="user-result-points">
                     {
                         curr_group.name !== 'no_group' ? (
@@ -74,21 +79,25 @@ class UserItem extends Component {
                         //:(<div style={{width:user_data.drops_quantity * 12}}></div>)
                     }
                     </div>
-                    <div className="user-actions">
-                        <Popconfirm 
-                            title="Вы уверены, что хотите удалить этого пользователя?" 
-                            onCancel={(e) => e.stopPropagation()} 
-                            onConfirm={(e) => {
-                                e.stopPropagation(); 
-                                this.props.delete_user(user_data.user_id)
-                            }}  
-                            okText="OK" 
-                            cancelText="Cancel"
-                            placement="topRight"
-                        >
-                          <Button onClick={(e) => e.stopPropagation()} type="danger">Delete</Button>
-                        </Popconfirm>
-                    </div>
+                    {
+                        !!!this.props.is_user_page ? 
+                            <div className="user-actions">
+                                <Popconfirm 
+                                    title="Вы уверены, что хотите удалить этого пользователя?" 
+                                    onCancel={(e) => e.stopPropagation()} 
+                                    onConfirm={(e) => {
+                                        e.stopPropagation(); 
+                                        this.props.delete_user(user_data.user_id)
+                                    }}  
+                                    okText="OK" 
+                                    cancelText="Cancel"
+                                    placement="topRight"
+                                >
+                                <Button onClick={(e) => e.stopPropagation()} type="danger">Delete</Button>
+                                </Popconfirm>
+                            </div>
+                        :('')
+                    }
                 </div>
             )
         }else{
