@@ -164,7 +164,7 @@ class GroupItem extends Component {
                 }
                 {
                     group_users && group_users.length > 0 ? (
-                        group_users.sort((a , b) => a.points > b.points).map(function (user_data) {
+                        group_users.sort((a,b) => (a.points > b.points) ? -1 : ((b.points > a.points) ? 1 : 0)).map(function (user_data) {
                             return (
                                 <UserItem
                                     {...this.props}

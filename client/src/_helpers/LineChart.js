@@ -81,13 +81,13 @@ class LineChart extends Component {
 
         ctx.beginPath();        
         ctx.strokeStyle = '#f5a700';
-        ctx.moveTo(7, (-1) * middleLine * bar_height + maxInData * bar_height + bar_height);
+        ctx.moveTo(7, 7 + (-1) * middleLine * bar_height + maxInData * bar_height + bar_height);
         ctx.lineTo(bar_width + bar_width * (chart_data.length), (-1) * middleLine * bar_height + maxInData * bar_height + bar_height); 
         ctx.stroke();
         ctx.closePath();
 
         ctx.beginPath();
-        ctx.moveTo(7, 0);
+        ctx.moveTo(7,7);
         ctx.strokeStyle = '#4472c4';
         for(let i = 0; i < chart_data.length; i++){
             if(this.props.is_child){
@@ -95,7 +95,13 @@ class LineChart extends Component {
                 ctx.fillText(
                     chart_data[i],
                     bar_width + bar_width * (i + 1) - 2,
-                    (-1) * chart_data[i] * bar_height + maxInData * bar_height + bar_height + 3
+                    (
+                        7 + 
+                        (-1) * chart_data[i] * bar_height + 
+                        maxInData * bar_height + 
+                        bar_height + 
+                        (chart_data[i] > 0 ? 4 : -10)
+                    )
                 ); //index of the bar
             }
             ctx.lineTo(bar_width + bar_width * (i + 1), (-1) * chart_data[i] * bar_height + maxInData * bar_height + bar_height); 
@@ -122,9 +128,10 @@ class LineChart extends Component {
                 if(!this.props.is_child)
                     return(
                         Modal.info({
+                            className: "chart-modal",
                             width: 35 * this.props.size + 100,
-                            content: <div classame="chart-modal">
-                                <LineChartChild 
+                            content: <div>
+                                <LineChartChild  
                                     {...this.props}
                                     is_child={true}
                                     bar_height={20}
