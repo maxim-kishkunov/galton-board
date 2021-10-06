@@ -197,7 +197,7 @@ class UserHomePage extends Component {
                         ):('')
                     }
                     { 
-                        Object.keys(this.state.userData).length > 0 && Object.keys(this.state.userData.groupsWithUsers).length > 0 ? (
+                        Object.keys(initialData).length > 0 && Object.keys(this.state.userData).length > 0 && Object.keys(this.state.userData.groupsWithUsers).length > 0 ? (
                             this.state.userData.group_data.map(function (curr_group) {
                                 return(
                                     <div className="users-table">

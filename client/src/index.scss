@@ -163,6 +163,33 @@ code {
   display: flex;
   justify-content: center;
 
+  .group-wrap{
+    .group-users{
+      .user-wrap{
+        .user-name {
+          width: 25%;
+        }
+        .user-result-points {
+          width: 10%;
+        }
+        .user-result-chart {
+          width: 65%;
+        }
+      }
+    }
+  }
+  .header-wrap{
+    .name {
+      width: 25%;
+    }
+    .result-points {
+      width: 10%;
+    }
+    .result-chart {
+      width: 65%;
+    }
+  }
+
   .user-inputs-table {
     display: flex;
 

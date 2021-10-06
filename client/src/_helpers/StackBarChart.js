@@ -80,14 +80,21 @@ class StackBarChart extends Component {
             ctx.fillText(chart_data[i] ? chart_data[i] : '',startX + (bar_width / 2 - 4),startY - 1); //value of the bar
             ctx.fillRect(startX,startY + barLength * bar_height,bar_width, 1); // axis
             if(i >= -1 && i <= 1){
+                ctx.beginPath();
                 ctx.rect(startX,startY + barLength * bar_height,bar_width, 14);
                 ctx.lineWidth = 1;
-                ctx.strokeStyle = "black";
+                ctx.strokeStyle = "black";                
                 ctx.stroke();
-                // ctx.rect(startX + 1,startY + barLength * bar_height + 1,bar_width, 2);
-                // ctx.lineWidth = 1;
-                // ctx.strokeStyle = "#fff";
-                // ctx.stroke();
+                
+                if(i === -1){
+                    ctx.beginPath();
+                    ctx.fillStyle = 'rgba(255,255,255,1)';
+                    ctx.fillRect(startX + bar_width - 2,startY + barLength * bar_height + 1,2, 12);
+                }else{
+                    ctx.beginPath();
+                    ctx.fillStyle = "#fff";
+                    ctx.fillRect(startX - 1,startY + barLength * bar_height + 1,2, 12);
+                }
             }
             ctx.fillStyle = '#000000';
             ctx.fillText(i,startX + (bar_width / 2 - 4),startY + barLength * bar_height + 12); //index of the bar
