@@ -103,6 +103,11 @@ class GBHomePage extends Component {
         })
     }
 
+    getBoardPES() {
+        const allRoutes = this.state;
+        // for(let i = 0; i < )
+    }
+
     render() {
         const {allRoutes} = this.state;
 
