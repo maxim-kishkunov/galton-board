@@ -7,6 +7,7 @@ import {
  import ResultsRow from './ResultsRow';
  import StackBarChart from '../../_helpers/StackBarChart';
  import GroupItem from '../Lecturer/GroupItem';
+ import GBHomePage from '../GaltonBoard/HomePage';
 
 class UserHomePage extends Component {
     constructor(props) {
@@ -134,6 +135,11 @@ class UserHomePage extends Component {
                 <div>
                     {
                         Object.keys(initialData).length > 0 ? (
+                            <GBHomePage {...this.props} />
+                        ):('')
+                    }
+                    {
+                        Object.keys(initialData).length > 0 ? (
                             <div className="result-with-chart-block">
                                 <div>Начальные результаты</div>
                                 <ResultsRow
@@ -214,9 +220,9 @@ class UserHomePage extends Component {
                                             table_data={this.state.userData.groupsWithUsers}
                                             new_group_inputs_visible={false}
                                             group_data={this.state.userData.groupData}
-                                            handle_change_user_group={()=> false}
-                                            render_group_invite_popover={()=> false}
-                                            render_new_group_inputs_popover={()=> false}
+                                            handle_change_user_group={() => false}
+                                            render_group_invite_popover={() => false}
+                                            render_new_group_inputs_popover={() => false}
                                             delete_user={()=> false}
                                         />
                                     </div>

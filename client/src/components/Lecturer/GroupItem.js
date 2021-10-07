@@ -155,7 +155,7 @@ class GroupItem extends Component {
                         <UserItem
                             {...this.props}
                             key="initial_user"
-                            is_user={false}
+                            is_user={0}
                             user_data={{
                                 user_id: 'initial',
                                 user_name: 'Начальные данные',
@@ -176,7 +176,7 @@ class GroupItem extends Component {
                                     user_data={user_data}
                                     initial_points={initialPoints}
                                     is_user={true}
-                                    is_leader={userLeaderId === user_data.user_id}
+                                    is_leader={userLeaderId === user_data.user_id ? 1 : 0}
                                 />
                             )
                         }, this)
@@ -187,7 +187,7 @@ class GroupItem extends Component {
                         <UserItem
                             {...this.props}
                             key="stat_method_user"
-                            is_user={false}
+                            is_user={0}
                             initial_points={initialPoints}
                             user_data={{
                                 user_id: 'stat_method',

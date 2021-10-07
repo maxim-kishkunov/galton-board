@@ -115,10 +115,10 @@ class GBHomePage extends Component {
             <div>
                 <div className="control-wrap">
                     <label>Размер:</label>
-                    <InputNumber name="size" value={this.state.size} onChange={(val) => this.onChangeSlider('size',val)} />
+                    <InputNumber max={20} min={1} name="size" value={this.state.size} onChange={(val) => this.onChangeSlider('size',val)} />
                     <Slider
                         min={1}
-                        max={30}
+                        max={20}
                         onChange={(val) => this.onChangeSlider('size',val)}
                         defaultValue={this.state.size}
                     />
