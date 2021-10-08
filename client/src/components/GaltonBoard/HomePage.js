@@ -24,6 +24,7 @@ class GBHomePage extends Component {
         this.handlePauseTimer = this.handlePauseTimer.bind(this);
         this.setFirstRedStep = this.setFirstRedStep.bind(this);
         this.handleDropSome = this.handleDropSome.bind(this);
+        this.getBoardPES = this.getBoardPES.bind(this);
     }
 
     onChangeSlider(fieldName,fieldValue){
@@ -104,8 +105,36 @@ class GBHomePage extends Component {
     }
 
     getBoardPES() {
-        const allRoutes = this.state;
-        // for(let i = 0; i < )
+        const { 
+            allRoutes,
+            size
+        } = this.state;
+        let ways = [];
+        let numbersArray = [];
+        let resArr = [];
+        for(let i = 0; i < Math.pow(2,size); i++){
+            let num = i.toString(2);
+            while(num.length < size)
+                num = 0 + num;
+            ways.push(num);
+        }
+        for(let i = 0; i < ways.length; i++){
+            let num = ways[i];
+            let newItem = [];
+            newItem.push(parseInt(num[0]));
+            for(let j = 1; j < num.length; j++){
+                newItem.push(parseInt(newItem[j - 1]) + parseInt(num[j]));
+            }
+            numbersArray.push(newItem);
+        }
+        for(let i = 0; i < size; i++){
+            let items = [];
+            items = numbersArray.filter(item => item[item.length - 1] === i);
+            resArr.push({
+                [i]:items
+            });
+        }
+        return resArr;
     }
 
     render() {
@@ -115,6 +144,8 @@ class GBHomePage extends Component {
         allRoutes.map((item, index, array) => {
             lastPoints += item[item.length - 1] + (index < array.length ? ', ' : '');
         });
+
+        let pes = this.getBoardPES();
 
         return (
             <div>
@@ -168,6 +199,15 @@ class GBHomePage extends Component {
                             routes_length={this.state.allRoutes.length}
                             setFirstRedStep={this.setFirstRedStep}  />
                     </Col>
+                </div>
+                <div>
+                {
+                    pes && Object.keys(pes).length > 0 ? 
+                        Object.keys(pes).forEach( (currKey, arr) => {
+                            <div>{currKey}:{JSON.stringify(arr)}</div>
+                        })
+                    :('')
+                }
                 </div>
             </div>
         );
