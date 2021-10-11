@@ -231,3 +231,22 @@ code {
 .chart-modal .anticon.anticon-info-circle{
   display: none;
 }
+
+.pes {
+  display: flex;
+
+  .pes-block {
+    margin: 0 4px;
+
+    .pes-items-wrap {
+      display: flex;
+
+    .pes-item {
+      padding: 0 2px;
+      border: 1px solid #acacac;
+      // border-collapse: collapse;
+    }
+  }
+  }
+}
+

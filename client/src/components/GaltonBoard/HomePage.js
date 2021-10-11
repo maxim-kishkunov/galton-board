@@ -127,12 +127,10 @@ class GBHomePage extends Component {
             }
             numbersArray.push(newItem);
         }
-        for(let i = 0; i < size; i++){
+        for(let i = 0; i <= size; i++){
             let items = [];
             items = numbersArray.filter(item => item[item.length - 1] === i);
-            resArr.push({
-                [i]:items
-            });
+            resArr[i] = items;
         }
         return resArr;
     }
@@ -146,7 +144,35 @@ class GBHomePage extends Component {
         });
 
         let pes = this.getBoardPES();
-
+        let pesDom = [];
+        if(pes && Object.keys(pes).length > 0){ 
+            Object.keys(pes).forEach(function(currKey){
+                let arrItems = [];
+                let currItems = pes[currKey];
+                Object.keys(currItems).forEach(function(arrKey){
+                    let itemsArr = [];
+                    let currItem = currItems[arrKey];
+                    let tmpItem = 0;
+                    Object.keys(currItem).forEach(function(itemsKey){
+                        itemsArr.push(
+                            <div key={arrKey} className="pes-number-item">
+                            {
+                                currItem[itemsKey] === tmpItem ? 0 : 1
+                            }
+                            </div>
+                        );
+                        tmpItem = currItem[itemsKey];
+                    });
+                    arrItems.push(<div key={arrKey} className="pes-item">{itemsArr}</div>);
+                });
+                pesDom.push(
+                    <div key={currKey} className="pes-block">
+                        <div className="pes-items-wrap">{arrItems}</div>
+                        <div className="pes-label">{currKey}</div>
+                    </div>
+                );
+            })
+        }
         return (
             <div>
                 <div className="control-wrap">
@@ -200,15 +226,13 @@ class GBHomePage extends Component {
                             setFirstRedStep={this.setFirstRedStep}  />
                     </Col>
                 </div>
-                <div>
                 {
                     pes && Object.keys(pes).length > 0 ? 
-                        Object.keys(pes).forEach( (currKey, arr) => {
-                            <div>{currKey}:{JSON.stringify(arr)}</div>
-                        })
+                        <div className="pes">
+                        {pesDom}
+                        </div>
                     :('')
                 }
-                </div>
             </div>
         );
         
