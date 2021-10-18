@@ -137,6 +137,45 @@ app.get("/migrate", async (req, res) => {
 
 });
 
+app.get("/get_sample_space", async (req, res) => {
+  let query = req.query;
+  let size = query.size;
+  let ways = [];
+  let numbersArray = [];
+  let resArr = [];
+  for(let i = 0; i < Math.pow(2,size); i++){
+      let num = i.toString(2);
+      while(num.length < size)
+          num = 0 + num;
+      ways.push(num);
+  }
+  for(let i = 0; i < ways.length; i++){
+      let num = ways[i];
+      let newItem = [];
+      newItem.push(parseInt(num[0]));
+      for(let j = 1; j < num.length; j++){
+          newItem.push(parseInt(newItem[j - 1]) + parseInt(num[j]));
+      }
+      numbersArray.push(newItem);
+  }
+  for(let i = 0; i <= size; i++){
+      let items = [];
+      items = numbersArray.filter(item => item[item.length - 1] === i);
+      resArr[i] = items;
+  }
+  let formattedArr = {};
+  for(let i = 0; i < resArr.length; i++){
+    for(let j = 0; j < resArr[i].length; i++){
+      let currItem = resArr[i][j];
+      if(typeof formattedArr[currItem[currItem.length - 1]] === 'undefined')
+        formattedArr[currItem[currItem.length - 1]] = [];
+
+      formattedArr[currItem[currItem.length - 1]].push(currItem.map((currItem,index,arr) => index > 0 ? currItem === arr[index - 1] ? 0 : 1 : 0 ));
+    }
+  }
+  res.json({ data: resArr, formatted_data: formattedArr });
+});
+
 app.get("/get_lect_data", async (req, res) => {     
   let queryText =  `
     SELECT

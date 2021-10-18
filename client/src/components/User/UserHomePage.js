@@ -131,106 +131,111 @@ class UserHomePage extends Component {
                 board_length = this.state.userData.board_length;
         }
         return (
-            <div className="user-page-wrap">
-                <div>
-                    {
-                        Object.keys(initialData).length > 0 ? (
-                            <GBHomePage {...this.props} />
-                        ):('')
-                    }
-                    {
-                        Object.keys(initialData).length > 0 ? (
-                            <div className="result-with-chart-block">
-                                <div>Начальные результаты</div>
-                                <ResultsRow
-                                    {...this.props}
-                                    drops_quantity={drops_quantity}
-                                    result_data={initialResult} />
-                                <div style={{width: '50%'}}>
-                                    <StackBarChart {...this.props}
-                                        size={board_length}
-                                        bar_height={3}
-                                        bar_width={50}
-                                        chart_data={initialData}
-                                    />
-                                </div>
+            <div className="user-page-wrap"  style={{ width: document.documentElement.clientWidth }}>
+                {
+                    Object.keys(initialData).length > 0 ? (
+                        <GBHomePage {...this.props} />
+                    ):('')
+                }
+                {
+                    Object.keys(initialData).length > 0 ? (
+                        <div className="result-with-chart-block">
+                            <div>
+                                Начальные результаты
+                                {                                   
+                                    Object.keys(initialData).length > 0 && Object.keys(this.state.userData).length > 0 && Object.keys(this.state.userData.groupsWithUsers).length > 0 ? (
+                                        `. Смещение: ${this.state.userData.group_data[0].random_shift}`
+                                    ):('')
+                                }
                             </div>
-                        ):('')
-                    }
-                    <div className="result-with-chart-block">
-                        <div>Попадание</div>
-                        <ResultsRow
-                            {...this.props}
-                            drops_quantity={drops_quantity}
-                            result_data={userResult} />
-                        <div>Поправка</div>
-                        <InputsTable
-                            {...this.props}
-                            checkResultStep={this.checkResultStep}
-                            user_data={this.state.userData} />
-                        <div style={{width: '50%'}}>
-                            <StackBarChart {...this.props}
-                                size={board_length}
-                                bar_height={3}
-                                bar_width={50}
-                                curr_step={curr_step}
-                                chart_data={chartData}
-                            />
+                            <ResultsRow
+                                {...this.props}
+                                drops_quantity={drops_quantity}
+                                result_data={initialResult} />
+                            <div style={{width: '50%'}}>
+                                <StackBarChart {...this.props}
+                                    size={board_length}
+                                    bar_height={3}
+                                    bar_width={50}
+                                    chart_data={initialData}
+                                />
+                            </div>
                         </div>
+                    ):('')
+                }
+                <div className="result-with-chart-block">
+                    <div>Попадание</div>
+                    <ResultsRow
+                        {...this.props}
+                        drops_quantity={drops_quantity}
+                        result_data={userResult} />
+                    <div>Поправка</div>
+                    <InputsTable
+                        {...this.props}
+                        checkResultStep={this.checkResultStep}
+                        user_data={this.state.userData} />
+                    <div style={{width: '50%'}}>
+                        <StackBarChart {...this.props}
+                            size={board_length}
+                            bar_height={3}
+                            bar_width={50}
+                            curr_step={curr_step}
+                            chart_data={chartData}
+                        />
                     </div>
-                    {
-                        Object.keys(initialData).length > 0 ? (
-                            <div className="result-with-chart-block">
-                                <div>Результаты статистического метода</div>
-                                <ResultsRow
-                                    {...this.props}
-                                    drops_quantity={drops_quantity}
-                                    result_data={statMethodResult} />
-                                <div>Изменения статистического метода</div>
-                                <ResultsRow
-                                    {...this.props}
-                                    drops_quantity={drops_quantity}
-                                    result_data={statMethodChanges} />
-                                <div style={{width: '50%'}}>
-                                    <StackBarChart {...this.props}
-                                        size={board_length}
-                                        bar_height={3}
-                                        bar_width={50}
-                                        chart_data={statMethodData}
+                </div>
+                {
+                    Object.keys(initialData).length > 0 ? (
+                        <div className="result-with-chart-block">
+                            <div>Результаты статистического метода</div>
+                            <ResultsRow
+                                {...this.props}
+                                drops_quantity={drops_quantity}
+                                result_data={statMethodResult} />
+                            <div>Изменения статистического метода</div>
+                            <ResultsRow
+                                {...this.props}
+                                drops_quantity={drops_quantity}
+                                result_data={statMethodChanges} />
+                            <div style={{width: '50%'}}>
+                                <StackBarChart {...this.props}
+                                    size={board_length}
+                                    bar_height={3}
+                                    bar_width={50}
+                                    chart_data={statMethodData}
+                                />
+                            </div>
+                        </div>
+                    ):('')
+                }
+                { 
+                    Object.keys(initialData).length > 0 && Object.keys(this.state.userData).length > 0 && Object.keys(this.state.userData.groupsWithUsers).length > 0 ? (
+                        this.state.userData.group_data.map(function (curr_group) {
+                            return(
+                                <div className="users-table">
+                                    <div className="header-wrap">
+                                        <div className="name">ФИО пользователя</div>
+                                        <div className="result-points">Количество попаданий</div>
+                                        <div className="result-chart">Гистрограмма по результатам</div>
+                                    </div>
+                                    <GroupItem 
+                                        {...this.props}
+                                        is_user_page="true"
+                                        key={curr_group.id}
+                                        curr_group={curr_group}
+                                        table_data={this.state.userData.groupsWithUsers}
+                                        new_group_inputs_visible={false}
+                                        group_data={this.state.userData.groupData}
+                                        handle_change_user_group={() => false}
+                                        render_group_invite_popover={() => false}
+                                        render_new_group_inputs_popover={() => false}
+                                        delete_user={()=> false}
                                     />
                                 </div>
-                            </div>
-                        ):('')
-                    }
-                    { 
-                        Object.keys(initialData).length > 0 && Object.keys(this.state.userData).length > 0 && Object.keys(this.state.userData.groupsWithUsers).length > 0 ? (
-                            this.state.userData.group_data.map(function (curr_group) {
-                                return(
-                                    <div className="users-table">
-                                        <div className="header-wrap">
-                                            <div className="name">ФИО пользователя</div>
-                                            <div className="result-points">Количество попаданий</div>
-                                            <div className="result-chart">Гистрограмма по результатам</div>
-                                        </div>
-                                        <GroupItem 
-                                            {...this.props}
-                                            is_user_page="true"
-                                            key={curr_group.id}
-                                            curr_group={curr_group}
-                                            table_data={this.state.userData.groupsWithUsers}
-                                            new_group_inputs_visible={false}
-                                            group_data={this.state.userData.groupData}
-                                            handle_change_user_group={() => false}
-                                            render_group_invite_popover={() => false}
-                                            render_new_group_inputs_popover={() => false}
-                                            delete_user={()=> false}
-                                        />
-                                    </div>
-                                )
-                            }, this)
-                        ):('')
-                    }
-                </div>
+                            )
+                        }, this)
+                    ):('')
+                }
             </div>
         )
     }

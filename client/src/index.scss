@@ -160,8 +160,9 @@ code {
 }
 
 .user-page-wrap {
-  display: flex;
-  justify-content: center;
+  overflow: auto;
+  // display: flex;
+  // justify-content: center;
 
   .group-wrap{
     .group-users{
@@ -234,6 +235,7 @@ code {
 
 .pes {
   display: flex;
+  overflow: auto;
 
   .pes-block {
     margin: 0 4px;

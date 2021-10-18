@@ -174,13 +174,13 @@ class GBHomePage extends Component {
             })
         }
         return (
-            <div>
-                <div className="control-wrap">
+            <div className="galton-board-wrap">
+                <Col span={12} className="control-wrap">
                     <label>Размер:</label>
-                    <InputNumber max={20} min={1} name="size" value={this.state.size} onChange={(val) => this.onChangeSlider('size',val)} />
+                    <InputNumber max={15} min={1} name="size" value={this.state.size} onChange={(val) => this.onChangeSlider('size',val)} />
                     <Slider
                         min={1}
-                        max={20}
+                        max={15}
                         onChange={(val) => this.onChangeSlider('size',val)}
                         defaultValue={this.state.size}
                     />
@@ -214,25 +214,23 @@ class GBHomePage extends Component {
                             </div>
                         :('')
                     }
-                </div>
-                <div>
-                    <Col span={12} style={{display:'flex',justifyContent: 'center', flexDirection: 'column'}}>
-                        <BoardWithCanvas 
-                            {...this.props} 
-                            size={this.state.size} 
-                            all_routes={this.state.allRoutes}
-                            reset_canvas={this.state.reset_canvas}
-                            routes_length={this.state.allRoutes.length}
-                            setFirstRedStep={this.setFirstRedStep}  />
-                    </Col>
-                </div>
-                {
-                    pes && Object.keys(pes).length > 0 ? 
-                        <div className="pes">
-                        {pesDom}
-                        </div>
-                    :('')
-                }
+                </Col>
+                <Col span={12} style={{display:'flex',justifyContent: 'center', flexDirection: 'column'}}>
+                    <BoardWithCanvas 
+                        {...this.props} 
+                        size={this.state.size} 
+                        all_routes={this.state.allRoutes}
+                        reset_canvas={this.state.reset_canvas}
+                        routes_length={this.state.allRoutes.length}
+                        setFirstRedStep={this.setFirstRedStep}  />
+                    {
+                        pes && Object.keys(pes).length > 0 ? 
+                            <div className="pes" style={{ width: document.documentElement.clientWidth }}>
+                                {pesDom}
+                            </div>
+                        :('')
+                    }
+                </Col>
             </div>
         );
         
