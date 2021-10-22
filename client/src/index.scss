@@ -236,19 +236,34 @@ code {
 .pes {
   display: flex;
   overflow: auto;
+  flex-direction: column;
 
   .pes-block {
-    margin: 0 4px;
+    margin: 2px;
+    display: flex;
+    align-items: center;
 
     .pes-items-wrap {
       display: flex;
-
-    .pes-item {
-      padding: 0 2px;
       border: 1px solid #acacac;
-      // border-collapse: collapse;
+
+      .pes-item {
+        .pes-label {
+          margin: 0 5px;
+        }
+        .pes-number-item {
+          width: 5px;
+          height: 5px;
+          margin: 1px;
+        }
+        .pes-number-item.right{
+          background: #555;
+        }
+        .pes-number-item.left {
+          background: #e4e4e4;
+        }
+      }
     }
-  }
   }
 }
 

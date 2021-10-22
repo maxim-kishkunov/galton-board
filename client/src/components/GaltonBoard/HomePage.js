@@ -1,4 +1,8 @@
+import axios from 'axios';
 import React, { Component } from 'react';
+import { 
+    Modal,
+ } from 'antd';
 import {
     Slider,
     Col,
@@ -27,12 +31,20 @@ class GBHomePage extends Component {
         this.getBoardPES = this.getBoardPES.bind(this);
     }
 
+    componentDidMount(){
+        this.getBoardPES();
+    }
+
     onChangeSlider(fieldName,fieldValue){
         this.setState({
             allRoutes: [],
             isPaused: false,
             reset_canvas: + this.state.reset_canvas + 0.00001,
-            [fieldName]: fieldValue
+            [fieldName]: fieldValue,            
+            pesData: [],
+            pesDataFormatted: []
+        },() => {
+            this.getBoardPES();
         })
     }
 
@@ -106,33 +118,68 @@ class GBHomePage extends Component {
 
     getBoardPES() {
         const { 
-            allRoutes,
             size
         } = this.state;
-        let ways = [];
-        let numbersArray = [];
-        let resArr = [];
-        for(let i = 0; i < Math.pow(2,size); i++){
-            let num = i.toString(2);
-            while(num.length < size)
-                num = 0 + num;
-            ways.push(num);
-        }
-        for(let i = 0; i < ways.length; i++){
-            let num = ways[i];
-            let newItem = [];
-            newItem.push(parseInt(num[0]));
-            for(let j = 1; j < num.length; j++){
-                newItem.push(parseInt(newItem[j - 1]) + parseInt(num[j]));
+        // let ways = [];
+        // let numbersArray = [];
+        // let resArr = [];
+        // for(let i = 0; i < Math.pow(2,size); i++){
+        //     let num = i.toString(2);
+        //     while(num.length < size)
+        //         num = 0 + num;
+        //     ways.push(num);
+        // }
+        // for(let i = 0; i < ways.length; i++){
+        //     let num = ways[i];
+        //     let newItem = [];
+        //     newItem.push(parseInt(num[0]));
+        //     for(let j = 1; j < num.length; j++){
+        //         newItem.push(parseInt(newItem[j - 1]) + parseInt(num[j]));
+        //     }
+        //     numbersArray.push(newItem);
+        // }
+        // for(let i = 0; i <= size; i++){
+        //     let items = [];
+        //     items = numbersArray.filter(item => item[item.length - 1] === i);
+        //     resArr[i] = items;
+        // }
+        // let formattedArr = {};
+        // for(let i = 0; i < resArr.length; i++){
+        //   if(resArr[i] && resArr[i].length){
+        //     for(let j = 0; j < resArr[i].length; j++){
+        //       let currItem = resArr[i][j];
+        //       if(typeof currItem !== 'undefined'){
+        //         if(typeof formattedArr[currItem[currItem.length - 1]] === 'undefined')
+        //           formattedArr[currItem[currItem.length - 1]] = [];
+      
+        //         formattedArr[currItem[currItem.length - 1]].push(currItem.map((currItem,index,arr) => index > 0 ? currItem === arr[index - 1] ? 0 : 1 : currItem ));
+        //       }
+        //     }
+        //   }
+        // }
+        // this.setState({
+        //     pesData: resArr,
+        //     pesDataFormatted: formattedArr
+        // })
+
+        axios.get(`/get_sample_space`,{params: 
+            {
+                size: size,
+            }}
+        ).then(response => {
+            if(response.data.code !== 200){
+                Modal.error({
+                    title: 'Error!',
+                    content: response.data.message,
+                });
+            }else{
+                this.setState({
+                    // pesData: response.data.data,
+                    pesDataFormatted: JSON.parse(response.data.data.formatted_spaces_json)
+                })
             }
-            numbersArray.push(newItem);
-        }
-        for(let i = 0; i <= size; i++){
-            let items = [];
-            items = numbersArray.filter(item => item[item.length - 1] === i);
-            resArr[i] = items;
-        }
-        return resArr;
+        })
+        
     }
 
     render() {
@@ -143,8 +190,9 @@ class GBHomePage extends Component {
             lastPoints += item[item.length - 1] + (index < array.length ? ', ' : '');
         });
 
-        let pes = this.getBoardPES();
+        let pes = this.state.pesDataFormatted;
         let pesDom = [];
+        let index = 0;
         if(pes && Object.keys(pes).length > 0){ 
             Object.keys(pes).forEach(function(currKey){
                 let arrItems = [];
@@ -152,23 +200,18 @@ class GBHomePage extends Component {
                 Object.keys(currItems).forEach(function(arrKey){
                     let itemsArr = [];
                     let currItem = currItems[arrKey];
-                    let tmpItem = 0;
                     Object.keys(currItem).forEach(function(itemsKey){
                         itemsArr.push(
-                            <div key={arrKey} className="pes-number-item">
-                            {
-                                currItem[itemsKey] === tmpItem ? 0 : 1
-                            }
-                            </div>
+                            <div key={arrKey + '_num_item_' + index} className={`pes-number-item${currItem[itemsKey] === 1 ? ' right' : ' left'}`}></div>
                         );
-                        tmpItem = currItem[itemsKey];
+                        index += 1;
                     });
-                    arrItems.push(<div key={arrKey} className="pes-item">{itemsArr}</div>);
+                    arrItems.push(<div key={currKey + '_' + arrKey + index} className="pes-item">{itemsArr}</div>);
                 });
                 pesDom.push(
-                    <div key={currKey} className="pes-block">
-                        <div className="pes-items-wrap">{arrItems}</div>
+                    <div key={currKey + '_block_' + index} className="pes-block">
                         <div className="pes-label">{currKey}</div>
+                        <div className="pes-items-wrap">{arrItems}</div>
                     </div>
                 );
             })

@@ -137,9 +137,48 @@ app.get("/migrate", async (req, res) => {
 
 });
 
-app.get("/get_sample_space", async (req, res) => {
-  let query = req.query;
-  let size = query.size;
+app.get("/migrate_sample_space_15", async (req, res) => {
+  let queryText = "select exists(select FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = 'public' AND TABLE_NAME = 'sample_spaces')";
+  let tablesExist = false;
+  let values = [];
+  await db.query(queryText)
+  .then(async(result) => {
+    tablesExist = result.rows[0].exists;
+  });
+  if(!tablesExist){
+    queryText =  'CREATE TABLE sample_spaces(';
+    queryText +=   'id UUID PRIMARY KEY, ';
+    queryText +=   'key INTEGER, ';
+    queryText +=   'spaces_json TEXT, ';
+    queryText +=   'unsorted_data TEXT, ';
+    queryText +=   'formatted_spaces_json TEXT ';
+    queryText += ')';
+
+    await  db.query(queryText).then(async(result) => {
+      for(let i = 1; i <= 15; i++){
+        let queryText = `SELECT * FROM sample_spaces WHERE key = ${i}`;        
+        await db.query(queryText).then((result) => {
+          if(result.rows.length === 0){
+            let result = generate_spaces(i);
+            queryText = 'INSERT INTO sample_spaces(id, key, spaces_json, unsorted_data, formatted_spaces_json) VALUES($1, $2, $3, $4, $5) RETURNING *';
+            values = [
+              uuid.v4(),
+              i,
+              JSON.stringify(result.data),
+              JSON.stringify(result.unsorted_data),
+              JSON.stringify(result.formatted_data),
+            ];
+            db.query(queryText, values);
+          }
+        });
+      }
+    });
+    res.json({ message: 'Done' });
+  }
+});
+
+
+const generate_spaces = function(size) {
   let ways = [];
   let numbersArray = [];
   let resArr = [];
@@ -163,17 +202,40 @@ app.get("/get_sample_space", async (req, res) => {
       items = numbersArray.filter(item => item[item.length - 1] === i);
       resArr[i] = items;
   }
-  let formattedArr = {};
+  let formattedArr = [];
   for(let i = 0; i < resArr.length; i++){
-    for(let j = 0; j < resArr[i].length; i++){
-      let currItem = resArr[i][j];
-      if(typeof formattedArr[currItem[currItem.length - 1]] === 'undefined')
-        formattedArr[currItem[currItem.length - 1]] = [];
+    if(resArr[i] && resArr[i].length){
+      for(let j = 0; j < resArr[i].length; j++){
+        let currItem = resArr[i][j];
+        if(typeof currItem !== 'undefined'){
+          if(typeof formattedArr[currItem[currItem.length - 1]] === 'undefined')
+            formattedArr[currItem[currItem.length - 1]] = [];
 
-      formattedArr[currItem[currItem.length - 1]].push(currItem.map((currItem,index,arr) => index > 0 ? currItem === arr[index - 1] ? 0 : 1 : 0 ));
+          formattedArr[currItem[currItem.length - 1]].push(currItem.map((currItem,index,arr) => index > 0 ? currItem === arr[index - 1] ? 0 : 1 : currItem ));
+        }
+      }
     }
   }
-  res.json({ data: resArr, formatted_data: formattedArr });
+  return {unsorted_data: numbersArray, data: resArr, formatted_data: formattedArr};
+}
+
+
+app.get("/get_sample_space", async (req, res) => {
+  let query = req.query;
+  let queryText =  `
+    SELECT * FROM sample_spaces
+    WHERE sample_spaces.key = '${query.size}'
+  `;
+  let data = {};
+  await db.query(queryText).then((result) => {
+    if(result.rows.length > 0)
+      data = result.rows[0];
+  });
+
+  if(Object.keys(data).length > 0 )
+    res.json({ data: data, code: 200 });
+  else
+    res.json({ message: 'Sample data is not found', code: 404 });
 });
 
 app.get("/get_lect_data", async (req, res) => {     
