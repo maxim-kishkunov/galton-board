@@ -11,8 +11,10 @@ import {
     Divider,
 } from 'antd';
 // import BoardBlock from './BoardBlock'
-import BoardWithCanvas from './BoardWithCanvas'
+import BoardWithCanvas from './BoardWithCanvas';
 
+let timer = false;
+let globalFirstRedStep = -1;
 class GBHomePage extends Component {
     constructor(props) {
         super(props);
@@ -23,6 +25,7 @@ class GBHomePage extends Component {
             reset_canvas: 0,
         };
         this.onChangeSlider = this.onChangeSlider.bind(this);
+        this.handleStopTimer = this.handleStopTimer.bind(this);
         this.handleStartTimer = this.handleStartTimer.bind(this);
         this.handleRestartTimer = this.handleRestartTimer.bind(this);
         this.handlePauseTimer = this.handlePauseTimer.bind(this);
@@ -39,10 +42,12 @@ class GBHomePage extends Component {
         this.setState({
             allRoutes: [],
             isPaused: false,
+            isStarted: false,
             reset_canvas: + this.state.reset_canvas + 0.00001,
             [fieldName]: fieldValue,            
             pesData: [],
-            pesDataFormatted: []
+            pesDataFormatted: [],
+            firstRedStep: -1,
         },() => {
             this.getBoardPES();
         })
@@ -50,31 +55,41 @@ class GBHomePage extends Component {
 
     handleStartTimer() {
         let i = 0;
-        this.timer = setInterval(() => {
-            if(!this.state.isPaused) {
-                let allRoutes = this.state.allRoutes;
-                let size = this.state.size;
-                for(let j = 0; j < allRoutes.length; j ++){
-                    if(allRoutes[j].length <= size){
-                        let randAddNumber = Math.round(Math.random(0));
-                        allRoutes[j].push(allRoutes[j][allRoutes[j].length - 1] + randAddNumber);
+        this.setState({
+            allRoutes: [],
+            firstRedStep: -1,
+            reset_canvas: + this.state.reset_canvas + 0.00001
+        },()=>{
+            globalFirstRedStep = -1;
+            timer = setInterval(() => {
+                if(!this.state.isPaused) {
+                    let allRoutes = this.state.allRoutes;
+                    let size = this.state.size;
+                    for(let j = 0; j < allRoutes.length; j ++){
+                        if(allRoutes[j].length <= size){
+                            let randAddNumber = Math.round(Math.random(0));
+                            allRoutes[j].push(allRoutes[j][allRoutes[j].length - 1] + randAddNumber);
+                        }
                     }
+                    if(i % 2 === 0){
+                        allRoutes.push([0]);
+                    }
+                    this.setState({
+                        isStarted: true,
+                        allRoutes: allRoutes
+                    })
+                    i++;
                 }
-                if(i % 2 === 0){
-                    allRoutes.push([0]);
-                }
-                this.setState({
-                    allRoutes: allRoutes
-                })
-                i++;
-            }
-        }, 30);
+            }, 30);
+        });
     }
 
     handleDropSome(quantity) {
         let allRoutes = [];
         this.setState({
             allRoutes: allRoutes,
+            firstRedStep: -1,
+            reset_canvas: + this.state.reset_canvas + 0.00001
         });
 
         for(let i = 0; i < quantity; i ++){
@@ -90,6 +105,7 @@ class GBHomePage extends Component {
             firstRedStep: -1,
             reset_canvas: + this.state.reset_canvas + 0.00001
         });
+        globalFirstRedStep = -1;
     }
 
     handleRestartTimer() {
@@ -99,8 +115,22 @@ class GBHomePage extends Component {
             firstRedStep: -1,
             reset_canvas: + this.state.reset_canvas + 0.00001
         },() => {
-            clearInterval(this.timer);
+            clearInterval(timer);
+            timer = false;
             this.handleStartTimer();
+        })
+    }
+
+    handleStopTimer() {
+        this.setState({
+            allRoutes: [],
+            isPaused: false,
+            isStarted: false,
+            firstRedStep: -1,
+            reset_canvas: + this.state.reset_canvas + 0.00001
+        },() => {
+            clearInterval(timer);
+            this.timer = false;
         })
     }
 
@@ -111,9 +141,12 @@ class GBHomePage extends Component {
     }
 
     setFirstRedStep(firstRedStep) {
-        this.setState({
-            firstRedStep: firstRedStep
-        })
+        if(globalFirstRedStep === -1){
+            globalFirstRedStep = firstRedStep
+            this.setState({
+                firstRedStep: firstRedStep
+            })
+        }
     }
 
     getBoardPES() {
@@ -174,7 +207,7 @@ class GBHomePage extends Component {
                 });
             }else{
                 this.setState({
-                    // pesData: response.data.data,
+                    pesData: JSON.parse(response.data.data.spaces_json),
                     pesDataFormatted: JSON.parse(response.data.data.formatted_spaces_json)
                 })
             }
@@ -185,36 +218,73 @@ class GBHomePage extends Component {
     render() {
         const {allRoutes} = this.state;
 
-        let lastPoints = '';
-        allRoutes.map((item, index, array) => {
-            lastPoints += item[item.length - 1] + (index < array.length ? ', ' : '');
+        let lastPoints = allRoutes.map((item, index, array) => {
+            return(
+                item[item.length - 1]
+            )
         });
 
-        let pes = this.state.pesDataFormatted;
+        let pes = this.state.pesData;
         let pesDom = [];
         let index = 0;
-        if(pes && Object.keys(pes).length > 0){ 
-            Object.keys(pes).forEach(function(currKey){
-                let arrItems = [];
+        if(pes && Object.keys(pes).length > 0){
+            pesDom = Object.keys(pes).map(function (currKey) {
                 let currItems = pes[currKey];
-                Object.keys(currItems).forEach(function(arrKey){
-                    let itemsArr = [];
+                let arrItems = Object.keys(currItems).map(function (arrKey) {
                     let currItem = currItems[arrKey];
-                    Object.keys(currItem).forEach(function(itemsKey){
-                        itemsArr.push(
-                            <div key={arrKey + '_num_item_' + index} className={`pes-number-item${currItem[itemsKey] === 1 ? ' right' : ' left'}`}></div>
-                        );
-                        index += 1;
+
+                    //currItem === arr[index - 1] ? 0 : 1 : currItem
+                    
+                    let itemsArr = Object.keys(currItem).map(function (itemsKey) {
+                        let showRight = true;
+                        if((itemsKey > 0 && currItem[itemsKey] === currItem[itemsKey - 1]) || currItem[itemsKey] === 0)
+                            showRight = false;
+                        return(
+                            <div key={itemsKey + '_num_item_' + index} className={`pes-number-item${showRight ? ' right' : ' left'}`}></div>
+                        )
                     });
-                    arrItems.push(<div key={currKey + '_' + arrKey + index} className="pes-item">{itemsArr}</div>);
+                    let currRouteItems = allRoutes.filter(item => item && item.join() === ('0,' + currItem.join()));
+                    let isChecked = currRouteItems.length > 0;
+                    let isDoubled = currRouteItems.length > 1;
+                    return(
+                        <div key={currKey + '_' + arrKey + index} className={`pes-item-wrap${isDoubled ? ' double' : ''}`}>
+                            <div className={`pes-item${isChecked ? ' checked' : ''}${isDoubled ? ' double' : ''}`}>
+                                {itemsArr}
+                            </div>
+                            {
+                                isDoubled ? <div className="pes-number-quantity">{currRouteItems.length}</div> : ('')
+                            }
+                        </div>)
                 });
-                pesDom.push(
+
+                return(
                     <div key={currKey + '_block_' + index} className="pes-block">
                         <div className="pes-label">{currKey}</div>
                         <div className="pes-items-wrap">{arrItems}</div>
                     </div>
-                );
+                )
             })
+            // Object.keys(pes).forEach(function(currKey){
+            //     let arrItems = [];
+            //     let currItems = pes[currKey];
+            //     Object.keys(currItems).forEach(function(arrKey){
+            //         let itemsArr = [];
+            //         let currItem = currItems[arrKey];
+            //         Object.keys(currItem).forEach(function(itemsKey){
+            //             itemsArr.push(
+            //                 <div key={arrKey + '_num_item_' + index} className={`pes-number-item${currItem[itemsKey] === 1 ? ' right' : ' left'}`}></div>
+            //             );
+            //             index += 1;
+            //         });
+            //         arrItems.push(<div key={currKey + '_' + arrKey + index} className="pes-item">{itemsArr}</div>);
+            //     });
+            //     pesDom.push(
+            //         <div key={currKey + '_block_' + index} className="pes-block">
+            //             <div className="pes-label">{currKey}</div>
+            //             <div className="pes-items-wrap">{arrItems}</div>
+            //         </div>
+            //     );
+            // })
         }
         return (
             <div className="galton-board-wrap">
@@ -229,16 +299,16 @@ class GBHomePage extends Component {
                     />
                     <Divider plain orientation="left">Бесконечные броски</Divider>
                     <div>
-                        <Button disabled={this.timer} onClick={this.handleStartTimer}>Старт</Button>
-                        <Button onClick={this.handlePauseTimer}>Пауза</Button>
-                        <Button onClick={this.handleRestartTimer}>Рестарт</Button>
+                        <Button onClick={this.state.isStarted ? this.handlePauseTimer : this.handleStartTimer}>{this.state.isStarted ? 'Пауза' : 'Старт'}</Button>
+                        <Button disabled={!this.state.isStarted} onClick={this.handleStopTimer}>Стоп</Button>
+                        <Button disabled={!this.state.isStarted} onClick={this.handleRestartTimer}>Рестарт</Button>
                     </div>
                     <Divider plain orientation="left">Кинуть несколько сразу</Divider>
                     <div>
-                        <Button disabled={this.timer} onClick={() => this.handleDropSome(30)}>30</Button>
-                        <Button disabled={this.timer} onClick={() => this.handleDropSome(100)}>100</Button>
-                        <Button disabled={this.timer} onClick={() => this.handleDropSome(1000)}>1000</Button>
-                        <Button disabled={this.timer} onClick={() => this.handleDropSome(10000)}>10000</Button>
+                        <Button disabled={this.state.isStarted} onClick={() => this.handleDropSome(30)}>30</Button>
+                        <Button disabled={this.state.isStarted} onClick={() => this.handleDropSome(100)}>100</Button>
+                        <Button disabled={this.state.isStarted} onClick={() => this.handleDropSome(1000)}>1000</Button>
+                        <Button disabled={this.state.isStarted} onClick={() => this.handleDropSome(10000)}>10000</Button>
                     </div>
                     <div className="text-block">
                         Всего бросков: {this.state.allRoutes.length}
@@ -251,14 +321,17 @@ class GBHomePage extends Component {
                         :('')
                     }
                     {
-                        lastPoints.length > 0 && allRoutes.length <= 30 ? 
+                        lastPoints.length > 0 ? 
                             <div className="text-block">
-                                Результаты: {lastPoints.substr(0, lastPoints.length - 2)}
+                                Первые 30 результатов: {lastPoints.slice(0, 29).join(', ')}
                             </div>
                         :('')
                     }
                 </Col>
                 <Col span={12} style={{display:'flex',justifyContent: 'center', flexDirection: 'column'}}>
+                    <div className="pes-controls">
+                        
+                    </div>
                     <BoardWithCanvas 
                         {...this.props} 
                         size={this.state.size} 

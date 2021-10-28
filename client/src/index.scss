@@ -14,7 +14,7 @@ code {
 
 
 .control-wrap {
-  width: 510px;
+  width: 600px;
   .text-block {
     text-align: left;
     margin-left: 5px;
@@ -245,9 +245,22 @@ code {
 
     .pes-items-wrap {
       display: flex;
-      border: 1px solid #acacac;
 
+      .pes-item-wrap.double {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      }
+      .pes-item.checked {
+        background: #6eaf4c;
+      }
+      .pes-item.checked.double {
+        background: #f44336;
+      }
       .pes-item {
+        border: 1px solid #acacac;
+
         .pes-label {
           margin: 0 5px;
         }
@@ -262,6 +275,15 @@ code {
         .pes-number-item.left {
           background: #e4e4e4;
         }
+      }
+      .pes-number-quantity {
+        background: #fff;
+        border: none;
+        height: 9px;
+        font-size: 9px;
+        line-height: 9px;
+        border-left: 1px solid #e9e9e9;
+        border-right: 1px solid #e9e9e9;
       }
     }
   }

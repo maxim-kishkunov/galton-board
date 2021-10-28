@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-
+let firstRedStep = -1;
 class BoardWithCanvas extends Component {
     constructor(props) {
         super(props);
@@ -8,7 +8,7 @@ class BoardWithCanvas extends Component {
             storedSize: 0,
             lastShownRoute: 0,
             shownRoutes: [],
-            firstRedStep: -1,
+            // firstRedStep: -1,
             shownPiecesBlack: [],
             reset_canvas: 0,
         }
@@ -118,11 +118,9 @@ class BoardWithCanvas extends Component {
                         shownRoutes.push(currRoute.join());
                     }
                 }else if(isThisRouteShown.length > 0){
-                    if(this.state.firstRedStep === -1){
+                    if(firstRedStep === -1){
+                        firstRedStep = lastShownRoute;
                         this.props.setFirstRedStep(lastShownRoute);
-                        this.setState({
-                            firstRedStep: lastShownRoute,
-                        })
                     }
                     let startX = 16 + (size - Math.floor(1/ 2)) * 16;
                     let startY = 32;// + i * 16;
@@ -198,6 +196,8 @@ class BoardWithCanvas extends Component {
             this.drawRoutesByPiece();
             this.drawStackBarChart();
         }
+        
+        firstRedStep = -1;
         this.setState({reset_canvas: reset_canvas});
     }
 
