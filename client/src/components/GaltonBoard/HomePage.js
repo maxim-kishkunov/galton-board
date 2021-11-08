@@ -9,6 +9,7 @@ import {
     Button,
     InputNumber,
     Divider,
+    Radio,
 } from 'antd';
 // import BoardBlock from './BoardBlock'
 import BoardWithCanvas from './BoardWithCanvas';
@@ -23,6 +24,7 @@ class GBHomePage extends Component {
             allRoutes: [],
             firstRedStep: -1,
             reset_canvas: 0,
+            resultShowMode: 'sorted_groups',
         };
         this.onChangeSlider = this.onChangeSlider.bind(this);
         this.handleStopTimer = this.handleStopTimer.bind(this);
@@ -32,6 +34,7 @@ class GBHomePage extends Component {
         this.setFirstRedStep = this.setFirstRedStep.bind(this);
         this.handleDropSome = this.handleDropSome.bind(this);
         this.getBoardPES = this.getBoardPES.bind(this);
+        this.onSwitchResultShowMode = this.onSwitchResultShowMode.bind(this);
     }
 
     componentDidMount(){
@@ -153,48 +156,6 @@ class GBHomePage extends Component {
         const { 
             size
         } = this.state;
-        // let ways = [];
-        // let numbersArray = [];
-        // let resArr = [];
-        // for(let i = 0; i < Math.pow(2,size); i++){
-        //     let num = i.toString(2);
-        //     while(num.length < size)
-        //         num = 0 + num;
-        //     ways.push(num);
-        // }
-        // for(let i = 0; i < ways.length; i++){
-        //     let num = ways[i];
-        //     let newItem = [];
-        //     newItem.push(parseInt(num[0]));
-        //     for(let j = 1; j < num.length; j++){
-        //         newItem.push(parseInt(newItem[j - 1]) + parseInt(num[j]));
-        //     }
-        //     numbersArray.push(newItem);
-        // }
-        // for(let i = 0; i <= size; i++){
-        //     let items = [];
-        //     items = numbersArray.filter(item => item[item.length - 1] === i);
-        //     resArr[i] = items;
-        // }
-        // let formattedArr = {};
-        // for(let i = 0; i < resArr.length; i++){
-        //   if(resArr[i] && resArr[i].length){
-        //     for(let j = 0; j < resArr[i].length; j++){
-        //       let currItem = resArr[i][j];
-        //       if(typeof currItem !== 'undefined'){
-        //         if(typeof formattedArr[currItem[currItem.length - 1]] === 'undefined')
-        //           formattedArr[currItem[currItem.length - 1]] = [];
-      
-        //         formattedArr[currItem[currItem.length - 1]].push(currItem.map((currItem,index,arr) => index > 0 ? currItem === arr[index - 1] ? 0 : 1 : currItem ));
-        //       }
-        //     }
-        //   }
-        // }
-        // this.setState({
-        //     pesData: resArr,
-        //     pesDataFormatted: formattedArr
-        // })
-
         axios.get(`/get_sample_space`,{params: 
             {
                 size: size,
@@ -208,12 +169,19 @@ class GBHomePage extends Component {
             }else{
                 this.setState({
                     pesData: JSON.parse(response.data.data.spaces_json),
+                    pesDataUnsorted: JSON.parse(response.data.data.unsorted_data),
                     pesDataFormatted: JSON.parse(response.data.data.formatted_spaces_json)
                 })
             }
         })
         
     }
+
+    onSwitchResultShowMode(ev){
+        this.setState({
+            resultShowMode: ev.target.value
+        });
+    };
 
     render() {
         const {allRoutes} = this.state;
@@ -225,7 +193,14 @@ class GBHomePage extends Component {
         });
 
         let pes = this.state.pesData;
-        let pesDom = [];
+        if(this.state.resultShowMode === 'unsorted'){
+            let pesDataUnsorted = this.state.pesDataUnsorted;
+            let chunk_size = 120;
+            pes = pesDataUnsorted.map( function(e,i){ 
+                return i % chunk_size===0 ? pesDataUnsorted.slice(i,i + chunk_size) : null; 
+           }).filter(function(e){ return e; });
+        }
+            let pesDom = [];
         let index = 0;
         if(pes && Object.keys(pes).length > 0){
             pesDom = Object.keys(pes).map(function (currKey) {
@@ -264,27 +239,6 @@ class GBHomePage extends Component {
                     </div>
                 )
             })
-            // Object.keys(pes).forEach(function(currKey){
-            //     let arrItems = [];
-            //     let currItems = pes[currKey];
-            //     Object.keys(currItems).forEach(function(arrKey){
-            //         let itemsArr = [];
-            //         let currItem = currItems[arrKey];
-            //         Object.keys(currItem).forEach(function(itemsKey){
-            //             itemsArr.push(
-            //                 <div key={arrKey + '_num_item_' + index} className={`pes-number-item${currItem[itemsKey] === 1 ? ' right' : ' left'}`}></div>
-            //             );
-            //             index += 1;
-            //         });
-            //         arrItems.push(<div key={currKey + '_' + arrKey + index} className="pes-item">{itemsArr}</div>);
-            //     });
-            //     pesDom.push(
-            //         <div key={currKey + '_block_' + index} className="pes-block">
-            //             <div className="pes-label">{currKey}</div>
-            //             <div className="pes-items-wrap">{arrItems}</div>
-            //         </div>
-            //     );
-            // })
         }
         return (
             <div className="galton-board-wrap">
@@ -330,7 +284,10 @@ class GBHomePage extends Component {
                 </Col>
                 <Col span={12} style={{display:'flex',justifyContent: 'center', flexDirection: 'column'}}>
                     <div className="pes-controls">
-                        
+                    <Radio.Group value={this.state.resultShowMode} onChange={this.onSwitchResultShowMode} buttonStyle="solid">
+                        <Radio.Button value="sorted_groups">Сортировать</Radio.Button>
+                        <Radio.Button value="unsorted">Не сортировать</Radio.Button>
+                    </Radio.Group>
                     </div>
                     <BoardWithCanvas 
                         {...this.props} 
