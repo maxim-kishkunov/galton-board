@@ -193,12 +193,22 @@ class GBHomePage extends Component {
         });
 
         let pes = this.state.pesData;
-        if(this.state.resultShowMode === 'unsorted'){
+        if(this.state.resultShowMode === 'ungrouped'){
             let pesDataUnsorted = this.state.pesDataUnsorted;
             let chunk_size = 120;
             pes = pesDataUnsorted.map( function(e,i){ 
                 return i % chunk_size===0 ? pesDataUnsorted.slice(i,i + chunk_size) : null; 
            }).filter(function(e){ return e; });
+        }else if(this.state.resultShowMode === 'unsorted'){
+            let pesDataUnsorted = this.state.pesDataUnsorted;
+            let shuffled = pesDataUnsorted
+                .map((value) => ({ value, sort: Math.random() }))
+                .sort((a, b) => a.sort - b.sort)
+                .map(({ value }) => value)
+            let chunk_size = 120;
+            pes = shuffled.map( function(e,i){ 
+                return i % chunk_size===0 ? shuffled.slice(i,i + chunk_size) : null; 
+            }).filter(function(e){ return e; });
         }
             let pesDom = [];
         let index = 0;
@@ -283,9 +293,11 @@ class GBHomePage extends Component {
                     }
                 </Col>
                 <Col span={12} style={{display:'flex',justifyContent: 'center', flexDirection: 'column'}}>
+                    <Divider plain orientation="left">Пространство Элементарных Событий</Divider>
                     <div className="pes-controls">
                     <Radio.Group value={this.state.resultShowMode} onChange={this.onSwitchResultShowMode} buttonStyle="solid">
                         <Radio.Button value="sorted_groups">Сортировать</Radio.Button>
+                        <Radio.Button value="ungrouped">Не группировать</Radio.Button>
                         <Radio.Button value="unsorted">Не сортировать</Radio.Button>
                     </Radio.Group>
                     </div>
