@@ -2,14 +2,16 @@ const express = require("express");
 const pg = require('pg');
 const bcrypt = require('bcrypt');
 const uuid = require('node-uuid');
-const bodyParser = require('body-parser')
+const bodyParser = require('body-parser');
+const dotenv = require('dotenv');
+dotenv.config();
 
 const db = new pg.Pool({
- host: 'localhost',
- database: 'galton_board',
- user: 'postgres',
- password: 'postgres',
- port: '5432'
+ host: process.env.DB_HOST,
+ database: process.env.DB_NAME,
+ user: process.env.DB_USER,
+ password: process.env.DB_PASSWORD,
+ port: process.env.DB_PORT
 });
 const PORT = process.env.PORT || 3001;
 
