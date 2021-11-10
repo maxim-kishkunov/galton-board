@@ -9,8 +9,8 @@ dotenv.config();
 const connectStr = process.env.DATABASE_URL;
 
 const db = new pg.Pool({
-  connectionString: connectStr,
-  ssl: true
+  connectionString: connectStr
+  
 //  host: process.env.DB_HOST,
 //  database: process.env.DB_NAME,
 //  user: process.env.DB_USER,
