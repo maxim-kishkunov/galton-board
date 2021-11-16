@@ -23,7 +23,7 @@ class HomePage extends Component {
     checkUser(){
         let currentUser = JSON.parse(localStorage.getItem('currentUser'));
         if(currentUser && Object.keys(currentUser).length > 0){
-            axios.get(`/check_user`,{params: 
+            axios.get(`http://172.30.222.45:84/check_user`,{params: 
                 {
                     user_id: currentUser.user_id
                 }}

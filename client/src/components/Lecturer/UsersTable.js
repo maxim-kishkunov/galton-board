@@ -39,7 +39,7 @@ class UsersTable extends Component {
     }
 
     getTableData(){        
-        axios.get(`/get_lect_data`).then(response => {
+        axios.get(`http://172.30.222.45:84/get_lect_data`).then(response => {
             if(response.data.code !== 200){
                 // Modal.error({
                 //     title: 'Error!',
@@ -61,7 +61,7 @@ class UsersTable extends Component {
             group_id: newGroupID,
             user_id: userID,
         };
-        axios.post(`/change_user_group`, params).then(response => {
+        axios.post(`http://172.30.222.45:84/change_user_group`, params).then(response => {
             this.getTableData();
         }).catch(error => {
             console.error(error);
@@ -69,7 +69,7 @@ class UsersTable extends Component {
     }
 
     deleteUser(user_id){
-        axios.post(`/delete_user`, {
+        axios.post(`http://172.30.222.45:84/delete_user`, {
             user_id: user_id,
         }).then(response => {
             this.getTableData();
@@ -120,7 +120,7 @@ class UsersTable extends Component {
         let params = {
             name: this.state.newGroupName,
         };
-        axios.post(`/create_new_group`, params)
+        axios.post(`http://172.30.222.45:84/create_new_group`, params)
         .then(response => {
             this.getTableData();
         }).catch(error => {
@@ -199,7 +199,7 @@ class UsersTable extends Component {
         let params = {
             group_data: currGroup,
         };
-        axios.post(`/create_group_input`, params)
+        axios.post(`http://172.30.222.45:84/create_group_input`, params)
         .then(response => {
             this.getTableData();
         }).catch(error => {

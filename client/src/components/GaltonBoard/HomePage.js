@@ -156,7 +156,7 @@ class GBHomePage extends Component {
         const { 
             size
         } = this.state;
-        axios.get(`/get_sample_space`,{params: 
+        axios.get(`http://172.30.222.45:84/get_sample_space`,{params: 
             {
                 size: size,
             }}

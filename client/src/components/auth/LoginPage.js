@@ -21,7 +21,7 @@ class LoginPage extends React.Component {
 
     handleLogin(e){
         e.preventDefault();        
-        axios.get(`/auth`,{params: 
+        axios.get(`http://172.30.222.45:84/auth`,{params: 
             {
                 email: this.state.email,
                 password: this.state.password

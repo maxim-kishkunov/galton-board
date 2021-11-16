@@ -50,7 +50,7 @@ class UserLogin extends Component {
     checkToken(){
         let currentUser = JSON.parse(localStorage.getItem('currentUser'));
         if(currentUser === null){
-            axios.get(`/auth_by_token`,{params:{
+            axios.get(`http://172.30.222.45:84/auth_by_token`,{params:{
                 name: this.state.name,
                 token: this.props.match.params.token
             }}).then(response => {
