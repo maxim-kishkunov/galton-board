@@ -4,6 +4,7 @@ const bcrypt = require('bcrypt');
 const uuid = require('node-uuid');
 const bodyParser = require('body-parser');
 const dotenv = require('dotenv');
+const cors = require('cors');
 dotenv.config();
 
 const connectStr = process.env.DATABASE_URL;
@@ -20,6 +21,8 @@ const db = new pg.Pool({
 const PORT = process.env.PORT || 3001;
 
 const app = express();
+
+app.use(cors());
 
 app.use( bodyParser.json() );
 app.use(bodyParser.urlencoded({
