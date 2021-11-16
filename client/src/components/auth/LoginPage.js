@@ -40,7 +40,10 @@ class LoginPage extends React.Component {
                         user_email: response.data.user_email,
                     })
                 );
-                window.location.replace('/');
+                if( localStorage.redirected_from )
+                    window.location.replace(localStorage.redirected_from);
+                else
+                    window.location.replace('/');
             }
         }).catch(function (error) {
             if (error.response && error.response.status === 401) {

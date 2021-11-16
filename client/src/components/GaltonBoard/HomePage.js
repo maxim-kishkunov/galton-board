@@ -310,7 +310,7 @@ class GBHomePage extends Component {
                         setFirstRedStep={this.setFirstRedStep}  />
                     {
                         pes && Object.keys(pes).length > 0 ? 
-                            <div className="pes" style={{ width: document.documentElement.clientWidth }}>
+                            <div className={`pes${this.state.resultShowMode === 'sorted_groups' ? ' grouped': ''}`} style={{ width: document.documentElement.clientWidth }}>
                                 {pesDom}
                             </div>
                         :('')

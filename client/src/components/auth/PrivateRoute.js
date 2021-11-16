@@ -8,6 +8,10 @@ export const PrivateRoute = ({ component: Component, roles, t, i18n, ...rest }) 
         const currentUser = authenticationService.currentUserValue;
         if (!currentUser) {
             // not logged in so redirect to login page with the return url
+            let path = window.location.pathname;
+            if (path !== '/' && path !== '/auth/login' && path.indexOf('sign_up') === -1) {
+                localStorage.setItem('redirected_from',path);
+            }
             return <Redirect to={{ pathname: '/login', state: { from: props.location } }} />
         }
 
