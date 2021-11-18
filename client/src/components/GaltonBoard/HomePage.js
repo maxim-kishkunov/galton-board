@@ -246,7 +246,7 @@ class GBHomePage extends Component {
                                 isDoubled ? <div className="pes-number-quantity">{currRouteItems.length}</div> : ('')
                             }
                         </div>)
-                });
+                }, this);
 
                 return(
                     <div key={currKey + '_block_' + index} className="pes-block">
@@ -254,7 +254,7 @@ class GBHomePage extends Component {
                         <div className="pes-items-wrap">{arrItems}</div>
                     </div>
                 )
-            })
+            }, this);
         }
         return (
             <div className="galton-board-wrap">
