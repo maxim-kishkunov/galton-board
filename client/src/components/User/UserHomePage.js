@@ -28,7 +28,7 @@ class UserHomePage extends Component {
 
     getUserData(){        
         let currentUser = JSON.parse(localStorage.getItem('currentUser'));
-        axios.get(`http://172.30.222.45:84/get_user_data`,{params: 
+        axios.get(`http://ktpsys.ddns.net:84/get_user_data`,{params: 
             {
                 user_id: currentUser.user_id
             }}
@@ -49,7 +49,7 @@ class UserHomePage extends Component {
     checkResultStep(group_id,currStep,value){
         let currentUser = JSON.parse(localStorage.getItem('currentUser'));
         let userData = this.state.userData;
-        axios.get(`http://172.30.222.45:84/check_result_step`,{params: 
+        axios.get(`http://ktpsys.ddns.net:84/check_result_step`,{params: 
             {
                 group_id: group_id,
                 user_id: currentUser.user_id,
