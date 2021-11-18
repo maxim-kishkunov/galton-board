@@ -233,7 +233,13 @@ class GBHomePage extends Component {
                     let isDoubled = currRouteItems.length > 1;
                     return(
                         <div key={currKey + '_' + arrKey + index} className={`pes-item-wrap${isDoubled ? ' double' : ''}`}>
-                            <div className={`pes-item${isChecked ? ' checked' : ''}${isDoubled ? ' double' : ''}`} style={{width: (itemsArr.length * 7 + 2)}}>
+                            <div 
+                                className={`pes-item${isChecked ? ' checked' : ''}${isDoubled ? ' double' : ''}`} 
+                                style={
+                                    this.state.resultShowMode === 'sorted_groups' ? 
+                                        {width: (itemsArr.length * 7 + 2)}
+                                    :{}}
+                            >
                                 {itemsArr}
                             </div>
                             {
