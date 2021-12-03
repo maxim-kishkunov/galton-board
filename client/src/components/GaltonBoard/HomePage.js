@@ -11,8 +11,9 @@ import {
     Divider,
     Radio,
 } from 'antd';
-// import BoardBlock from './BoardBlock'
+
 import BoardWithCanvas from './BoardWithCanvas';
+import SampleSpaces from './SampleSpaces';
 
 let timer = false;
 let globalFirstRedStep = -1;
@@ -25,6 +26,8 @@ class GBHomePage extends Component {
             firstRedStep: -1,
             reset_canvas: 0,
             resultShowMode: 'sorted_groups',
+            repeates: [],
+            pesDataUnsorted:[],
         };
         this.onChangeSlider = this.onChangeSlider.bind(this);
         this.handleStopTimer = this.handleStopTimer.bind(this);
@@ -35,6 +38,8 @@ class GBHomePage extends Component {
         this.handleDropSome = this.handleDropSome.bind(this);
         this.getBoardPES = this.getBoardPES.bind(this);
         this.onSwitchResultShowMode = this.onSwitchResultShowMode.bind(this);
+        this.resetBoard = this.resetBoard.bind(this);
+        this.setRepeates = this.setRepeates.bind(this);
     }
 
     componentDidMount(){
@@ -106,6 +111,7 @@ class GBHomePage extends Component {
         this.setState({
             allRoutes: allRoutes,
             firstRedStep: -1,
+            repeates:[],
             reset_canvas: + this.state.reset_canvas + 0.00001
         });
         globalFirstRedStep = -1;
@@ -116,6 +122,7 @@ class GBHomePage extends Component {
             allRoutes: [],
             isPaused: false,
             firstRedStep: -1,
+            repeates:[],
             reset_canvas: + this.state.reset_canvas + 0.00001
         },() => {
             clearInterval(timer);
@@ -130,6 +137,7 @@ class GBHomePage extends Component {
             isPaused: false,
             isStarted: false,
             firstRedStep: -1,
+            repeates:[],
             reset_canvas: + this.state.reset_canvas + 0.00001
         },() => {
             clearInterval(timer);
@@ -152,6 +160,18 @@ class GBHomePage extends Component {
         }
     }
 
+    resetBoard(){
+        globalFirstRedStep = -1;
+        this.setState({
+            allRoutes: [],
+            repeates:[],
+            isPaused: false,
+            isStarted: false,
+            firstRedStep: -1,
+            reset_canvas: + this.state.reset_canvas + 0.00001
+        });
+    }
+    
     getBoardPES() {
         const { 
             size
@@ -183,6 +203,11 @@ class GBHomePage extends Component {
         });
     };
 
+    setRepeates(repArr){
+        this.setState({
+            repeates:repArr
+        })
+    }
     render() {
         const {allRoutes} = this.state;
 
@@ -192,70 +217,6 @@ class GBHomePage extends Component {
             )
         });
 
-        let pes = this.state.pesData;
-        if(this.state.resultShowMode === 'ungrouped'){
-            let pesDataUnsorted = this.state.pesDataUnsorted;
-            let chunk_size = 120;
-            pes = pesDataUnsorted.map( function(e,i){ 
-                return i % chunk_size===0 ? pesDataUnsorted.slice(i,i + chunk_size) : null; 
-           }).filter(function(e){ return e; });
-        }else if(this.state.resultShowMode === 'unsorted'){
-            let pesDataUnsorted = this.state.pesDataUnsorted;
-            let shuffled = pesDataUnsorted
-                .map((value) => ({ value, sort: Math.random() }))
-                .sort((a, b) => a.sort - b.sort)
-                .map(({ value }) => value)
-            let chunk_size = 120;
-            pes = shuffled.map( function(e,i){ 
-                return i % chunk_size===0 ? shuffled.slice(i,i + chunk_size) : null; 
-            }).filter(function(e){ return e; });
-        }
-            let pesDom = [];
-        let index = 0;
-        if(pes && Object.keys(pes).length > 0){
-            pesDom = Object.keys(pes).map(function (currKey) {
-                let currItems = pes[currKey];
-                let arrItems = Object.keys(currItems).map(function (arrKey) {
-                    let currItem = currItems[arrKey];
-
-                    //currItem === arr[index - 1] ? 0 : 1 : currItem
-                    
-                    let itemsArr = Object.keys(currItem).map(function (itemsKey) {
-                        let showRight = true;
-                        if((itemsKey > 0 && currItem[itemsKey] === currItem[itemsKey - 1]) || currItem[itemsKey] === 0)
-                            showRight = false;
-                        return(
-                            <div key={itemsKey + '_num_item_' + index} className={`pes-number-item${showRight ? ' right' : ' left'}`}></div>
-                        )
-                    });
-                    let currRouteItems = allRoutes.filter(item => item && item.join() === ('0,' + currItem.join()));
-                    let isChecked = currRouteItems.length > 0;
-                    let isDoubled = currRouteItems.length > 1;
-                    return(
-                        <div key={currKey + '_' + arrKey + index} className={`pes-item-wrap${isDoubled ? ' double' : ''}`}>
-                            <div 
-                                className={`pes-item${isChecked ? ' checked' : ''}${isDoubled ? ' double' : ''}`} 
-                                style={
-                                    this.state.resultShowMode === 'sorted_groups' ? 
-                                        {width: (itemsArr.length * 7 + 2)}
-                                    :{}}
-                            >
-                                {itemsArr}
-                            </div>
-                            {
-                                isDoubled ? <div className="pes-number-quantity">{currRouteItems.length}</div> : ('')
-                            }
-                        </div>)
-                }, this);
-
-                return(
-                    <div key={currKey + '_block_' + index} className="pes-block">
-                        <div className="pes-label">{currKey}</div>
-                        <div className="pes-items-wrap">{arrItems}</div>
-                    </div>
-                )
-            }, this);
-        }
         return (
             <div className="galton-board-wrap">
                 <Col span={12} className="control-wrap">
@@ -297,15 +258,46 @@ class GBHomePage extends Component {
                             </div>
                         :('')
                     }
+                    {
+                        this.state.repeates[1] > 0 &&
+                        <div className="text-block">
+                            Повторений 1 раз: {this.state.repeates[1]}
+                        </div>
+                    }
+                    {
+                        this.state.repeates[2] > 0 &&
+                        <div className="text-block">
+                            Повторений 2 раз: {this.state.repeates[2]}
+                        </div>
+                    }
+                    {
+                        this.state.repeates[3] > 0 &&
+                        <div className="text-block">
+                            Повторений 3 раз: {this.state.repeates[3]}
+                        </div>
+                    }
+                    {
+                        this.state.repeates[4] > 0 &&
+                        <div className="text-block">
+                            Повторений 4 раз: {this.state.repeates[4]}
+                        </div>
+                    }
+                    {
+                        this.state.repeates.length > 0 &&
+                        <div className="text-block">
+                            Повторений всего: {this.state.repeates.length > 0 ? this.state.repeates.reduce((a, b) => a + b, 0) : 0}
+                        </div>
+                    }
                 </Col>
                 <Col span={12} style={{display:'flex',justifyContent: 'center', flexDirection: 'column'}}>
                     <Divider plain orientation="left">Пространство Элементарных Событий</Divider>
                     <div className="pes-controls">
-                    <Radio.Group value={this.state.resultShowMode} onChange={this.onSwitchResultShowMode} buttonStyle="solid">
-                        <Radio.Button value="sorted_groups">Сортировать</Radio.Button>
-                        <Radio.Button value="ungrouped">Не группировать</Radio.Button>
-                        <Radio.Button value="unsorted">Не сортировать</Radio.Button>
-                    </Radio.Group>
+                        <Radio.Group value={this.state.resultShowMode} onChange={this.onSwitchResultShowMode} buttonStyle="solid">
+                            <Radio.Button value="sorted_groups">Сортировать</Radio.Button>
+                            <Radio.Button value="ungrouped">Не группировать</Radio.Button>
+                            <Radio.Button value="unsorted">Не сортировать</Radio.Button>
+                        </Radio.Group>
+                        <Button onClick={() => this.handleStopTimer()}>Сбросить</Button>
                     </div>
                     <BoardWithCanvas 
                         {...this.props} 
@@ -314,13 +306,17 @@ class GBHomePage extends Component {
                         reset_canvas={this.state.reset_canvas}
                         routes_length={this.state.allRoutes.length}
                         setFirstRedStep={this.setFirstRedStep}  />
-                    {
-                        pes && Object.keys(pes).length > 0 ? 
-                            <div className={`pes${this.state.resultShowMode === 'sorted_groups' ? ' grouped': ''}`} style={{ width: document.documentElement.clientWidth }}>
-                                {pesDom}
-                            </div>
-                        :('')
-                    }
+                    <SampleSpaces  
+                        {...this.props} 
+                        size={this.state.size} 
+                        all_routes={this.state.allRoutes}
+                        pes_data={this.state.pesData}
+                        pes_data_unsorted={this.state.pesDataUnsorted}
+                        pes_data_length={this.state.pesDataUnsorted.length}
+                        result_show_mode={this.state.resultShowMode}
+                        reset_canvas={this.state.reset_canvas}
+                        routes_length={this.state.allRoutes.length}
+                        setRepeates={this.setRepeates} />
                 </Col>
             </div>
         );
