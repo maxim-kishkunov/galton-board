@@ -231,6 +231,9 @@ code {
 .pes .pes-block .pes-items-wrap .pes-item.checked.double {
   background: #f44336;
 }
+.pes .pes-block .pes-items-wrap .pes-item.checked.double.first-repeat {
+  background: #047cfd;
+}
 .pes .pes-block .pes-items-wrap .pes-item {
   border: 1px solid #acacac;
 }

@@ -26,6 +26,7 @@ class GBHomePage extends Component {
             firstRedStep: -1,
             reset_canvas: 0,
             resultShowMode: 'sorted_groups',
+            routesShowMode: 'many_squares',
             repeates: [],
             pesDataUnsorted:[],
         };
@@ -40,6 +41,7 @@ class GBHomePage extends Component {
         this.onSwitchResultShowMode = this.onSwitchResultShowMode.bind(this);
         this.resetBoard = this.resetBoard.bind(this);
         this.setRepeates = this.setRepeates.bind(this);
+        this.onSwitchRoutesShowMode = this.onSwitchRoutesShowMode.bind(this);
     }
 
     componentDidMount(){
@@ -202,6 +204,12 @@ class GBHomePage extends Component {
             resultShowMode: ev.target.value
         });
     };
+     
+    onSwitchRoutesShowMode(ev){ 
+        this.setState({
+            routesShowMode: ev.target.value
+        });
+    };
 
     setRepeates(repArr){
         this.setState({
@@ -243,6 +251,9 @@ class GBHomePage extends Component {
                     </div>
                     <div className="text-block">
                         Всего бросков: {this.state.allRoutes.length}
+                    </div>
+                    <div className="text-block">
+                        Всего комбинаций: {this.state.pesDataUnsorted.length}
                     </div>
                     {
                         this.state.firstRedStep !== -1 ? 
@@ -292,12 +303,20 @@ class GBHomePage extends Component {
                 <Col span={12} style={{display:'flex',justifyContent: 'center', flexDirection: 'column'}}>
                     <Divider plain orientation="left">Пространство Элементарных Событий</Divider>
                     <div className="pes-controls">
-                        <Radio.Group value={this.state.resultShowMode} onChange={this.onSwitchResultShowMode} buttonStyle="solid">
-                            <Radio.Button value="sorted_groups">Сортировать</Radio.Button>
-                            <Radio.Button value="ungrouped">Не группировать</Radio.Button>
-                            <Radio.Button value="unsorted">Не сортировать</Radio.Button>
-                        </Radio.Group>
-                        <Button onClick={() => this.handleStopTimer()}>Сбросить</Button>
+                        <div style={{marginBottom: 10}}>
+                            <Radio.Group value={this.state.routesShowMode} onChange={this.onSwitchRoutesShowMode} buttonStyle="solid">
+                                <Radio.Button value="many_squares">Отображать весь путь</Radio.Button>
+                                <Radio.Button value="one_square">Отображать путь в виде квадрата</Radio.Button>
+                            </Radio.Group>
+                        </div>
+                        <div>
+                            <Radio.Group value={this.state.resultShowMode} onChange={this.onSwitchResultShowMode} buttonStyle="solid">
+                                <Radio.Button value="sorted_groups">Сортировать</Radio.Button>
+                                <Radio.Button value="ungrouped">Не группировать</Radio.Button>
+                                <Radio.Button value="unsorted">Не сортировать</Radio.Button>
+                            </Radio.Group>
+                            <Button onClick={() => this.handleStopTimer()}>Сбросить</Button>
+                        </div>
                     </div>
                     <BoardWithCanvas 
                         {...this.props} 
@@ -314,6 +333,7 @@ class GBHomePage extends Component {
                         pes_data_unsorted={this.state.pesDataUnsorted}
                         pes_data_length={this.state.pesDataUnsorted.length}
                         result_show_mode={this.state.resultShowMode}
+                        routes_show_mode={this.state.routesShowMode}
                         reset_canvas={this.state.reset_canvas}
                         routes_length={this.state.allRoutes.length}
                         setRepeates={this.setRepeates} />
