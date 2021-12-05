@@ -22,7 +22,7 @@ class RegPage extends React.Component {
 
     handleSubmit(e){
         e.preventDefault();
-        axios.get(`/registrate`,{params: 
+        axios.get(`http://ktpsys.ddns.net:84/registrate`,{params: 
             {
                 email: this.state.email,
                 name: this.state.name,
