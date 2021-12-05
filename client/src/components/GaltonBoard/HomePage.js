@@ -157,7 +157,8 @@ class GBHomePage extends Component {
         if(globalFirstRedStep === -1){
             globalFirstRedStep = firstRedStep
             this.setState({
-                firstRedStep: firstRedStep
+                firstRedStep: firstRedStep,
+                reset_canvas: + this.state.reset_canvas + 0.00001
             })
         }
     }
@@ -335,6 +336,7 @@ class GBHomePage extends Component {
                         result_show_mode={this.state.resultShowMode}
                         routes_show_mode={this.state.routesShowMode}
                         reset_canvas={this.state.reset_canvas}
+                        first_red_step={this.state.firstRedStep}
                         routes_length={this.state.allRoutes.length}
                         setRepeates={this.setRepeates} />
                 </Col>

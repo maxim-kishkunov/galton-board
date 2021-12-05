@@ -193,6 +193,9 @@ code {
 .pes.grouped .pes-block .pes-items-wrap .pes-item {
     display: flex;
 }
+.pes.grouped.one_square .pes-block .pes-items-wrap {
+    flex-direction: column-reverse;
+}
 .pes.grouped .pes-block .pes-items-wrap {
     flex-direction: column;
 }
@@ -216,7 +219,10 @@ code {
   display: flex;
   align-items: center;
 }
-.pes .pes-block .pes-items-wrap {
+.pes-group-wrap {
+  display: flex;
+}
+.pes .pes-block .pes-group-wrap .pes-items-wrap {
   display: flex;
 }
 .pes .pes-block .pes-items-wrap .pes-item-wrap.double {

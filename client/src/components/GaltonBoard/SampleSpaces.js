@@ -32,6 +32,7 @@ class SampleSpaces extends Component {
         let allRoutes = this.props.all_routes;
         let repeates = [];
         let routesShowMode = this.props.routes_show_mode;
+        let firstRedStep = this.props.first_red_step;
 
         if(this.props.result_show_mode === 'ungrouped'){
             let chunk_size = 120;
@@ -75,17 +76,18 @@ class SampleSpaces extends Component {
                     let isChecked = currRouteItems.length > 0;
                     let isDoubled = currRouteItems.length > 1;
                     let isFirstRepeat = false;
+                    if(allRoutes[firstRedStep] && ('0,' + currItem.join()) === allRoutes[firstRedStep].join()){
+                        isFirstRepeat = true;
+                        firstRepeat = currKey;
+                    }
                     if(isDoubled){
-                        if(firstRepeat === -1){
-                            isFirstRepeat = true;
-                            firstRepeat = currKey;
-                        }
                         if(typeof repeates[currRouteItems.length - 1] === `undefined`){
                             repeates[currRouteItems.length - 1] = 1;
                         }else{
                             repeates[currRouteItems.length - 1] ++;
                         }
                     }
+                    index ++;
                     return(
                         <div key={currKey + '_' + arrKey + index} className={`pes-item-wrap${isDoubled ? ' double' : ''}`}>
                             <div 
@@ -103,10 +105,23 @@ class SampleSpaces extends Component {
                         </div>)
                 }, this);
 
+                let pesItems = [];
+                if(routesShowMode === `one_square` && arrItems.length > 1){
+                    let sliceEndIndex = Math.ceil(arrItems.length / Math.sqrt(arrItems.length));
+                    while(arrItems.length > Math.ceil(Math.sqrt(arrItems.length))){
+                        let slice = arrItems.slice(0, sliceEndIndex);
+                        pesItems.push(<div className="pes-items-wrap">{slice}</div>);
+                        arrItems = arrItems.slice(sliceEndIndex);
+                    }
+                }else{
+                    pesItems.push(<div className="pes-items-wrap">{arrItems}</div>);
+                }
                 return(
                     <div key={currKey + '_block_' + index} className="pes-block">
                         <div className="pes-label">{currKey}</div>
-                        <div className="pes-items-wrap">{arrItems}</div>
+                        <div className="pes-group-wrap">
+                            {pesItems}
+                        </div>
                         <div>{currItems.length}</div>
                     </div>
                 )
@@ -121,7 +136,7 @@ class SampleSpaces extends Component {
     render() {
         return (
             <div>
-                <div className={`pes${this.props.result_show_mode === 'sorted_groups' ? ' grouped': ''}`} style={{ width: document.documentElement.clientWidth }}>
+                <div className={`pes${this.props.result_show_mode === 'sorted_groups' ? ' grouped': ''}${this.props.routes_show_mode === 'one_square' ? '  one_square': ''}`} style={{ width: document.documentElement.clientWidth }}>
                     {this.state.pesDom}
                 </div>
                 <div>
