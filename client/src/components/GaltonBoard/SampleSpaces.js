@@ -139,9 +139,6 @@ class SampleSpaces extends Component {
                 <div className={`pes${this.props.result_show_mode === 'sorted_groups' ? ' grouped': ''}${this.props.routes_show_mode === 'one_square' ? '  one_square': ''}`} style={{ width: document.documentElement.clientWidth }}>
                     {this.state.pesDom}
                 </div>
-                <div>
-                    Всего комбинаций: {this.props.pes_data_unsorted.length}
-                </div>
             </div>
         );
     }    

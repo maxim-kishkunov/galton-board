@@ -29,6 +29,7 @@ class GBHomePage extends Component {
             routesShowMode: 'many_squares',
             repeates: [],
             pesDataUnsorted:[],
+            shownRotes:[],
         };
         this.onChangeSlider = this.onChangeSlider.bind(this);
         this.handleStopTimer = this.handleStopTimer.bind(this);
@@ -41,6 +42,7 @@ class GBHomePage extends Component {
         this.onSwitchResultShowMode = this.onSwitchResultShowMode.bind(this);
         this.resetBoard = this.resetBoard.bind(this);
         this.setRepeates = this.setRepeates.bind(this);
+        this.setShownRotes = this.setShownRotes.bind(this);
         this.onSwitchRoutesShowMode = this.onSwitchRoutesShowMode.bind(this);
     }
 
@@ -217,6 +219,13 @@ class GBHomePage extends Component {
             repeates:repArr
         })
     }
+
+    setShownRotes(arr){
+        this.setState({
+            shownRotes: arr
+        })
+    }
+
     render() {
         const {allRoutes} = this.state;
 
@@ -244,17 +253,24 @@ class GBHomePage extends Component {
                         <Button disabled={!this.state.isStarted} onClick={this.handleRestartTimer}>Рестарт</Button>
                     </div>
                     <Divider plain orientation="left">Кинуть несколько сразу</Divider>
-                    <div>
+                    <div style={{display: 'flex', justifyContent: 'center'}}>
                         <Button disabled={this.state.isStarted} onClick={() => this.handleDropSome(30)}>30</Button>
                         <Button disabled={this.state.isStarted} onClick={() => this.handleDropSome(100)}>100</Button>
                         <Button disabled={this.state.isStarted} onClick={() => this.handleDropSome(1000)}>1000</Button>
                         <Button disabled={this.state.isStarted} onClick={() => this.handleDropSome(10000)}>10000</Button>
+                        <InputNumber max={1000} min={1} onChange={(val) => this.handleDropSome(val)} />
                     </div>
                     <div className="text-block">
                         Всего бросков: {this.state.allRoutes.length}
                     </div>
                     <div className="text-block">
                         Всего комбинаций: {this.state.pesDataUnsorted.length}
+                    </div>
+                    <div className="text-block">
+                        Комбинаций сыграло: {this.state.shownRotes.length}
+                    </div>
+                    <div className="text-block">
+                        Комбинаций не сыграло: {this.state.pesDataUnsorted.length - this.state.shownRotes.length}
                     </div>
                     {
                         this.state.firstRedStep !== -1 ? 
@@ -325,6 +341,7 @@ class GBHomePage extends Component {
                         all_routes={this.state.allRoutes}
                         reset_canvas={this.state.reset_canvas}
                         routes_length={this.state.allRoutes.length}
+                        setShownRotes={this.setShownRotes}
                         setFirstRedStep={this.setFirstRedStep}  />
                     <SampleSpaces  
                         {...this.props} 

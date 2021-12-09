@@ -138,6 +138,7 @@ class BoardWithCanvas extends Component {
                     }
                 }
             }
+            this.props.setShownRotes(shownRoutes);
             this.setState({
                 shownRoutes: shownRoutes,
                 lastShownRoute: lastShownRoute,
