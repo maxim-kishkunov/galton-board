@@ -258,7 +258,7 @@ class GBHomePage extends Component {
                         <Button disabled={this.state.isStarted} onClick={() => this.handleDropSome(100)}>100</Button>
                         <Button disabled={this.state.isStarted} onClick={() => this.handleDropSome(1000)}>1000</Button>
                         <Button disabled={this.state.isStarted} onClick={() => this.handleDropSome(10000)}>10000</Button>
-                        <InputNumber max={1000} min={1} onChange={(val) => this.handleDropSome(val)} />
+                        <InputNumber min={1} onChange={(val) => this.handleDropSome(val)} />
                     </div>
                     <div className="text-block">
                         Всего бросков: {this.state.allRoutes.length}
