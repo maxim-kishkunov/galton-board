@@ -30,6 +30,7 @@ class GBHomePage extends Component {
             repeates: [],
             pesDataUnsorted:[],
             shownRotes:[],
+            dropSomeInput: 0,
         };
         this.onChangeSlider = this.onChangeSlider.bind(this);
         this.handleStopTimer = this.handleStopTimer.bind(this);
@@ -44,10 +45,17 @@ class GBHomePage extends Component {
         this.setRepeates = this.setRepeates.bind(this);
         this.setShownRotes = this.setShownRotes.bind(this);
         this.onSwitchRoutesShowMode = this.onSwitchRoutesShowMode.bind(this);
+        this.handleChangeInput = this.handleChangeInput.bind(this);
     }
 
     componentDidMount(){
-        this.getBoardPES();
+        this.getBoardPES(); 
+    }
+
+    handleChangeInput(val){
+        this.setState({
+            dropSomeInput: val
+        })
     }
 
     onChangeSlider(fieldName,fieldValue){
@@ -258,8 +266,13 @@ class GBHomePage extends Component {
                         <Button disabled={this.state.isStarted} onClick={() => this.handleDropSome(100)}>100</Button>
                         <Button disabled={this.state.isStarted} onClick={() => this.handleDropSome(1000)}>1000</Button>
                         <Button disabled={this.state.isStarted} onClick={() => this.handleDropSome(10000)}>10000</Button>
-                        <InputNumber min={1} onChange={(val) => this.handleDropSome(val)} />
                     </div>
+                    <Divider plain orientation="left">Ввести количество вручную</Divider>
+                    <div style={{display: 'flex', justifyContent: 'center'}}>
+                        <InputNumber min={1} onChange={(val) => this.handleChangeInput(val)} />
+                        <Button onClick={() => this.handleDropSome(this.state.dropSomeInput)}>OK</Button>
+                    </div>
+                    <Divider plain></Divider>
                     <div className="text-block">
                         Всего бросков: {this.state.allRoutes.length}
                     </div>
