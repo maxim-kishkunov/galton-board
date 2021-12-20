@@ -269,7 +269,7 @@ class GBHomePage extends Component {
                     </div>
                     <Divider plain orientation="left">Ввести количество вручную</Divider>
                     <div style={{display: 'flex', justifyContent: 'center'}}>
-                        <InputNumber min={1} onChange={(val) => this.handleChangeInput(val)} />
+                        <InputNumber min={1} onChange={(val) => this.handleChangeInput(val)} onPressEnter={() => this.handleDropSome(this.state.dropSomeInput)}/>
                         <Button onClick={() => this.handleDropSome(this.state.dropSomeInput)}>OK</Button>
                     </div>
                     <Divider plain></Divider>
